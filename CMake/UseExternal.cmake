@@ -14,7 +14,7 @@ function(USE_EXTERNAL_GATHER_ARGS NAME)
   endforeach()
 
   # self root '-DFOO_ROOT=<path>'
-  set(INSTALL_PATH "${CMAKE_CURRENT_BINARY_DIR}/${NAME}")
+  set(INSTALL_PATH "${CMAKE_CURRENT_BINARY_DIR}/install")
   if("${UPPER_NAME}_ROOT_VAR" STREQUAL "")
     set(ARGS ${ARGS} "-D${UPPER_NAME}_ROOT=${INSTALL_PATH}")
   else()
