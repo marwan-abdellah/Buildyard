@@ -14,7 +14,8 @@ clean:
 
 else
 
-all: debug
+normal: debug
+all: debug release
 clean:
 	@-$(MAKE) -C Debug clean
 	@-$(MAKE) -C Release clean

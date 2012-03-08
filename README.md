@@ -1,10 +1,20 @@
 # CMake Projects
 
 CMake projects facilitates the build and development of multiple,
-dependent projects from installed packages, git or svn repositories. It uses the
-ExternalProject CMake module with a simplified per-project configuration
-file. Each project has a config/name.cmake configuration file, which
-contains the following variables:
+dependent projects from installed packages, git or svn repositories.
+
+## Using
+
+For Windows, use cmake to build a Visual Studio Solution. For all other
+platforms, executing 'make' invokes cmake and builds all debug
+targets. Alternatively use 'make Project' to build a single project and
+all its dependencies.
+ 
+## Configuration
+
+The ExternalProject CMake module is the foundation for a simplified
+per-project configuration file. Each project has a config/name.cmake
+configuration file, which contains the following variables:
 
 * NAME\_VERSION: the required version of the project
 * NAME\_DEPENDS: optional name list of dependencies
