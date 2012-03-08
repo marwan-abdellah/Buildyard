@@ -59,13 +59,12 @@ function(USE_EXTERNAL NAME)
   endif()
 
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/${NAME}/CMake")
-  list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../${NAME}/CMake")
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_INSTALL_PREFIX}/share/${NAME}/CMake")
   list(APPEND CMAKE_MODULE_PATH /usr/share/${NAME}/CMake)
   list(APPEND CMAKE_MODULE_PATH /usr/local/share/${NAME}/CMake)
 
   # try find_package
-  find_package(${NAME} ${${UPPER_NAME}_VERSION})
+  find_package(${NAME} ${${UPPER_NAME}_VERSION} QUIET)
   if(${UPPER_NAME}_FOUND)
     return()
   endif()
@@ -95,7 +94,8 @@ function(USE_EXTERNAL NAME)
     set(REPO_TAG_VAL HEAD)
   endif()
 
-  set(INSTALL_PATH "${CMAKE_CURRENT_BINARY_DIR}/${NAME}")
+  set(INSTALL_PATH "${CMAKE_CURRENT_BINARY_DIR}/install")
+  set(SOURCE_DIR "${CMAKE_SOURCE_DIR}/src/${NAME}")
   use_external_gather_args(${NAME})
   set(ARGS -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
            -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH}
@@ -104,6 +104,7 @@ function(USE_EXTERNAL NAME)
   ExternalProject_Add(${NAME}
     PREFIX "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
     BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/${NAME}/build"
+    SOURCE_DIR "${SOURCE_DIR}"
     INSTALL_DIR "${INSTALL_PATH}"
     DEPENDS "${${UPPER_NAME}_DEPENDS}"
     ${REPO_TYPE}_REPOSITORY ${${UPPER_NAME}_REPO_URL}
@@ -116,6 +117,9 @@ function(USE_EXTERNAL NAME)
   else()
     set(${${UPPER_NAME}_ROOT_VAR} "${INSTALL_PATH}" PARENT_SCOPE)
   endif()
+
+  # setup forwarding makefile
+  configure_file(CMake/Makefile.in "${SOURCE_DIR}/Makefile" @ONLY)
 
   #if(WIN32)
   #  set(${UPPER_NAME}_LIBRARY ${${UPPER_NAME}_install}/lib/vrpn${_LINK_LIBRARY_SUFFIX})
