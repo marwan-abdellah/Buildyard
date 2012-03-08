@@ -1,12 +1,9 @@
 #!gmake
-.PHONY: debug release clean clobber package install debuginst releaseinst tests
+.PHONY: debug release clean clobber package tests
 
 
 ifeq ($(wildcard Makefile), Makefile)
 all:
-	$(MAKE) -f Makefile $(MAKECMDGOALS)
-
-install:
 	$(MAKE) -f Makefile $(MAKECMDGOALS)
 
 clean:
@@ -18,10 +15,6 @@ clean:
 else
 
 all: debug
-install: Debug/Makefile Release/Makefile
-	@$(MAKE) -C Debug install
-	@$(MAKE) -C Release install
-
 clean:
 	@-$(MAKE) -C Debug clean
 	@-$(MAKE) -C Release clean
@@ -45,12 +38,12 @@ debug: Debug/Makefile
 
 Debug/Makefile:
 	@mkdir -p Debug
-	@cd Debug; cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX:PATH=install
+	@cd Debug; cmake .. -DCMAKE_BUILD_TYPE=Debug
 
 release: Release/Makefile
 	@$(MAKE) -C Release
 
 Release/Makefile:
 	@mkdir -p Release
-	@cd Release; cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX:PATH=install
+	@cd Release; cmake .. -DCMAKE_BUILD_TYPE=Release
 
