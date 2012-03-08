@@ -1,0 +1,6 @@
+#!gmake
+all:
+	@$(MAKE) -C ../..
+
+.DEFAULT:
+	@$(MAKE) -C ../.. $(MAKECMDGOALS)
