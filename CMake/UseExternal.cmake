@@ -6,7 +6,7 @@ function(USE_EXTERNAL_GATHER_ARGS NAME)
   string(TOUPPER ${NAME} UPPER_NAME)
 
   # recurse to get dependency roots
-  include(${NAME} OPTIONAL)
+  include(${NAME})
   foreach(PROJ ${${UPPER_NAME}_DEPENDS})
     use_external_gather_args(${PROJ})
     string(TOUPPER ${PROJ} UPPER_PROJ)
@@ -34,7 +34,7 @@ function(USE_EXTERNAL NAME)
   # ** Version is read from optional $NAME.cmake
   # * If no pre-installed package is found, use ExternalProject to get dependency
   # ** External project settings are read from $NAME.cmake
-  include(${NAME} OPTIONAL)
+  include(${NAME})
 
   string(SUBSTRING ${NAME} 0 2 SHORT_NAME)
   string(TOUPPER ${SHORT_NAME} SHORT_NAME)
