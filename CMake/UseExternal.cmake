@@ -75,7 +75,7 @@ function(USE_EXTERNAL NAME)
   endif()
 
   # External Project
-  set(EXTRA)
+  set(PATCH_CMD)
   set(REPO_TYPE ${${UPPER_NAME}_REPO_TYPE})
   if(NOT REPO_TYPE)
     set(REPO_TYPE git)
@@ -84,7 +84,7 @@ function(USE_EXTERNAL NAME)
 
   if(REPO_TYPE STREQUAL "GIT")
     set(REPO_TAG GIT_TAG)
-    set(EXTRA "UPDATE_COMMAND ${GIT_EXECUTABLE} pull")
+    set(PATCH_CMD ${GIT_EXECUTABLE} pull || /bin/true)
   elseif(REPO_TYPE STREQUAL "SVN")
     set(REPO_TAG SVN_REVISION)
   else()
@@ -111,8 +111,8 @@ function(USE_EXTERNAL NAME)
     DEPENDS "${${UPPER_NAME}_DEPENDS}"
     ${REPO_TYPE}_REPOSITORY ${${UPPER_NAME}_REPO_URL}
     ${REPO_TAG} ${REPO_TAG_VAL}
+    PATCH_COMMAND "${PATCH_CMD}"
     CMAKE_ARGS ${ARGS}
-    ${EXTRA}
     STEP_TARGETS update build configure test install
     )
 
