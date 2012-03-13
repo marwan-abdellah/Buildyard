@@ -1,6 +1,6 @@
 #!gmake
 all:
-	@$(MAKE) -C ../..
+	@$(MAKE) -C ../.. @NAME@-build
 
 .DEFAULT:
 	@$(MAKE) -C ../.. $(MAKECMDGOALS)
