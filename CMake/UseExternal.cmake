@@ -113,6 +113,7 @@ function(USE_EXTERNAL NAME)
     ${REPO_TAG} ${REPO_TAG_VAL}
     CMAKE_ARGS ${ARGS}
     ${EXTRA}
+    STEP_TARGETS update build configure test install
     )
 
   if("${UPPER_NAME}_ROOT_VAR" STREQUAL "")
