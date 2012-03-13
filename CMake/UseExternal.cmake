@@ -75,6 +75,7 @@ function(USE_EXTERNAL NAME)
   endif()
 
   # External Project
+  set(EXTRA)
   set(REPO_TYPE ${${UPPER_NAME}_REPO_TYPE})
   if(NOT REPO_TYPE)
     set(REPO_TYPE git)
@@ -83,13 +84,14 @@ function(USE_EXTERNAL NAME)
 
   if(REPO_TYPE STREQUAL "GIT")
     set(REPO_TAG GIT_TAG)
+    set(EXTRA "UPDATE_COMMAND git pull")
   elseif(REPO_TYPE STREQUAL "SVN")
     set(REPO_TAG SVN_REVISION)
   else()
     message(FATAL_ERROR "Unkown repository type ${REPO_TYPE}")
   endif()
 
-  set(REPO_TAG_VAL ${${UPPER_NAME}_TAG})
+  set(REPO_TAG_VAL ${${UPPER_NAME}_REPO_TAG})
   if(NOT REPO_TAG_VAL)
     set(REPO_TAG_VAL HEAD)
   endif()
@@ -110,6 +112,7 @@ function(USE_EXTERNAL NAME)
     ${REPO_TYPE}_REPOSITORY ${${UPPER_NAME}_REPO_URL}
     ${REPO_TAG} ${REPO_TAG_VAL}
     CMAKE_ARGS ${ARGS}
+    ${EXTRA}
     )
 
   if("${UPPER_NAME}_ROOT_VAR" STREQUAL "")
