@@ -84,7 +84,7 @@ function(USE_EXTERNAL NAME)
 
   if(REPO_TYPE STREQUAL "GIT")
     set(REPO_TAG GIT_TAG)
-    set(EXTRA "UPDATE_COMMAND git pull")
+    set(EXTRA "UPDATE_COMMAND ${GIT_EXECUTABLE} pull")
   elseif(REPO_TYPE STREQUAL "SVN")
     set(REPO_TAG SVN_REVISION)
   else()
