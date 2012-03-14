@@ -1,4 +1,6 @@
 
+# Copyright (c) 2012 Stefan Eilemann <Stefan.Eilemann@epfl.ch>
+
 include(ExternalProject)
 find_package(Git REQUIRED)
 
@@ -69,7 +71,6 @@ endif()
 endfunction(_ep_write_gitclone_script)
 
 
-
 function(USE_EXTERNAL_GATHER_ARGS NAME)
   # sets ${UPPER_NAME}_ARGS on return, to be passed to CMake
   string(TOUPPER ${NAME} UPPER_NAME)
@@ -103,6 +104,12 @@ function(USE_EXTERNAL NAME)
   # ** Version is read from optional $NAME.cmake
   # * If no pre-installed package is found, use ExternalProject to get dependency
   # ** External project settings are read from $NAME.cmake
+
+  get_target_property(_check ${NAME} LOCATION)
+  if(NOT _check STREQUAL "NOT_FOUND") # already used
+    return()
+  endif()
+
   include(${NAME})
 
   string(SUBSTRING ${NAME} 0 2 SHORT_NAME)
@@ -143,6 +150,14 @@ function(USE_EXTERNAL NAME)
     message(FATAL_ERROR
       "No repository information for ${NAME}, create ${NAME}.cmake?")
   endif()
+
+  # pull in dependent projects first
+  foreach(_dep ${${UPPER_NAME}_DEPENDS})
+    get_target_property(_dep_check ${_dep} LOCATION)
+    if(_dep_check STREQUAL "NOT_FOUND")
+      use_external(${_dep})
+    endif()
+  endforeach()
 
   # External Project
   set(PATCH_CMD)
