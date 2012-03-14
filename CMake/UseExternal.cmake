@@ -67,6 +67,7 @@ function(USE_EXTERNAL NAME)
   # try find_package
   find_package(${NAME} ${${UPPER_NAME}_VERSION} QUIET)
   if(${UPPER_NAME}_FOUND)
+    message(STATUS "Using install ${NAME} in ${${UPPER_NAME}_INCLUDE_DIRS}")
     return()
   endif()
 
