@@ -105,8 +105,8 @@ function(USE_EXTERNAL NAME)
   # * If no pre-installed package is found, use ExternalProject to get dependency
   # ** External project settings are read from $NAME.cmake
 
-  get_target_property(_check ${NAME} LOCATION)
-  if(NOT _check STREQUAL "NOT_FOUND") # already used
+  get_target_property(_check ${NAME} _EP_IS_EXTERNAL_PROJECT)
+  if(NOT "${_check}" STREQUAL "_check-NOTFOUND") # already used
     return()
   endif()
 
@@ -153,8 +153,8 @@ function(USE_EXTERNAL NAME)
 
   # pull in dependent projects first
   foreach(_dep ${${UPPER_NAME}_DEPENDS})
-    get_target_property(_dep_check ${_dep} LOCATION)
-    if(_dep_check STREQUAL "NOT_FOUND")
+    get_target_property(_dep_check ${_dep} _EP_IS_EXTERNAL_PROJECT)
+    if("${_dep_check}" STREQUAL "_dep_check-NOTFOUND")
       use_external(${_dep})
     endif()
   endforeach()
