@@ -1,5 +1,6 @@
 
 include(ExternalProject)
+find_package(Git REQUIRED)
 
 function(USE_EXTERNAL_GATHER_ARGS NAME)
   # sets ${UPPER_NAME}_ARGS on return, to be passed to CMake
@@ -92,11 +93,6 @@ function(USE_EXTERNAL NAME)
     message(FATAL_ERROR "Unkown repository type ${REPO_TYPE}")
   endif()
 
-  set(REPO_TAG_VAL ${${UPPER_NAME}_REPO_TAG})
-  if(NOT REPO_TAG_VAL)
-    set(REPO_TAG_VAL HEAD)
-  endif()
-
   set(INSTALL_PATH "${CMAKE_CURRENT_BINARY_DIR}/install")
   set(SOURCE_DIR "${CMAKE_SOURCE_DIR}/src/${NAME}")
   use_external_gather_args(${NAME})
@@ -111,7 +107,7 @@ function(USE_EXTERNAL NAME)
     INSTALL_DIR "${INSTALL_PATH}"
     DEPENDS "${${UPPER_NAME}_DEPENDS}"
     ${REPO_TYPE}_REPOSITORY ${${UPPER_NAME}_REPO_URL}
-    ${REPO_TAG} ${REPO_TAG_VAL}
+    ${REPO_TAG} ${${UPPER_NAME}_REPO_TAG}
     PATCH_COMMAND "${PATCH_CMD}"
     CMAKE_ARGS ${ARGS}
     STEP_TARGETS update build configure test install
