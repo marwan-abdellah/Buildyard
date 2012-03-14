@@ -84,7 +84,8 @@ function(USE_EXTERNAL NAME)
 
   if(REPO_TYPE STREQUAL "GIT")
     set(REPO_TAG GIT_TAG)
-    set(PATCH_CMD ${GIT_EXECUTABLE} pull || /bin/true)
+    # pull fails if tag is a SHA hash, use git status to set exit value to true
+    set(PATCH_CMD ${GIT_EXECUTABLE} pull || ${GIT_EXECUTABLE} status)
   elseif(REPO_TYPE STREQUAL "SVN")
     set(REPO_TAG SVN_REVISION)
   else()
