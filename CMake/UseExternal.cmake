@@ -77,6 +77,8 @@ function(USE_EXTERNAL_GATHER_ARGS NAME)
 
   # recurse to get dependency roots
   include(${NAME})
+
+  set(DEPENDS)
   foreach(PROJ ${${UPPER_NAME}_DEPENDS})
     use_external_gather_args(${PROJ})
     string(TOUPPER ${PROJ} UPPER_PROJ)
@@ -140,9 +142,18 @@ function(USE_EXTERNAL NAME)
   list(APPEND CMAKE_MODULE_PATH /usr/local/share/${NAME}/CMake)
 
   # try find_package
+  if(${NAME}_FOUND) # Opt: already found, be quiet
+    set(${NAME}_FOUND 1 PARENT_SCOPE)
+    return()
+  endif()
   find_package(${NAME} ${${UPPER_NAME}_VERSION} QUIET)
   if(${UPPER_NAME}_FOUND)
-    message(STATUS "Using install ${NAME} in ${${UPPER_NAME}_INCLUDE_DIRS}")
+    set(${NAME}_FOUND 1) # compat with Foo_FOUND and FOO_FOUND usage
+  endif()
+  if(${NAME}_FOUND)
+    message(STATUS "Using installed ${NAME} in ${${UPPER_NAME}_INCLUDE_DIRS}"
+      "${${NAME}_INCLUDE_DIRS}")
+    set(${NAME}_FOUND 1 PARENT_SCOPE)
     return()
   endif()
 
@@ -156,6 +167,11 @@ function(USE_EXTERNAL NAME)
     get_target_property(_dep_check ${_dep} _EP_IS_EXTERNAL_PROJECT)
     if("${_dep_check}" STREQUAL "_dep_check-NOTFOUND")
       use_external(${_dep})
+    endif()
+    if(${_dep}_FOUND)
+      set(${_dep}_FOUND 1 PARENT_SCOPE)
+    else()
+      list(APPEND DEPENDS ${_dep})
     endif()
   endforeach()
 
@@ -174,7 +190,7 @@ function(USE_EXTERNAL NAME)
   elseif(REPO_TYPE STREQUAL "SVN")
     set(REPO_TAG SVN_REVISION)
   else()
-    message(FATAL_ERROR "Unkown repository type ${REPO_TYPE}")
+    message(FATAL_ERROR "Unknown repository type ${REPO_TYPE}")
   endif()
 
   set(INSTALL_PATH "${CMAKE_CURRENT_BINARY_DIR}/install")
@@ -189,7 +205,7 @@ function(USE_EXTERNAL NAME)
     BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
     SOURCE_DIR "${SOURCE_DIR}"
     INSTALL_DIR "${INSTALL_PATH}"
-    DEPENDS "${${UPPER_NAME}_DEPENDS}"
+    DEPENDS "${DEPENDS}"
     ${REPO_TYPE}_REPOSITORY ${${UPPER_NAME}_REPO_URL}
     ${REPO_TAG} ${${UPPER_NAME}_REPO_TAG}
     PATCH_COMMAND "${PATCH_CMD}"
