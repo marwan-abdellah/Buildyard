@@ -166,8 +166,10 @@ function(USE_EXTERNAL NAME)
   unset(${UPPER_NAME}_LIBRARy_DIRS CACHE)
 
   if("${${UPPER_NAME}_REPO_URL}" STREQUAL "")
-    message(FATAL_ERROR
-      "No repository information for ${NAME}, create ${NAME}.cmake?")
+    message(WARNING
+      "Missing dependency ${NAME}: No source repository, fix ${NAME}.cmake?")
+    set(${NAME}_FOUND 1 PARENT_SCOPE) # ugh: removes dependency
+    return()
   endif()
 
   # pull in dependent projects first
