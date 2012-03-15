@@ -67,7 +67,6 @@ endif()
 
 "
 )
-
 endfunction(_ep_write_gitclone_script)
 
 
@@ -95,6 +94,7 @@ function(USE_EXTERNAL_GATHER_ARGS NAME)
 
   set(${UPPER_NAME}_ARGS ${ARGS} PARENT_SCOPE) # return value
 endfunction()
+
 
 function(USE_EXTERNAL NAME)
   # Searches for an external project.
@@ -142,20 +142,28 @@ function(USE_EXTERNAL NAME)
   list(APPEND CMAKE_MODULE_PATH /usr/local/share/${NAME}/CMake)
 
   # try find_package
-  if(${NAME}_FOUND) # Opt: already found, be quiet
+  if(${NAME}_FOUND) # Opt: already found, be quiet and propagate upwards
     set(${NAME}_FOUND 1 PARENT_SCOPE)
     return()
   endif()
+
   find_package(${NAME} ${${UPPER_NAME}_VERSION} QUIET)
   if(${UPPER_NAME}_FOUND)
     set(${NAME}_FOUND 1) # compat with Foo_FOUND and FOO_FOUND usage
   endif()
   if(${NAME}_FOUND)
-    message(STATUS "Using installed ${NAME} in ${${UPPER_NAME}_INCLUDE_DIRS}"
+    message(STATUS "  ${NAME}: installed in ${${UPPER_NAME}_INCLUDE_DIRS}"
       "${${NAME}_INCLUDE_DIRS}")
     set(${NAME}_FOUND 1 PARENT_SCOPE)
     return()
   endif()
+
+  unset(${NAME}_INCLUDE_DIR CACHE)        # some find_package (boost) don't
+  unset(${UPPER_NAME}_INCLUDE_DIR CACHE)  # properly unset and recheck the
+  unset(${NAME}_INCLUDE_DIRS CACHE)       # version on subsequent runs if it
+  unset(${UPPER_NAME}_INCLUDE_DIRS CACHE) # failed
+  unset(${NAME}_LIBRARY_DIRS CACHE)
+  unset(${UPPER_NAME}_LIBRARy_DIRS CACHE)
 
   if("${${UPPER_NAME}_REPO_URL}" STREQUAL "")
     message(FATAL_ERROR
@@ -200,6 +208,8 @@ function(USE_EXTERNAL NAME)
            -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH}
            ${${UPPER_NAME}_ARGS})
 
+  message(STATUS "  ${NAME}: building from ${${UPPER_NAME}_REPO_URL}:"
+    "${${UPPER_NAME}_REPO_TAG}")
   ExternalProject_Add(${NAME}
     PREFIX "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
     BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
@@ -210,6 +220,7 @@ function(USE_EXTERNAL NAME)
     ${REPO_TAG} ${${UPPER_NAME}_REPO_TAG}
     PATCH_COMMAND "${PATCH_CMD}"
     CMAKE_ARGS ${ARGS}
+    ${${UPPER_NAME}_EXTRA}
     STEP_TARGETS update build configure test install
     )
 
