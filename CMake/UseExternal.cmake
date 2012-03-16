@@ -10,7 +10,10 @@ set(USE_EXTERNAL_SUBTARGETS update build buildonly configure test install
   package doxygen)
 foreach(subtarget ${USE_EXTERNAL_SUBTARGETS})
   add_custom_target(${subtarget}s)
+  set_target_properties(${subtarget}s PROPERTIES FOLDER "00_Meta")
 endforeach()
+add_custom_target(AllProjects)
+set_target_properties(AllProjects PROPERTIES FOLDER "00_Main")
 
 # overwrite git clone script generation to avoid excessive cloning
 function(_ep_write_gitclone_script script_filename source_dir git_EXECUTABLE git_repository git_tag src_name work_dir)
@@ -406,8 +409,10 @@ function(USE_EXTERNAL NAME)
         add_dependencies(${subtarget}s ${NAME}-${subtarget})
       endif()
     endforeach()
+    add_dependencies(AllProjects ${NAME})
   endif()
 
+  set_target_properties(${NAME} PROPERTIES FOLDER "00_Main")
   foreach(subtarget ${USE_EXTERNAL_SUBTARGETS})
     set_target_properties(${NAME}-${subtarget} PROPERTIES FOLDER ${NAME})
   endforeach()
