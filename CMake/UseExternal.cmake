@@ -4,6 +4,7 @@
 include(ExternalProject)
 find_package(Git REQUIRED)
 find_package(Subversion REQUIRED)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(USE_EXTERNAL_SUBTARGETS update build buildonly configure test install
   package doxygen)
@@ -406,6 +407,10 @@ function(USE_EXTERNAL NAME)
       endif()
     endforeach()
   endif()
+
+  foreach(subtarget ${USE_EXTERNAL_SUBTARGETS})
+    set_target_properties(${NAME}-${subtarget} PROPERTIES FOLDER ${NAME})
+  endforeach()
 
   if("${UPPER_NAME}_ROOT_VAR" STREQUAL "")
     set(${UPPER_NAME}_ROOT "${INSTALL_PATH}" PARENT_SCOPE)
