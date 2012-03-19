@@ -250,9 +250,7 @@ function(USE_EXTERNAL NAME)
   endif()
 
   # setup forwarding makefile
-  if(EXISTS "${SOURCE_DIR}/Makefile")
-    message("Project source has a Makefile, can't setup forwarding Makefile")
-  else()
+  if(NOT EXISTS "${SOURCE_DIR}/Makefile")
     configure_file(CMake/Makefile.in "${SOURCE_DIR}/Makefile" @ONLY)
   endif()
 endfunction()
