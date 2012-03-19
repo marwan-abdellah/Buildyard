@@ -233,12 +233,7 @@ function(USE_EXTERNAL NAME)
   endif()
 
   # setup forwarding makefile
-  configure_file(CMake/Makefile.in "${SOURCE_DIR}/Makefile" @ONLY)
-
-  #if(WIN32)
-  #  set(${UPPER_NAME}_LIBRARY ${${UPPER_NAME}_install}/lib/vrpn${_LINK_LIBRARY_SUFFIX})
-  #else()
-  #  set(${UPPER_NAME}_LIBRARY ${${UPPER_NAME}_install}/lib/libvrpn.a)
-  #endif()
-  #set(${UPPER_NAME}_INCLUDE_DIR ${${UPPER_NAME}_install}/include)
+  if(NOT EXISTS "${SOURCE_DIR}/Makefile")
+    configure_file(CMake/Makefile.in "${SOURCE_DIR}/Makefile" @ONLY)
+  endif()
 endfunction()
