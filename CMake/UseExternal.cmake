@@ -223,10 +223,10 @@ function(USE_EXTERNAL NAME)
     PATCH_COMMAND "${PATCH_CMD}"
     CMAKE_ARGS ${ARGS}
     ${${UPPER_NAME}_EXTRA}
-    STEP_TARGETS update build configure test install package
+    STEP_TARGETS update build configure test install
     )
 
-  # add package target
+  # add optional package target
   get_property(cmd_set TARGET ${NAME} PROPERTY _EP_BUILD_COMMAND SET)
   if(cmd_set)
     get_property(cmd TARGET ${NAME} PROPERTY _EP_BUILD_COMMAND)
@@ -234,12 +234,14 @@ function(USE_EXTERNAL NAME)
     _ep_get_build_command(${NAME} BUILD cmd)
   endif()
 
-  ExternalProject_Add_Step(${NAME} package
+  add_custom_target(${NAME}-package
     COMMAND ${cmd} package
+    DEPENDS ${NAME}
     COMMENT "Building package"
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
-    DEPENDEES build
     )
+  set_target_properties(${NAME}-package PROPERTIES EXCLUDE_FROM_ALL ON)
+
 
   if("${UPPER_NAME}_ROOT_VAR" STREQUAL "")
     set(${UPPER_NAME}_ROOT "${INSTALL_PATH}" PARENT_SCOPE)
