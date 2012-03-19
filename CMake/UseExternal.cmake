@@ -223,7 +223,22 @@ function(USE_EXTERNAL NAME)
     PATCH_COMMAND "${PATCH_CMD}"
     CMAKE_ARGS ${ARGS}
     ${${UPPER_NAME}_EXTRA}
-    STEP_TARGETS update build configure test install
+    STEP_TARGETS update build configure test install package
+    )
+
+  # add package target
+  get_property(cmd_set TARGET ${NAME} PROPERTY _EP_BUILD_COMMAND SET)
+  if(cmd_set)
+    get_property(cmd TARGET ${NAME} PROPERTY _EP_BUILD_COMMAND)
+  else()
+    _ep_get_build_command(${NAME} BUILD cmd)
+  endif()
+
+  ExternalProject_Add_Step(${NAME} package
+    COMMAND ${cmd} package
+    COMMENT "Building package"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
+    DEPENDEES build
     )
 
   if("${UPPER_NAME}_ROOT_VAR" STREQUAL "")
@@ -233,7 +248,9 @@ function(USE_EXTERNAL NAME)
   endif()
 
   # setup forwarding makefile
-  if(NOT EXISTS "${SOURCE_DIR}/Makefile")
+  if(EXISTS "${SOURCE_DIR}/Makefile")
+    message("Project source has a Makefile, can't setup forwarding Makefile")
+  else()
     configure_file(CMake/Makefile.in "${SOURCE_DIR}/Makefile" @ONLY)
   endif()
 endfunction()
