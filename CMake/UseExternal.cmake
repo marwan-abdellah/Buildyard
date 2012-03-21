@@ -96,6 +96,32 @@ function(USE_EXTERNAL_GATHER_ARGS NAME)
 endfunction()
 
 
+function(USE_EXTERNAL_BUILDONLY name)
+  ExternalProject_Get_Property(${name} binary_dir)
+
+  get_property(cmd_set TARGET ${name} PROPERTY _EP_BUILD_COMMAND SET)
+  if(cmd_set)
+    get_property(cmd TARGET ${name} PROPERTY _EP_BUILD_COMMAND)
+  else()
+    _ep_get_build_command(${name} BUILD cmd)
+  endif()
+
+  get_property(log TARGET ${name} PROPERTY _EP_LOG_BUILD)
+  if(log)
+    set(log LOG 1)
+  else()
+    set(log "")
+  endif()
+
+  ExternalProject_Add_Step(${name} buildonly
+    COMMAND ${cmd}
+    WORKING_DIRECTORY ${binary_dir}
+#    DEPENDEES configure
+    ${log}
+    )
+endfunction()
+
+
 function(USE_EXTERNAL NAME)
   # Searches for an external project.
   #  Sets NAME_ROOT to the installation directory when not found using
@@ -224,8 +250,9 @@ function(USE_EXTERNAL NAME)
     UPDATE_COMMAND "${UPDATE_CMD}"
     CMAKE_ARGS ${ARGS}
     ${${UPPER_NAME}_EXTRA}
-    STEP_TARGETS update build configure test install
+    STEP_TARGETS update build buildonly configure test install
     )
+  use_external_buildonly(${NAME})
 
   # add optional package target
   get_property(cmd_set TARGET ${NAME} PROPERTY _EP_BUILD_COMMAND SET)
