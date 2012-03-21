@@ -113,12 +113,12 @@ function(USE_EXTERNAL_BUILDONLY name)
     set(log "")
   endif()
 
-  ExternalProject_Add_Step(${name} buildonly
+  add_custom_target(${NAME}-buildonly
     COMMAND ${cmd}
+    COMMENT "Building ${NAME}"
     WORKING_DIRECTORY ${binary_dir}
-#    DEPENDEES configure
-    ${log}
     )
+  set_target_properties(${NAME}-buildonly PROPERTIES EXCLUDE_FROM_ALL ON)
 endfunction()
 
 
@@ -269,7 +269,6 @@ function(USE_EXTERNAL NAME)
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
     )
   set_target_properties(${NAME}-package PROPERTIES EXCLUDE_FROM_ALL ON)
-
 
   if("${UPPER_NAME}_ROOT_VAR" STREQUAL "")
     set(${UPPER_NAME}_ROOT "${INSTALL_PATH}" PARENT_SCOPE)
