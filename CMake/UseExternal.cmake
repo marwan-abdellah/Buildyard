@@ -186,7 +186,7 @@ function(USE_EXTERNAL NAME)
   endforeach()
 
   # External Project
-  set(PATCH_CMD)
+  set(UPDATE_CMD)
   set(REPO_TYPE ${${UPPER_NAME}_REPO_TYPE})
   if(NOT REPO_TYPE)
     set(REPO_TYPE git)
@@ -196,7 +196,8 @@ function(USE_EXTERNAL NAME)
   if(REPO_TYPE STREQUAL "GIT")
     set(REPO_TAG GIT_TAG)
     # pull fails if tag is a SHA hash, use git status to set exit value to true
-    set(PATCH_CMD ${GIT_EXECUTABLE} pull || ${GIT_EXECUTABLE} status)
+    set(UPDATE_CMD ${GIT_EXECUTABLE} pull || ${GIT_EXECUTABLE} status
+      ALWAYS TRUE)
   elseif(REPO_TYPE STREQUAL "SVN")
     set(REPO_TAG SVN_REVISION)
   else()
@@ -220,7 +221,7 @@ function(USE_EXTERNAL NAME)
     DEPENDS "${DEPENDS}"
     ${REPO_TYPE}_REPOSITORY ${${UPPER_NAME}_REPO_URL}
     ${REPO_TAG} ${${UPPER_NAME}_REPO_TAG}
-    PATCH_COMMAND "${PATCH_CMD}"
+    UPDATE_COMMAND "${UPDATE_CMD}"
     CMAKE_ARGS ${ARGS}
     ${${UPPER_NAME}_EXTRA}
     STEP_TARGETS update build configure test install
@@ -250,9 +251,7 @@ function(USE_EXTERNAL NAME)
   endif()
 
   # setup forwarding makefile
-  if(EXISTS "${SOURCE_DIR}/Makefile")
-    message("Project source has a Makefile, can't setup forwarding Makefile")
-  else()
+  if(NOT EXISTS "${SOURCE_DIR}/Makefile")
     configure_file(CMake/Makefile.in "${SOURCE_DIR}/Makefile" @ONLY)
   endif()
 endfunction()
