@@ -29,3 +29,7 @@ configuration file, which contains the following variables:
 The top-level CMakeLists reads all .cmake files from all config*
 directories, and use them as a project. This allows extending the base
 configuration with custom projects from other sources.
+
+## TODO
+
+* Local overrides, e.g., to specify a user fork repository
