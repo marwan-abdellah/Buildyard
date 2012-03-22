@@ -1,7 +1,7 @@
-# CMake Projects
+# Buildyard
 
-CMake projects facilitates the build and development of multiple,
-dependent projects from installed packages, git or svn repositories.
+Buildyard facilitates the build and development of multiple, dependent
+projects from installed packages, git or svn repositories.
 
 ## Using
 
