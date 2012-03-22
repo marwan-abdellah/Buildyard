@@ -73,22 +73,18 @@ endfunction(_ep_write_gitclone_script)
 # renames existing origin and adds user URL as new origin (git only)
 function(_ep_change_origin NAME ORIGIN_URL USER_URL ORIGIN_RENAME)
   if(ORIGIN_URL AND USER_URL AND ORIGIN_RENAME)
-    set(ADD_USER_REMOTE ${GIT_EXECUTABLE} remote set-url origin "${USER_URL}")
-    set(CHANGE_ORIGIN_REMOTE ${GIT_EXECUTABLE} remote rm ${ORIGIN_RENAME} ||
-                             ${GIT_EXECUTABLE} remote add ${ORIGIN_RENAME} "${ORIGIN_URL}")
+    set(CHANGE_ORIGIN ${GIT_EXECUTABLE} remote set-url origin "${USER_URL}")
+    set(RM_REMOTE ${GIT_EXECUTABLE} remote rm ${ORIGIN_RENAME} || ${GIT_EXECUTABLE} status) #workaround to ignore remote rm return value
+    set(ADD_REMOTE ${GIT_EXECUTABLE} remote add ${ORIGIN_RENAME} "${ORIGIN_URL}")
 
-    ExternalProject_Add_Step(${NAME} change_origin_remote
-      COMMAND ${CHANGE_ORIGIN_REMOTE}
+    ExternalProject_Add_Step(${NAME} change_origin
+      COMMAND ${CHANGE_ORIGIN}
+      COMMAND ${RM_REMOTE}
+      COMMAND ${ADD_REMOTE}
       WORKING_DIRECTORY "${SOURCE_DIR}"
       DEPENDS "${DEPENDS}"
       DEPENDEES download
     )
-    ExternalProject_Add_Step(${NAME} add_user_remote
-      COMMAND ${ADD_USER_REMOTE}
-      WORKING_DIRECTORY "${SOURCE_DIR}"
-      DEPENDS "${DEPENDS}"
-      DEPENDEES change_origin_remote
-    )    
   endif()
 endfunction()
 
