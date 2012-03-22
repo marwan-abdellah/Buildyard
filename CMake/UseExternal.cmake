@@ -84,6 +84,12 @@ function(USE_EXTERNAL_GATHER_ARGS NAME)
     set(ARGS ${ARGS} ${${UPPER_PROJ}_ARGS})
   endforeach()
 
+  get_target_property(_check ${NAME} _EP_IS_EXTERNAL_PROJECT)
+  if(NOT _check EQUAL 1) # installed package
+    set(${UPPER_NAME}_ARGS ${ARGS} PARENT_SCOPE) # return value
+    return()
+  endif()
+
   # self root '-DFOO_ROOT=<path>'
   set(INSTALL_PATH "${CMAKE_CURRENT_BINARY_DIR}/install")
   if("${${UPPER_NAME}_ROOT_VAR}" STREQUAL "")
@@ -134,7 +140,7 @@ function(USE_EXTERNAL NAME)
   # ** External project settings are read from $NAME.cmake
 
   get_target_property(_check ${NAME} _EP_IS_EXTERNAL_PROJECT)
-  if(NOT "${_check}" STREQUAL "_check-NOTFOUND") # already used
+  if(_check EQUAL 1) # already used
     return()
   endif()
 
@@ -201,7 +207,7 @@ function(USE_EXTERNAL NAME)
   # pull in dependent projects first
   foreach(_dep ${${UPPER_NAME}_DEPENDS})
     get_target_property(_dep_check ${_dep} _EP_IS_EXTERNAL_PROJECT)
-    if("${_dep_check}" STREQUAL "_dep_check-NOTFOUND")
+    if(NOT _dep_check EQUAL 1)
       use_external(${_dep})
     endif()
     if(${_dep}_FOUND)
