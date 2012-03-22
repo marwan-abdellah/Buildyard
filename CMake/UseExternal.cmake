@@ -244,7 +244,7 @@ function(USE_EXTERNAL NAME)
     set(REPO_TAG GIT_TAG)
     # pull fails if tag is a SHA hash, use git status to set exit value to true
     set(UPDATE_CMD ${GIT_EXECUTABLE} pull || ${GIT_EXECUTABLE} status
-      ALWAYS TRUE)     
+      ALWAYS TRUE)
   elseif(REPO_TYPE STREQUAL "SVN")
     set(REPO_TAG SVN_REVISION)
   else()
@@ -274,7 +274,7 @@ function(USE_EXTERNAL NAME)
     STEP_TARGETS update build buildonly configure test install
     )
   use_external_buildonly(${NAME})
-  
+
   if(REPO_TYPE STREQUAL "GIT")
     set(REPO_ORIGIN_URL ${${UPPER_NAME}_REPO_URL})
     set(REPO_USER_URL ${${UPPER_NAME}_USER_URL})
