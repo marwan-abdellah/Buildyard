@@ -5,9 +5,11 @@ set(BOOST_REPO_URL http://svn.boost.org/svn/boost/tags/release/Boost_1_49_0)
 set(BOOST_REPO_TYPE SVN)
 
 if(MSVC)
-file(WRITE "${BOOST_SOURCE}/b3.bat"
-  "set VS_UNICODE_OUTPUT=\n"
-  "b2 --with-serialization --with-system --with-regex --with-date_time \"--prefix=${CMAKE_CURRENT_BINARY_DIR}/install\" %1 %2 %3 %4\n"
+  string(REGEX REPLACE "Visual Studio ([0-9]+) [0-9]+" "msvc-\\1.0"
+    TOOLSET ${CMAKE_GENERATOR})
+  file(WRITE "${BOOST_SOURCE}/b3.bat"
+    "set VS_UNICODE_OUTPUT=\n"
+    "b2 --layout=tagged toolset=${TOOLSET} --with-serialization --with-system --with-regex --with-date_time \"--prefix=${CMAKE_CURRENT_BINARY_DIR}/install\" %1 %2 %3 %4\n"
 )
   set(BOOTSTRAP cd ${BOOST_SOURCE} && bootstrap.bat)
   set(BTWO b3.bat)
