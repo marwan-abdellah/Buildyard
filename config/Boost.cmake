@@ -6,7 +6,7 @@ set(BOOST_REPO_TYPE SVN)
 
 if(MSVC)
   set(BOOTSTRAP cd ${BOOST_SOURCE} && bootstrap.bat "--prefix=${CMAKE_CURRENT_BINARY_DIR}/install" --with-libraries=serialization,system,regex,date_time)
-  set(BTWO b2)
+  set(BTWO b2 --without-mpi)
 else()
   set(BOOTSTRAP cd ${BOOST_SOURCE} && ./bootstrap.sh "--prefix=${CMAKE_CURRENT_BINARY_DIR}/install" --with-libraries=serialization,system,regex,date_time)
   set(BTWO ./b2)
