@@ -6,9 +6,14 @@ dependent projects from installed packages, git or svn repositories.
 ## Using
 
 For Windows, use cmake to build a Visual Studio Solution. For all other
-platforms, executing 'make' invokes cmake and builds all debug
-targets. Alternatively use 'make Project' to build a single project and
-all its dependencies.
+platforms, execute 'make' which invokes cmake and builds all debug
+targets of all projects. Alternatively use 'make [Project]' to build a
+single project and all its dependencies.
+
+For development, cd into src/[Project] and work there as usual. The
+default make target will build the (pre-configured) project without
+considering any dependencies. 'make [Project]' will build the project
+considering all dependencies.
 
 ## Configuration
 

@@ -75,14 +75,18 @@ function(USE_EXTERNAL_GATHER_ARGS NAME)
   string(TOUPPER ${NAME} UPPER_NAME)
 
   # recurse to get dependency roots
-  include(${NAME})
-
   set(DEPENDS)
   foreach(PROJ ${${UPPER_NAME}_DEPENDS})
     use_external_gather_args(${PROJ})
     string(TOUPPER ${PROJ} UPPER_PROJ)
     set(ARGS ${ARGS} ${${UPPER_PROJ}_ARGS})
   endforeach()
+
+  get_target_property(_check ${NAME} _EP_IS_EXTERNAL_PROJECT)
+  if(NOT _check EQUAL 1) # installed package
+    set(${UPPER_NAME}_ARGS ${ARGS} PARENT_SCOPE) # return value
+    return()
+  endif()
 
   # self root '-DFOO_ROOT=<path>'
   set(INSTALL_PATH "${CMAKE_CURRENT_BINARY_DIR}/install")
@@ -134,11 +138,9 @@ function(USE_EXTERNAL NAME)
   # ** External project settings are read from $NAME.cmake
 
   get_target_property(_check ${NAME} _EP_IS_EXTERNAL_PROJECT)
-  if(NOT "${_check}" STREQUAL "_check-NOTFOUND") # already used
+  if(_check EQUAL 1) # already used
     return()
   endif()
-
-  include(${NAME})
 
   string(SUBSTRING ${NAME} 0 2 SHORT_NAME)
   string(TOUPPER ${SHORT_NAME} SHORT_NAME)
@@ -192,7 +194,7 @@ function(USE_EXTERNAL NAME)
   unset(${UPPER_NAME}_LIBRARy_DIRS CACHE)
 
   if("${${UPPER_NAME}_REPO_URL}" STREQUAL "")
-    message(WARNING
+    message(STATUS
       "Missing dependency ${NAME}: No source repository, fix ${NAME}.cmake?")
     set(${NAME}_FOUND 1 PARENT_SCOPE) # ugh: removes dependency
     return()
@@ -201,7 +203,7 @@ function(USE_EXTERNAL NAME)
   # pull in dependent projects first
   foreach(_dep ${${UPPER_NAME}_DEPENDS})
     get_target_property(_dep_check ${_dep} _EP_IS_EXTERNAL_PROJECT)
-    if("${_dep_check}" STREQUAL "_dep_check-NOTFOUND")
+    if(NOT _dep_check EQUAL 1)
       use_external(${_dep})
     endif()
     if(${_dep}_FOUND)
