@@ -19,7 +19,7 @@ foreach(_dir ${_dirs})
   endif()
 endforeach()
 
-if(IS_DIRECTORY config.local)
+if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/config.local)
   message(STATUS "Applying local override configuration from config.local")
   file(GLOB _files "config.local/*.cmake")
   foreach(_config ${_files})
