@@ -75,8 +75,6 @@ function(USE_EXTERNAL_GATHER_ARGS NAME)
   string(TOUPPER ${NAME} UPPER_NAME)
 
   # recurse to get dependency roots
-  include(${NAME})
-
   set(DEPENDS)
   foreach(PROJ ${${UPPER_NAME}_DEPENDS})
     use_external_gather_args(${PROJ})
@@ -144,8 +142,6 @@ function(USE_EXTERNAL NAME)
     return()
   endif()
 
-  include(${NAME})
-
   string(SUBSTRING ${NAME} 0 2 SHORT_NAME)
   string(TOUPPER ${SHORT_NAME} SHORT_NAME)
   string(TOUPPER ${NAME} UPPER_NAME)
@@ -198,7 +194,7 @@ function(USE_EXTERNAL NAME)
   unset(${UPPER_NAME}_LIBRARy_DIRS CACHE)
 
   if("${${UPPER_NAME}_REPO_URL}" STREQUAL "")
-    message(WARNING
+    message(STATUS
       "Missing dependency ${NAME}: No source repository, fix ${NAME}.cmake?")
     set(${NAME}_FOUND 1 PARENT_SCOPE) # ugh: removes dependency
     return()
