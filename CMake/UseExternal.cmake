@@ -3,6 +3,7 @@
 
 include(ExternalProject)
 find_package(Git REQUIRED)
+find_package(Subversion REQUIRED)
 
 # overwrite git clone script generation to avoid excessive cloning
 function(_ep_write_gitclone_script script_filename source_dir git_EXECUTABLE git_repository git_tag src_name work_dir)
