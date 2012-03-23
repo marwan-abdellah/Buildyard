@@ -38,6 +38,16 @@ configuration file, which contains the following variables:
 * NAME\_REPO\_TAG: The svn revision or git tag to use to build the project
 * NAME\_ROOT\_VAR: optional CMake variable name for the project root,
   as required by the project find script. Default is  NAME\_ROOT
+  
+## Local overrides
+
+For customizing the shipped configurations one can override and extend those
+configurations with a config.local/name.cmake configuration. Additional options
+are available there to specify a user fork for instance. Note that this options
+are only valid for git repositories:
+
+* NAME\_USER\_URL: the URL of the new origin for the project
+* NAME\_ORIGIN\_RENAME: the new remote name of the original origin
 
 ## Extending
 
@@ -45,6 +55,3 @@ The top-level CMakeLists reads all .cmake files from all config*
 directories, and use them as a project. This allows extending the base
 configuration with custom projects from other sources.
 
-## TODO
-
-* Local overrides, e.g., to specify a user fork repository
