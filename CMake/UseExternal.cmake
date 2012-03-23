@@ -270,6 +270,7 @@ function(USE_EXTERNAL NAME)
     ${REPO_TAG} ${${UPPER_NAME}_REPO_TAG}
     UPDATE_COMMAND "${UPDATE_CMD}"
     CMAKE_ARGS ${ARGS}
+    TEST_BEFORE_INSTALL 1
     ${${UPPER_NAME}_EXTRA}
     STEP_TARGETS update build buildonly configure test install
     )

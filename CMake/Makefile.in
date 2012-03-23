@@ -2,5 +2,14 @@
 all:
 	@$(MAKE) -C ../.. @NAME@-buildonly
 
+install:
+	@$(MAKE) -C ../.. @NAME@-install
+
+configure:
+	@$(MAKE) -C ../.. @NAME@-configure
+
+test:
+	@$(MAKE) -C ../.. @NAME@-test
+
 .DEFAULT:
 	@$(MAKE) -C ../.. $(MAKECMDGOALS)
