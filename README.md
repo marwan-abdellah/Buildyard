@@ -47,7 +47,8 @@ are available there to specify a user fork for instance. Note that this options
 are only valid for git repositories:
 
 * NAME\_USER\_URL: the URL of the new origin for the project
-* NAME\_ORIGIN\_RENAME: the new remote name of the original origin
+* NAME\_ORIGIN\_NAME: the new remote name of the original origin
+  (optional, default 'root')
 
 ## Extending
 
