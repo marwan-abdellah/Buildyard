@@ -2,3 +2,4 @@ src
 Debug
 Release
 config.local
+CMakeLists.txt.user*
