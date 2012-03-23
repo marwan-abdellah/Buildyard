@@ -71,8 +71,11 @@ endif()
 endfunction(_ep_write_gitclone_script)
 
 # renames existing origin and adds user URL as new origin (git only)
-function(_ep_change_origin NAME ORIGIN_URL USER_URL ORIGIN_RENAME)
-  if(ORIGIN_URL AND USER_URL AND ORIGIN_RENAME)
+function(USE_EXTERNAL_CHANGE_ORIGIN NAME ORIGIN_URL USER_URL ORIGIN_RENAME)
+  if(NOT ORIGIN_RENAME)
+    set(ORIGIN_RENAME "root")
+  endif()
+  if(ORIGIN_URL AND USER_URL)
     set(CHANGE_ORIGIN ${GIT_EXECUTABLE} remote set-url origin "${USER_URL}")
     set(RM_REMOTE ${GIT_EXECUTABLE} remote rm ${ORIGIN_RENAME} || ${GIT_EXECUTABLE} status) #workaround to ignore remote rm return value
     set(ADD_REMOTE ${GIT_EXECUTABLE} remote add ${ORIGIN_RENAME} "${ORIGIN_URL}")
@@ -136,12 +139,31 @@ function(USE_EXTERNAL_BUILDONLY name)
     set(log "")
   endif()
 
-  add_custom_target(${NAME}-buildonly
+  add_custom_target(${name}-buildonly
     COMMAND ${cmd}
-    COMMENT "Building ${NAME}"
+    COMMENT "Building ${name}"
     WORKING_DIRECTORY ${binary_dir}
     )
-  set_target_properties(${NAME}-buildonly PROPERTIES EXCLUDE_FROM_ALL ON)
+  set_target_properties(${name}-buildonly PROPERTIES EXCLUDE_FROM_ALL ON)
+endfunction()
+
+function(_ep_add_test_command name)
+  ExternalProject_Get_Property(${name} binary_dir)
+
+  get_property(cmd_set TARGET ${name} PROPERTY _EP_TEST_COMMAND SET)
+  if(cmd_set)
+    get_property(cmd TARGET ${name} PROPERTY _EP_TEST_COMMAND)
+  else()
+    _ep_get_build_command(${name} TEST cmd)
+  endif()
+
+  string(REGEX REPLACE "^(.*/)cmake([^/]*)$" "\\1ctest\\2" cmd "${cmd}")
+  add_custom_target(${name}-test
+    COMMAND ${cmd}
+    COMMENT "Testing ${name}"
+    WORKING_DIRECTORY ${binary_dir}
+    DEPENDS ${name}-build
+    )
 endfunction()
 
 
@@ -280,7 +302,8 @@ function(USE_EXTERNAL NAME)
     set(REPO_ORIGIN_URL ${${UPPER_NAME}_REPO_URL})
     set(REPO_USER_URL ${${UPPER_NAME}_USER_URL})
     set(REPO_ORIGIN_RENAME ${${UPPER_NAME}_ORIGIN_RENAME})
-    _ep_change_origin(${NAME} "${REPO_ORIGIN_URL}" "${REPO_USER_URL}" "${REPO_ORIGIN_RENAME}")
+    use_external_change_origin(${NAME} "${REPO_ORIGIN_URL}" "${REPO_USER_URL}"
+      "${REPO_ORIGIN_NAME}")
   endif()
 
   # add optional package target
