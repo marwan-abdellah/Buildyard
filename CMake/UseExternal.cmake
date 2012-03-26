@@ -279,6 +279,7 @@ function(USE_EXTERNAL NAME)
   set(ARGS -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
            -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH}
            ${${UPPER_NAME}_ARGS})
+  set(SUBTARGETS update build buildonly configure test install)
 
   message(STATUS "  ${NAME}: building from ${${UPPER_NAME}_REPO_URL}:"
     "${${UPPER_NAME}_REPO_TAG}")
@@ -294,9 +295,16 @@ function(USE_EXTERNAL NAME)
     CMAKE_ARGS ${ARGS}
     TEST_BEFORE_INSTALL 1
     ${${UPPER_NAME}_EXTRA}
-    STEP_TARGETS update build buildonly configure test install
+    STEP_TARGETS ${SUBTARGETS}
     )
   use_external_buildonly(${NAME})
+
+  if(${${NAME}_OPTIONAL})
+    set_target_properties(${NAME} PROPERTIES EXCLUDE_FROM_ALL ON)
+    foreach(subtarget ${subtargets})
+      set_target_properties(${NAME}-{subtarget} PROPERTIES EXCLUDE_FROM_ALL ON)
+    endforeach()
+  endif()
 
   if(REPO_TYPE STREQUAL "GIT")
     set(REPO_ORIGIN_URL ${${UPPER_NAME}_REPO_URL})
