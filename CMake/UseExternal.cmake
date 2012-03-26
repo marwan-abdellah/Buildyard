@@ -30,7 +30,7 @@ else()
   endif()
 
   execute_process(
-    COMMAND \"${git_EXECUTABLE}\" clone \"${git_repository}\" \"${src_name}\"
+    COMMAND \"${git_EXECUTABLE}\" ${GIT_SVN} clone \"${git_repository}\" \"${src_name}\"
     WORKING_DIRECTORY \"${work_dir}\"
     RESULT_VARIABLE error_code
     )
@@ -261,7 +261,10 @@ function(USE_EXTERNAL NAME)
     set(REPO_TYPE git)
   endif()
   string(TOUPPER ${REPO_TYPE} REPO_TYPE)
-
+  if(REPO_TYPE STREQUAL "GIT-SVN")
+    set(REPO_TYPE GIT)
+    set(GIT_SVN "svn")
+  endif()
   if(REPO_TYPE STREQUAL "GIT")
     set(REPO_TAG GIT_TAG)
     # pull fails if tag is a SHA hash, use git status to set exit value to true
