@@ -276,8 +276,11 @@ function(USE_EXTERNAL NAME)
     message(FATAL_ERROR "Unknown repository type ${REPO_TYPE}")
   endif()
 
+  if(NOT ${UPPER_NAME}_SOURCE)
+    set(${UPPER_NAME}_SOURCE "${CMAKE_SOURCE_DIR}/src/${NAME}")
+  endif()
+
   set(INSTALL_PATH "${CMAKE_CURRENT_BINARY_DIR}/install")
-  set(SOURCE_DIR "${CMAKE_SOURCE_DIR}/src/${NAME}")
   use_external_gather_args(${NAME})
   set(ARGS -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
            -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH}
@@ -289,7 +292,7 @@ function(USE_EXTERNAL NAME)
   ExternalProject_Add(${NAME}
     PREFIX "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
     BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
-    SOURCE_DIR "${SOURCE_DIR}"
+    SOURCE_DIR "${${UPPER_NAME}_SOURCE}"
     INSTALL_DIR "${INSTALL_PATH}"
     DEPENDS "${DEPENDS}"
     ${REPO_TYPE}_REPOSITORY ${${UPPER_NAME}_REPO_URL}
@@ -340,7 +343,7 @@ function(USE_EXTERNAL NAME)
   endif()
 
   # setup forwarding makefile
-  if(NOT EXISTS "${SOURCE_DIR}/Makefile")
-    configure_file(CMake/Makefile.in "${SOURCE_DIR}/Makefile" @ONLY)
+  if(NOT EXISTS "${${UPPER_NAME}_SOURCE}/Makefile")
+    configure_file(CMake/Makefile.in "${${UPPER_NAME}_SOURCE}/Makefile" @ONLY)
   endif()
 endfunction()
