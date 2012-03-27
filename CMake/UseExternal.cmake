@@ -5,6 +5,11 @@ include(ExternalProject)
 find_package(Git REQUIRED)
 find_package(Subversion REQUIRED)
 
+set(USE_EXTERNAL_SUBTARGETS update build buildonly configure test install)
+foreach(subtarget ${USE_EXTERNAL_SUBTARGETS})
+  add_custom_target(${subtarget}s)
+endforeach()
+
 # overwrite git clone script generation to avoid excessive cloning
 function(_ep_write_gitclone_script script_filename source_dir git_EXECUTABLE git_repository git_tag src_name work_dir)
   file(WRITE ${script_filename}
@@ -290,7 +295,6 @@ function(USE_EXTERNAL NAME)
   set(ARGS -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
            -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH}
            ${${UPPER_NAME}_ARGS})
-  set(SUBTARGETS update build buildonly configure test install)
 
   ExternalProject_Add(${NAME}
     PREFIX "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
@@ -304,9 +308,13 @@ function(USE_EXTERNAL NAME)
     CMAKE_ARGS ${ARGS}
     TEST_BEFORE_INSTALL 1
     ${${UPPER_NAME}_EXTRA}
-    STEP_TARGETS ${SUBTARGETS}
+    STEP_TARGETS ${USE_EXTERNAL_SUBTARGETS}
     )
   use_external_buildonly(${NAME})
+
+  foreach(subtarget ${USE_EXTERNAL_SUBTARGETS})
+    add_dependencies(${subtarget}s ${NAME}-${subtarget})
+  endforeach()
 
   if(REPO_TYPE STREQUAL "GIT")
     set(REPO_ORIGIN_URL ${${UPPER_NAME}_REPO_URL})
@@ -325,7 +333,7 @@ function(USE_EXTERNAL NAME)
   endif()
 
   add_custom_target(${NAME}-package
-    COMMAND ${cmd} package
+    COMMAND fakeroot ${cmd} package
     DEPENDS ${NAME}
     COMMENT "Building package"
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
