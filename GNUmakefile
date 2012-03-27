@@ -15,6 +15,9 @@ else
 
 BUILD ?= Debug
 
+normal: $(BUILD)/Makefile
+	@$(MAKE) -C $(BUILD) $(MAKECMDGOALS)
+
 all: debug release
 clean:
 	@-$(MAKE) -C Debug clean
