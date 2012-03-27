@@ -251,6 +251,7 @@ function(USE_EXTERNAL NAME)
   endif()
 
   # pull in dependent projects first
+  set(DEPENDS)
   foreach(_dep ${${UPPER_NAME}_DEPENDS})
     get_target_property(_dep_check ${_dep} _EP_IS_EXTERNAL_PROJECT)
     if(NOT _dep_check EQUAL 1)

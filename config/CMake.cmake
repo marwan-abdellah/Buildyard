@@ -1,4 +1,4 @@
-set(CMAKE_DEPENDS Equalizer)
+
 set(CMAKE_REPO_URL https://github.com/Eyescale/CMake.git)
 set(CMAKE_REPO_TAG master)
 
