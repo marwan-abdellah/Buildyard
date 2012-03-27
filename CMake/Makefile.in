@@ -5,6 +5,9 @@ all:
 install:
 	@$(MAKE) -C ../.. @NAME@-install
 
+package:
+	@$(MAKE) -C ../.. @NAME@-package
+
 configure:
 	@$(MAKE) -C ../.. @NAME@-configure
 
