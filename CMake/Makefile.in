@@ -1,18 +1,18 @@
 #!gmake
 all:
-	@$(MAKE) -C ../.. @NAME@-buildonly
+	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-buildonly
 
 install:
-	@$(MAKE) -C ../.. @NAME@-install
+	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-install
 
 package:
-	@$(MAKE) -C ../.. @NAME@-package
+	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-package
 
 configure:
-	@$(MAKE) -C ../.. @NAME@-configure
+	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-configure
 
 test:
-	@$(MAKE) -C ../.. @NAME@-test
+	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-test
 
 .DEFAULT:
-	@$(MAKE) -C ../.. $(MAKECMDGOALS)
+	@$(MAKE) -C @CMAKE_SOURCE_DIR@ $(MAKECMDGOALS)
