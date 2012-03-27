@@ -263,9 +263,11 @@ function(USE_EXTERNAL NAME)
   string(TOUPPER ${REPO_TYPE} REPO_TYPE)
   if(REPO_TYPE STREQUAL "GIT-SVN")
     set(REPO_TYPE GIT)
+    set(REPO_TAG GIT_TAG)
     set(GIT_SVN "svn")
-  endif()
-  if(REPO_TYPE STREQUAL "GIT")
+    set(UPDATE_CMD ${GIT_EXECUTABLE} svn rebase || ${GIT_EXECUTABLE} status
+      ALWAYS TRUE)
+  elseif(REPO_TYPE STREQUAL "GIT")
     set(REPO_TAG GIT_TAG)
     # pull fails if tag is a SHA hash, use git status to set exit value to true
     set(UPDATE_CMD ${GIT_EXECUTABLE} pull || ${GIT_EXECUTABLE} status
