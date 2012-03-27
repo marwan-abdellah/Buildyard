@@ -1,7 +1,6 @@
 #!gmake
 .PHONY: debug release clean clobber package tests
 
-
 ifeq ($(wildcard Makefile), Makefile)
 all:
 	@$(MAKE) -f Makefile $(MAKECMDGOALS)
@@ -14,7 +13,8 @@ clean:
 
 else
 
-normal: debug
+BUILD ?= Debug
+
 all: debug release
 clean:
 	@-$(MAKE) -C Debug clean
@@ -24,11 +24,11 @@ package: Release/Makefile
 	@$(MAKE) -C Release clean
 	@$(MAKE) -C Release package
 
-tests: Debug/Makefile
-	@$(MAKE) -C Debug tests
+tests: $(BUILD)/Makefile
+	@$(MAKE) -C $(BUILD) tests
 
-.DEFAULT: Debug/Makefile
-	@$(MAKE) -C Debug $(MAKECMDGOALS)
+.DEFAULT: $(BUILD)/Makefile
+	@$(MAKE) -C $(BUILD) $(MAKECMDGOALS)
 endif
 
 clobber:

@@ -25,6 +25,10 @@ default make target will build the (pre-configured) project without
 considering any dependencies. 'make [Project]' will build the project
 considering all dependencies.
 
+Custom CMake binary directories are supported and can be used through
+the top-level make using 'make BUILD=[directory]' or 'export
+BUILD=[directory]; make'.
+
 ## Configuration
 
 The ExternalProject CMake module is the foundation for a simplified
