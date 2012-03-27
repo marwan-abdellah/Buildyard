@@ -5,7 +5,7 @@ include(ExternalProject)
 find_package(Git REQUIRED)
 find_package(Subversion REQUIRED)
 
-set(USE_EXTERNAL_SUBTARGETS update build buildonly configure test install)
+set(USE_EXTERNAL_SUBTARGETS update build buildonly configure test install package)
 foreach(subtarget ${USE_EXTERNAL_SUBTARGETS})
   add_custom_target(${subtarget}s)
 endforeach()
@@ -312,17 +312,6 @@ function(USE_EXTERNAL NAME)
     )
   use_external_buildonly(${NAME})
 
-  foreach(subtarget ${USE_EXTERNAL_SUBTARGETS})
-    add_dependencies(${subtarget}s ${NAME}-${subtarget})
-  endforeach()
-
-  if(${${UPPER_NAME}_OPTIONAL})
-    set_target_properties(${NAME} PROPERTIES EXCLUDE_FROM_ALL ON)
-    foreach(subtarget ${USE_EXTERNAL_SUBTARGETS})
-      set_target_properties(${NAME}-${subtarget} PROPERTIES EXCLUDE_FROM_ALL ON)
-    endforeach()
-  endif()
-
   if(REPO_TYPE STREQUAL "GIT")
     set(REPO_ORIGIN_URL ${${UPPER_NAME}_REPO_URL})
     set(REPO_USER_URL ${${UPPER_NAME}_USER_URL})
@@ -346,6 +335,19 @@ function(USE_EXTERNAL NAME)
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
     )
   set_target_properties(${NAME}-package PROPERTIES EXCLUDE_FROM_ALL ON)
+
+  # make optional if requested
+  if(${${UPPER_NAME}_OPTIONAL})
+    set_target_properties(${NAME} PROPERTIES EXCLUDE_FROM_ALL ON)
+    foreach(subtarget ${USE_EXTERNAL_SUBTARGETS})
+      set_target_properties(${NAME}-${subtarget} PROPERTIES EXCLUDE_FROM_ALL ON)
+    endforeach()
+  else()
+    # add to meta sub-targets
+    foreach(subtarget ${USE_EXTERNAL_SUBTARGETS})
+      add_dependencies(${subtarget}s ${NAME}-${subtarget})
+    endforeach()
+  endif()
 
   if("${UPPER_NAME}_ROOT_VAR" STREQUAL "")
     set(${UPPER_NAME}_ROOT "${INSTALL_PATH}" PARENT_SCOPE)
