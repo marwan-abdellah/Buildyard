@@ -89,7 +89,7 @@ function(USE_EXTERNAL_CHANGE_ORIGIN NAME ORIGIN_URL USER_URL ORIGIN_RENAME)
       COMMAND ${CHANGE_ORIGIN}
       COMMAND ${RM_REMOTE}
       COMMAND ${ADD_REMOTE}
-      WORKING_DIRECTORY "${SOURCE_DIR}"
+      WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/${NAME}"
       DEPENDS "${DEPENDS}"
       DEPENDEES download
     )
@@ -319,6 +319,9 @@ function(USE_EXTERNAL NAME)
     set(REPO_ORIGIN_NAME ${${UPPER_NAME}_ORIGIN_NAME})
     use_external_change_origin(${NAME} "${REPO_ORIGIN_URL}" "${REPO_USER_URL}"
       "${REPO_ORIGIN_NAME}")
+    unset(${REPO_ORIGIN_URL} CACHE)
+    unset(${REPO_USER_URL} CACHE)
+    unset(${REPO_ORIGIN_NAME} CACHE)
   endif()
 
   # add optional package target
