@@ -316,6 +316,13 @@ function(USE_EXTERNAL NAME)
     add_dependencies(${subtarget}s ${NAME}-${subtarget})
   endforeach()
 
+  if(${${UPPER_NAME}_OPTIONAL})
+    set_target_properties(${NAME} PROPERTIES EXCLUDE_FROM_ALL ON)
+    foreach(subtarget ${USE_EXTERNAL_SUBTARGETS})
+      set_target_properties(${NAME}-${subtarget} PROPERTIES EXCLUDE_FROM_ALL ON)
+    endforeach()
+  endif()
+
   if(REPO_TYPE STREQUAL "GIT")
     set(REPO_ORIGIN_URL ${${UPPER_NAME}_REPO_URL})
     set(REPO_USER_URL ${${UPPER_NAME}_USER_URL})
