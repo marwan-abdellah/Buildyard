@@ -221,8 +221,8 @@ function(USE_EXTERNAL NAME)
     set(${NAME}_FOUND 1) # compat with Foo_FOUND and FOO_FOUND usage
   endif()
   if(${NAME}_FOUND)
-    message(STATUS "  ${NAME}: installed in ${${UPPER_NAME}_INCLUDE_DIRS}"
-      "${${NAME}_INCLUDE_DIRS}")
+    message(STATUS "${USE_EXTERNAL_INDENT}${NAME}: installed in "
+      "${${UPPER_NAME}_INCLUDE_DIRS}${${NAME}_INCLUDE_DIRS}")
     set(${NAME}_FOUND 1 PARENT_SCOPE)
     return()
   endif()
@@ -233,6 +233,10 @@ function(USE_EXTERNAL NAME)
   unset(${UPPER_NAME}_INCLUDE_DIRS CACHE) # failed
   unset(${NAME}_LIBRARY_DIRS CACHE)
   unset(${UPPER_NAME}_LIBRARy_DIRS CACHE)
+
+  message(STATUS "${USE_EXTERNAL_INDENT}${NAME}: building from "
+    "${${UPPER_NAME}_REPO_URL}:${${UPPER_NAME}_REPO_TAG}")
+  set(USE_EXTERNAL_INDENT "${USE_EXTERNAL_INDENT}  ")
 
   if("${${UPPER_NAME}_REPO_URL}" STREQUAL "")
     message(STATUS
@@ -265,8 +269,7 @@ function(USE_EXTERNAL NAME)
     set(REPO_TYPE GIT)
     set(REPO_TAG GIT_TAG)
     set(GIT_SVN "svn")
-    set(UPDATE_CMD ${GIT_EXECUTABLE} svn rebase || ${GIT_EXECUTABLE} status
-      ALWAYS TRUE)
+    set(UPDATE_CMD ${GIT_EXECUTABLE} svn rebase ALWAYS TRUE)
   elseif(REPO_TYPE STREQUAL "GIT")
     set(REPO_TAG GIT_TAG)
     # pull fails if tag is a SHA hash, use git status to set exit value to true
@@ -289,8 +292,6 @@ function(USE_EXTERNAL NAME)
            ${${UPPER_NAME}_ARGS})
   set(SUBTARGETS update build buildonly configure test install)
 
-  message(STATUS "  ${NAME}: building from ${${UPPER_NAME}_REPO_URL}:"
-    "${${UPPER_NAME}_REPO_TAG}")
   ExternalProject_Add(${NAME}
     PREFIX "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
     BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
@@ -309,7 +310,7 @@ function(USE_EXTERNAL NAME)
 
   if(${${NAME}_OPTIONAL})
     set_target_properties(${NAME} PROPERTIES EXCLUDE_FROM_ALL ON)
-    foreach(subtarget ${subtargets})
+    foreach(subtarget ${subtargets} complete)
       set_target_properties(${NAME}-{subtarget} PROPERTIES EXCLUDE_FROM_ALL ON)
     endforeach()
   endif()
