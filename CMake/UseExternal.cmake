@@ -5,7 +5,8 @@ include(ExternalProject)
 find_package(Git REQUIRED)
 find_package(Subversion REQUIRED)
 
-set(USE_EXTERNAL_SUBTARGETS update build buildonly configure test install package)
+set(USE_EXTERNAL_SUBTARGETS update build buildonly configure test install
+  package doxygen)
 foreach(subtarget ${USE_EXTERNAL_SUBTARGETS})
   add_custom_target(${subtarget}s)
 endforeach()
@@ -324,7 +325,7 @@ function(USE_EXTERNAL NAME)
     unset(${REPO_ORIGIN_NAME} CACHE)
   endif()
 
-  # add optional package target
+  # add optional targets: package, doxygen
   get_property(cmd_set TARGET ${NAME} PROPERTY _EP_BUILD_COMMAND SET)
   if(cmd_set)
     get_property(cmd TARGET ${NAME} PROPERTY _EP_BUILD_COMMAND)
@@ -332,13 +333,25 @@ function(USE_EXTERNAL NAME)
     _ep_get_build_command(${NAME} BUILD cmd)
   endif()
 
+  if(NOT APPLE)
+    set(fakeroot fakeroot)
+  endif()
+
   add_custom_target(${NAME}-package
-    COMMAND fakeroot ${cmd} package
+    COMMAND ${fakeroot} ${cmd} package
     DEPENDS ${NAME}
     COMMENT "Building package"
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
     )
   set_target_properties(${NAME}-package PROPERTIES EXCLUDE_FROM_ALL ON)
+
+  add_custom_target(${NAME}-doxygen
+    COMMAND ${cmd} doxygen
+    DEPENDS ${NAME}-configure
+    COMMENT "Running doxygen"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
+    )
+  set_target_properties(${NAME}-doxygen PROPERTIES EXCLUDE_FROM_ALL ON)
 
   # make optional if requested
   if(${${UPPER_NAME}_OPTIONAL})
