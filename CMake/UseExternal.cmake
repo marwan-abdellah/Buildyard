@@ -168,7 +168,7 @@ function(_ep_add_test_command name)
     COMMAND ${cmd}
     COMMENT "Testing ${name}"
     WORKING_DIRECTORY ${binary_dir}
-    DEPENDS ${name}-build
+    DEPENDS ${name}
     )
 endfunction()
 
