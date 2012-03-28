@@ -362,7 +362,10 @@ function(USE_EXTERNAL NAME)
   else()
     # add to meta sub-targets
     foreach(subtarget ${USE_EXTERNAL_SUBTARGETS})
-      add_dependencies(${subtarget}s ${NAME}-${subtarget})
+      string(TOUPPER ${subtarget} UPPER_SUBTARGET)
+      if(NOT ${UPPER_NAME}_NO${UPPER_SUBTARGET})
+        add_dependencies(${subtarget}s ${NAME}-${subtarget})
+      endif()
     endforeach()
   endif()
 
