@@ -23,9 +23,8 @@ clean:
 	@-$(MAKE) -C Debug clean
 	@-$(MAKE) -C Release clean
 
-package: Release/Makefile
-	@$(MAKE) -C Release clean
-	@$(MAKE) -C Release package
+packages: Release/Makefile
+	@$(MAKE) -C Release packages
 
 tests: $(BUILD)/Makefile
 	@$(MAKE) -C $(BUILD) tests
