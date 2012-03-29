@@ -50,3 +50,5 @@ Release/Makefile:
 	@mkdir -p Release
 	@cd Release; cmake .. -DCMAKE_BUILD_TYPE=Release
 
+%-clean: $(BUILD)/%
+	@$(MAKE) -C $< clean

@@ -312,7 +312,9 @@ function(USE_EXTERNAL NAME)
     set(REPO_TYPE GIT)
     set(REPO_TAG GIT_TAG)
     set(GIT_SVN "svn")
-    set(UPDATE_CMD ${GIT_EXECUTABLE} svn rebase ALWAYS TRUE)
+    # svn rebase fails with local modifications, ignore
+    set(UPDATE_CMD ${GIT_EXECUTABLE} svn rebase || ${GIT_EXECUTABLE} status
+      ALWAYS TRUE)
   elseif(REPO_TYPE STREQUAL "GIT")
     set(REPO_TAG GIT_TAG)
     # pull fails if tag is a SHA hash, use git status to set exit value to true

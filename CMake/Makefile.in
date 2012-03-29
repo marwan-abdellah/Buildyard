@@ -16,5 +16,8 @@ configure:
 test:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-test
 
+clean:
+	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-clean
+
 .DEFAULT:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ $(MAKECMDGOALS)
