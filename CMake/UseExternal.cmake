@@ -173,6 +173,40 @@ function(_ep_add_test_command name)
 endfunction()
 
 
+function(USE_EXTERNAL_MAKEFILE NAME)
+  set(_makefile "${${UPPER_NAME}_SOURCE}/Makefile")
+  set(_scriptdir ${CMAKE_CURRENT_BINARY_DIR}/${NAME})
+
+  # Remove our old file before updating
+  file(WRITE ${_scriptdir}/rmMakefile.cmake
+    "if(EXISTS \"${_makefile}\")
+       file(READ \"${_makefile}\" _makefile_contents)
+       if(_makefile_contents MATCHES \"MAGIC_IS_BUILDYARD_MAKEFILE\")
+         file(REMOVE \"${_makefile}\")
+       endif()
+     endif()")
+
+  ExternalProject_Add_Step(${NAME} rmMakefile
+    COMMENT "Removing in-source Makefile"
+    COMMAND ${CMAKE_COMMAND} -P ${_scriptdir}/rmMakefile.cmake
+    DEPENDEES mkdir DEPENDERS download ALWAYS 1
+    )
+
+  # Move our Makefile in place if no other exists
+  file(WRITE ${_scriptdir}/cpMakefile.cmake
+    "if(NOT EXISTS \"${_makefile}\")
+       configure_file(${CMAKE_SOURCE_DIR}/CMake/Makefile.in \"${_makefile}\"
+         @ONLY)
+     endif()")
+
+  ExternalProject_Add_Step(${NAME} cpMakefile
+    COMMENT "Adding in-source Makefile"
+    COMMAND ${CMAKE_COMMAND} -P ${_scriptdir}/cpMakefile.cmake
+    DEPENDEES configure DEPENDERS build ALWAYS 1
+    )
+endfunction()
+
+
 function(USE_EXTERNAL NAME)
   # Searches for an external project.
   #  Sets NAME_ROOT to the installation directory when not found using
@@ -375,8 +409,5 @@ function(USE_EXTERNAL NAME)
     set(${${UPPER_NAME}_ROOT_VAR} "${INSTALL_PATH}" PARENT_SCOPE)
   endif()
 
-  # setup forwarding makefile
-  if(NOT EXISTS "${${UPPER_NAME}_SOURCE}/Makefile")
-    configure_file(CMake/Makefile.in "${${UPPER_NAME}_SOURCE}/Makefile" @ONLY)
-  endif()
+  use_external_makefile(${NAME})
 endfunction()

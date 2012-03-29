@@ -1,4 +1,6 @@
 #!gmake
+# MAGIC_IS_BUILDYARD_MAKEFILE
+
 all:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-buildonly
 
