@@ -195,6 +195,8 @@ function(USE_EXTERNAL_MAKEFILE NAME)
   # Move our Makefile in place if no other exists
   file(WRITE ${_scriptdir}/cpMakefile.cmake
     "if(NOT EXISTS \"${_makefile}\")
+       set(NAME ${NAME})
+       set(CMAKE_SOURCE_DIR ${CMAKE_SOURCE_DIR})
        configure_file(${CMAKE_SOURCE_DIR}/CMake/Makefile.in \"${_makefile}\"
          @ONLY)
      endif()")
