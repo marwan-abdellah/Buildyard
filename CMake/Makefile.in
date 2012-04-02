@@ -19,5 +19,8 @@ test:
 clean:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-clean
 
+doxygen:
+	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-doxygen
+
 .DEFAULT:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ $(MAKECMDGOALS)
