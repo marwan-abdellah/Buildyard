@@ -95,8 +95,9 @@ function(USE_EXTERNAL_CHANGE_ORIGIN NAME ORIGIN_URL USER_URL ORIGIN_RENAME)
       COMMAND ${RM_REMOTE}
       COMMAND ${ADD_REMOTE}
       WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/${NAME}"
-      DEPENDS "${DEPENDS}"
+      DEPENDERS build
       DEPENDEES download
+      ALWAYS 1
     )
   endif()
 endfunction()
