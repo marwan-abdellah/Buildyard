@@ -11,4 +11,5 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake)
 list(APPEND CMAKE_PREFIX_PATH ${SystemDrive}:/cygwin/bin)
 
+include(ModulePath)
 include(ReadConfigs)
