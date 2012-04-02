@@ -390,7 +390,7 @@ function(USE_EXTERNAL NAME)
 
   add_custom_target(${NAME}-doxygen
     COMMAND ${cmd} doxygen
-    DEPENDS ${NAME}-configure
+    DEPENDS ${NAME}
     COMMENT "Running doxygen"
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
     )
