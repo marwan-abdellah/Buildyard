@@ -107,8 +107,11 @@ function(USE_EXTERNAL_GATHER_ARGS NAME)
   # sets ${UPPER_NAME}_ARGS on return, to be passed to CMake
   string(TOUPPER ${NAME} UPPER_NAME)
 
-  # recurse to get dependency roots
+  set(ARGS)
   set(DEPENDS)
+  set(${UPPER_NAME}_ARGS)
+
+  # recurse to get dependency roots
   foreach(PROJ ${${UPPER_NAME}_DEPENDS})
     use_external_gather_args(${PROJ})
     string(TOUPPER ${PROJ} UPPER_PROJ)
