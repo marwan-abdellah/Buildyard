@@ -1,6 +1,5 @@
 # Buildyard
 
-![Depency Graph](https://github.com/Eyescale/Buildyard/raw/master/config/Equalizer.png)
 Buildyard facilitates the build and development of multiple, dependent
 projects from installed packages, git or svn repositories.
 
@@ -64,3 +63,4 @@ The top-level CMakeLists reads all .cmake files from all config*
 directories, and use them as a project. This allows extending the base
 configuration with custom projects from other sources.
 
+![Depency Graph](https://github.com/Eyescale/Buildyard/raw/master/config/Equalizer.png)
