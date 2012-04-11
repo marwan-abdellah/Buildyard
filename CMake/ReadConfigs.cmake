@@ -3,6 +3,7 @@
 # Does a use_external(..) for each config*/*.cmake project.
 
 include(UseExternal)
+include(CreateDependencyGraph)
 
 set(_configs)
 file(GLOB _dirs "${CMAKE_SOURCE_DIR}/config*")
@@ -12,7 +13,6 @@ foreach(_dir ${_dirs})
     file(GLOB _files "${_dir}/*.cmake")
     foreach(_config ${_files})
       include(${_config})
-      string(REPLACE "${_dir}/" "" _config ${_config})
       string(REPLACE ".cmake" "" _config ${_config})
       list(APPEND _configs ${_config})
     endforeach()
@@ -27,6 +27,10 @@ if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/config.local)
   endforeach()
 endif()
 
-foreach(_config ${_configs})
+foreach(_file ${_configs})
+  get_filename_component(_dir ${_file} PATH)
+  get_filename_component(_config ${_file} NAME)
+
+  create_dependency_graph(${_dir} ${_config})
   use_external(${_config})
 endforeach()
