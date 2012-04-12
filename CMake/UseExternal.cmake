@@ -23,6 +23,10 @@ function(_ep_write_gitclone_script script_filename source_dir git_EXECUTABLE git
 endif()
 if(IS_DIRECTORY \"${work_dir}/${src_name}/.git\")
   execute_process(
+    COMMAND \"${git_EXECUTABLE}\" fetch
+    WORKING_DIRECTORY \"${work_dir}/${src_name}\"
+    )
+  execute_process(
     COMMAND \"${git_EXECUTABLE}\" checkout ${git_tag}
     WORKING_DIRECTORY \"${work_dir}/${src_name}\"
     RESULT_VARIABLE error_code
