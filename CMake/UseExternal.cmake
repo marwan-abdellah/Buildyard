@@ -403,6 +403,12 @@ function(USE_EXTERNAL NAME)
     )
   set_target_properties(${NAME}-doxygen PROPERTIES EXCLUDE_FROM_ALL ON)
 
+  add_custom_target(${NAME}-deps
+    DEPENDS ${DEPENDS}
+    COMMENT "Building ${NAME} dependencies"
+    )
+  set_target_properties(${NAME}-deps PROPERTIES EXCLUDE_FROM_ALL ON)
+
   # make optional if requested
   if(${${UPPER_NAME}_OPTIONAL})
     set_target_properties(${NAME} PROPERTIES EXCLUDE_FROM_ALL ON)
