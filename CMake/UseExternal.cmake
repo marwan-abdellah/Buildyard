@@ -86,9 +86,6 @@ endfunction(_ep_write_gitclone_script)
 
 # renames existing origin and adds user URL as new origin (git only)
 function(USE_EXTERNAL_CHANGE_ORIGIN NAME ORIGIN_URL USER_URL ORIGIN_RENAME)
-  if(NOT ORIGIN_RENAME)
-    set(ORIGIN_RENAME "root")
-  endif()
   if(ORIGIN_URL AND USER_URL)
     set(CHANGE_ORIGIN ${GIT_EXECUTABLE} remote set-url origin "${USER_URL}")
     set(RM_REMOTE ${GIT_EXECUTABLE} remote rm ${ORIGIN_RENAME} || ${GIT_EXECUTABLE} status) #workaround to ignore remote rm return value
@@ -329,9 +326,20 @@ function(USE_EXTERNAL NAME)
       ALWAYS TRUE)
   elseif(REPO_TYPE STREQUAL "GIT")
     set(REPO_TAG GIT_TAG)
-    # pull fails if tag is a SHA hash, use git status to set exit value to true
-    set(UPDATE_CMD ${GIT_EXECUTABLE} pull || ${GIT_EXECUTABLE} status
-      ALWAYS TRUE)
+    set(REPO_ORIGIN_URL ${${UPPER_NAME}_REPO_URL})
+    set(REPO_USER_URL ${${UPPER_NAME}_USER_URL})
+    set(REPO_ORIGIN_NAME ${${UPPER_NAME}_ORIGIN_NAME})
+    if(REPO_ORIGIN_URL AND REPO_USER_URL)
+      if(NOT REPO_ORIGIN_NAME)
+        set(REPO_ORIGIN_NAME "root")
+      endif()
+      set(UPDATE_CMD ${GIT_EXECUTABLE} pull ${REPO_ORIGIN_NAME} master || ${GIT_EXECUTABLE} status
+          ALWAYS TRUE)
+    else()
+      # pull fails if tag is a SHA hash, use git status to set exit value to true
+      set(UPDATE_CMD ${GIT_EXECUTABLE} pull || ${GIT_EXECUTABLE} status
+          ALWAYS TRUE)
+    endif()
   elseif(REPO_TYPE STREQUAL "SVN")
     set(REPO_TAG SVN_REVISION)
   else()
@@ -365,11 +373,8 @@ function(USE_EXTERNAL NAME)
   use_external_buildonly(${NAME})
 
   if(REPO_TYPE STREQUAL "GIT")
-    set(REPO_ORIGIN_URL ${${UPPER_NAME}_REPO_URL})
-    set(REPO_USER_URL ${${UPPER_NAME}_USER_URL})
-    set(REPO_ORIGIN_NAME ${${UPPER_NAME}_ORIGIN_NAME})
     use_external_change_origin(${NAME} "${REPO_ORIGIN_URL}" "${REPO_USER_URL}"
-      "${REPO_ORIGIN_NAME}")
+                              "${REPO_ORIGIN_NAME}")
     unset(${REPO_ORIGIN_URL} CACHE)
     unset(${REPO_USER_URL} CACHE)
     unset(${REPO_ORIGIN_NAME} CACHE)
