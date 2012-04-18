@@ -48,7 +48,14 @@ configuration file, which contains the following variables:
 * NAME\_ROOT\_VAR: optional CMake variable name for the project root,
   as required by the project find script. Default is  NAME\_ROOT
   
-## Local overrides
+## Extending
+
+The top-level CMakeLists reads all .cmake files from all config*
+directories, and use them as a project. This allows extending the base
+configuration with custom projects from other sources.
+
+## Options
+### Local overrides
 
 For customizing the shipped configurations one can override and extend those
 configurations with a config.local/name.cmake configuration. Additional options
@@ -59,9 +66,7 @@ are only valid for git repositories:
 * NAME\_ORIGIN\_NAME: the new remote name of the original origin
   (optional, default 'root')
 
-## Extending
+### Force build from source
 
-The top-level CMakeLists reads all .cmake files from all config*
-directories, and use them as a project. This allows extending the base
-configuration with custom projects from other sources.
-
+Setting NAME\_FORCE\_BUILD to ON will disable finding installed versions
+of the project, causing the project to be always build from source.

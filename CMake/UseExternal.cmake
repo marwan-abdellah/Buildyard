@@ -267,7 +267,9 @@ function(USE_EXTERNAL NAME)
     return()
   endif()
 
-  find_package(${NAME} ${${UPPER_NAME}_VERSION} QUIET)
+  if(NOT ${UPPER_NAME}_FORCE_BUILD)
+    find_package(${NAME} ${${UPPER_NAME}_VERSION} QUIET)
+  endif()
   if(${UPPER_NAME}_FOUND)
     set(${NAME}_FOUND 1) # compat with Foo_FOUND and FOO_FOUND usage
   endif()
