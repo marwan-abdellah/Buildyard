@@ -179,6 +179,11 @@ function(_ep_add_test_command name)
     WORKING_DIRECTORY ${binary_dir}
     DEPENDS ${name}
     )
+  add_custom_target(${name}-testonly
+    COMMAND ${cmd}
+    COMMENT "Testing ${name}"
+    WORKING_DIRECTORY ${binary_dir}
+    )
 endfunction()
 
 

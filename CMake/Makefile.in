@@ -17,7 +17,7 @@ configure:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-configure
 
 test:
-	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-test
+	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-testonly
 
 clean:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-clean
