@@ -140,18 +140,11 @@ endfunction()
 function(USE_EXTERNAL_BUILDONLY name)
   ExternalProject_Get_Property(${name} binary_dir)
 
-  get_property(cmd_set TARGET ${name} PROPERTY _EP_BUILD_COMMAND SET)
+  get_property(cmd_set TARGET ${name} PROPERTY _EP_INSTALL_COMMAND SET)
   if(cmd_set)
-    get_property(cmd TARGET ${name} PROPERTY _EP_BUILD_COMMAND)
+    get_property(cmd TARGET ${name} PROPERTY _EP_INSTALL_COMMAND)
   else()
-    _ep_get_build_command(${name} BUILD cmd)
-  endif()
-
-  get_property(log TARGET ${name} PROPERTY _EP_LOG_BUILD)
-  if(log)
-    set(log LOG 1)
-  else()
-    set(log "")
+    _ep_get_build_command(${name} INSTALL cmd)
   endif()
 
   add_custom_target(${name}-buildonly
