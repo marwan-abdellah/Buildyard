@@ -6,14 +6,15 @@ set(BOOST_SOURCE "${CMAKE_SOURCE_DIR}/src/Boost")
 # set(BOOST_FORCE_BUILD ON)
 
 if(MSVC)
-  string(REGEX REPLACE "Visual Studio ([0-9]+) [0-9]+" "msvc-\\1.0"
+  string(REGEX REPLACE "Visual Studio ([0-9]+)[ ]*[0-9]*" "msvc-\\1.0"
     TOOLSET ${CMAKE_GENERATOR})
-  file(WRITE "${BOOST_SOURCE}/b3.bat"
+  set(BATFILE "${BOOST_SOURCE}/b3_${TOOLSET}.bat")
+  file(WRITE "${BATFILE}"
     "set VS_UNICODE_OUTPUT=\n"
     "b2 --layout=tagged toolset=${TOOLSET} --with-serialization --with-system --with-regex --with-date_time \"--prefix=${CMAKE_CURRENT_BINARY_DIR}/install\" %1 %2 %3 %4\n"
 )
   set(BOOTSTRAP cd ${BOOST_SOURCE} && bootstrap.bat)
-  set(BTWO b3.bat)
+  set(BTWO ${BATFILE})
 else()
   set(BOOTSTRAP cd ${BOOST_SOURCE} && ./bootstrap.sh "--prefix=${CMAKE_CURRENT_BINARY_DIR}/install" --with-libraries=serialization,system,regex,date_time)
   set(BTWO ./b2)
