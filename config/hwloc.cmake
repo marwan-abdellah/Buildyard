@@ -5,8 +5,9 @@ if(MSVC OR APPLE)
 endif()
 
 set(HWLOC_VERSION 1.4.0)
-set(HWLOC_REPO_URL http://svn.open-mpi.org/svn/hwloc/tags/hwloc-1.4.0/)
-set(HWLOC_REPO_TYPE SVN)
+#set(HWLOC_REPO_URL http://svn.open-mpi.org/svn/hwloc/tags/hwloc-1.4.0/)
+set(HWLOC_REPO_URL https://github.com/marwan-abdellah/HWLOC)
+set(HWLOC_REPO_TYPE GIT)
 set(HWLOC_SOURCE "${CMAKE_SOURCE_DIR}/src/hwloc")
 set(HWLOC_NOPACKAGE ON)
 set(HWLOC_EXTRA
