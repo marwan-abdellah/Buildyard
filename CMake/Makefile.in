@@ -7,6 +7,9 @@ all:
 install:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-install
 
+deps:
+	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-deps
+
 package:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-package
 
@@ -14,7 +17,7 @@ configure:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-configure
 
 test:
-	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-test
+	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-testonly
 
 clean:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-clean

@@ -6,8 +6,8 @@ find_package(Git REQUIRED)
 find_package(Subversion REQUIRED)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-set(USE_EXTERNAL_SUBTARGETS update build buildonly configure test install
-  package doxygen download)
+set(USE_EXTERNAL_SUBTARGETS update build buildonly configure test testonly
+  install package doxygen download deps)
 foreach(subtarget ${USE_EXTERNAL_SUBTARGETS})
   add_custom_target(${subtarget}s)
   set_target_properties(${subtarget}s PROPERTIES FOLDER "00_Meta")
@@ -86,9 +86,6 @@ endfunction(_ep_write_gitclone_script)
 
 # renames existing origin and adds user URL as new origin (git only)
 function(USE_EXTERNAL_CHANGE_ORIGIN NAME ORIGIN_URL USER_URL ORIGIN_RENAME)
-  if(NOT ORIGIN_RENAME)
-    set(ORIGIN_RENAME "root")
-  endif()
   if(ORIGIN_URL AND USER_URL)
     set(CHANGE_ORIGIN ${GIT_EXECUTABLE} remote set-url origin "${USER_URL}")
     set(RM_REMOTE ${GIT_EXECUTABLE} remote rm ${ORIGIN_RENAME} || ${GIT_EXECUTABLE} status) #workaround to ignore remote rm return value
@@ -143,18 +140,11 @@ endfunction()
 function(USE_EXTERNAL_BUILDONLY name)
   ExternalProject_Get_Property(${name} binary_dir)
 
-  get_property(cmd_set TARGET ${name} PROPERTY _EP_BUILD_COMMAND SET)
+  get_property(cmd_set TARGET ${name} PROPERTY _EP_INSTALL_COMMAND SET)
   if(cmd_set)
-    get_property(cmd TARGET ${name} PROPERTY _EP_BUILD_COMMAND)
+    get_property(cmd TARGET ${name} PROPERTY _EP_INSTALL_COMMAND)
   else()
-    _ep_get_build_command(${name} BUILD cmd)
-  endif()
-
-  get_property(log TARGET ${name} PROPERTY _EP_LOG_BUILD)
-  if(log)
-    set(log LOG 1)
-  else()
-    set(log "")
+    _ep_get_build_command(${name} INSTALL cmd)
   endif()
 
   add_custom_target(${name}-buildonly
@@ -181,6 +171,11 @@ function(_ep_add_test_command name)
     COMMENT "Testing ${name}"
     WORKING_DIRECTORY ${binary_dir}
     DEPENDS ${name}
+    )
+  add_custom_target(${name}-testonly
+    COMMAND ${cmd}
+    COMMENT "Testing ${name}"
+    WORKING_DIRECTORY ${binary_dir}
     )
 endfunction()
 
@@ -270,7 +265,9 @@ function(USE_EXTERNAL NAME)
     return()
   endif()
 
-  find_package(${NAME} ${${UPPER_NAME}_VERSION} QUIET)
+  if(NOT ${UPPER_NAME}_FORCE_BUILD)
+    find_package(${NAME} ${${UPPER_NAME}_VERSION} QUIET)
+  endif()
   if(${UPPER_NAME}_FOUND)
     set(${NAME}_FOUND 1) # compat with Foo_FOUND and FOO_FOUND usage
   endif()
@@ -329,9 +326,20 @@ function(USE_EXTERNAL NAME)
       ALWAYS TRUE)
   elseif(REPO_TYPE STREQUAL "GIT")
     set(REPO_TAG GIT_TAG)
-    # pull fails if tag is a SHA hash, use git status to set exit value to true
-    set(UPDATE_CMD ${GIT_EXECUTABLE} pull || ${GIT_EXECUTABLE} status
-      ALWAYS TRUE)
+    set(REPO_ORIGIN_URL ${${UPPER_NAME}_REPO_URL})
+    set(REPO_USER_URL ${${UPPER_NAME}_USER_URL})
+    set(REPO_ORIGIN_NAME ${${UPPER_NAME}_ORIGIN_NAME})
+    if(REPO_ORIGIN_URL AND REPO_USER_URL)
+      if(NOT REPO_ORIGIN_NAME)
+        set(REPO_ORIGIN_NAME "root")
+      endif()
+      set(UPDATE_CMD ${GIT_EXECUTABLE} pull ${REPO_ORIGIN_NAME} master || ${GIT_EXECUTABLE} status
+          ALWAYS TRUE)
+    else()
+      # pull fails if tag is a SHA hash, use git status to set exit value to true
+      set(UPDATE_CMD ${GIT_EXECUTABLE} pull || ${GIT_EXECUTABLE} status
+          ALWAYS TRUE)
+    endif()
   elseif(REPO_TYPE STREQUAL "SVN")
     set(REPO_TAG SVN_REVISION)
   else()
@@ -358,18 +366,15 @@ function(USE_EXTERNAL NAME)
     ${REPO_TAG} ${${UPPER_NAME}_REPO_TAG}
     UPDATE_COMMAND ${UPDATE_CMD}
     CMAKE_ARGS ${ARGS}
-    TEST_BEFORE_INSTALL 1
+    TEST_AFTER_INSTALL 1
     ${${UPPER_NAME}_EXTRA}
     STEP_TARGETS ${USE_EXTERNAL_SUBTARGETS}
     )
   use_external_buildonly(${NAME})
 
   if(REPO_TYPE STREQUAL "GIT")
-    set(REPO_ORIGIN_URL ${${UPPER_NAME}_REPO_URL})
-    set(REPO_USER_URL ${${UPPER_NAME}_USER_URL})
-    set(REPO_ORIGIN_NAME ${${UPPER_NAME}_ORIGIN_NAME})
     use_external_change_origin(${NAME} "${REPO_ORIGIN_URL}" "${REPO_USER_URL}"
-      "${REPO_ORIGIN_NAME}")
+                              "${REPO_ORIGIN_NAME}")
     unset(${REPO_ORIGIN_URL} CACHE)
     unset(${REPO_USER_URL} CACHE)
     unset(${REPO_ORIGIN_NAME} CACHE)
@@ -402,6 +407,12 @@ function(USE_EXTERNAL NAME)
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
     )
   set_target_properties(${NAME}-doxygen PROPERTIES EXCLUDE_FROM_ALL ON)
+
+  add_custom_target(${NAME}-deps
+    DEPENDS ${DEPENDS}
+    COMMENT "Building ${NAME} dependencies"
+    )
+  set_target_properties(${NAME}-deps PROPERTIES EXCLUDE_FROM_ALL ON)
 
   # make optional if requested
   if(${${UPPER_NAME}_OPTIONAL})
