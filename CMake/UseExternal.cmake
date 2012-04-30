@@ -18,12 +18,13 @@ set_target_properties(AllProjects PROPERTIES FOLDER "00_Main")
 # overwrite git clone script generation to avoid excessive cloning
 function(_ep_write_gitclone_script script_filename source_dir git_EXECUTABLE git_repository git_tag src_name work_dir)
 
-  set(SVN_REVISION ${${src_name}_SVN_REVISION})
-  if(SVN_REVISION)
-      set(SVN_REVISION_CMD "-r"${SVN_REVISION})
-      message(${SVN_REVISION_CMD})
-  endif(SVN_REVISION)
-    
+  string(TOUPPER ${src_name} UPPER_NAME)
+  set(TAIL_REVISION ${${UPPER_NAME}_TAIL_REVISION})
+  if(TAIL_REVISION)
+      set(TAIL_REVISION_CMD "-r"${TAIL_REVISION})
+      message(${TAIL_REVISION_CMD})
+  endif(TAIL_REVISION)
+
   file(WRITE ${script_filename}
 "if(\"${git_tag}\" STREQUAL \"\")
   message(FATAL_ERROR \"Tag for git checkout should not be empty.\")
@@ -50,7 +51,7 @@ else()
     message(FATAL_ERROR \"Failed to remove directory: '${source_dir}'\")
   endif()
   execute_process(
-    COMMAND \"${git_EXECUTABLE}\" ${GIT_SVN} clone ${SVN_REVISION_CMD} \"${git_repository}\" \"${src_name}\"
+    COMMAND \"${git_EXECUTABLE}\" ${GIT_SVN} clone ${TAIL_REVISION_CMD} \"${git_repository}\" \"${src_name}\"
     WORKING_DIRECTORY \"${work_dir}\"
     RESULT_VARIABLE error_code
     )
@@ -327,7 +328,7 @@ function(USE_EXTERNAL NAME)
     set(REPO_TYPE GIT)
     set(REPO_TAG GIT_TAG)
     set(GIT_SVN "svn")
-      # svn rebase fails with local modifications, ignore
+    # svn rebase fails with local modifications, ignore
     set(UPDATE_CMD ${GIT_EXECUTABLE} svn rebase || ${GIT_EXECUTABLE} status
       ALWAYS TRUE)
   elseif(REPO_TYPE STREQUAL "GIT")
