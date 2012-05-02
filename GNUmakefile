@@ -29,7 +29,8 @@ packages: Release/Makefile
 tests: $(BUILD)/Makefile
 	@$(MAKE) -C $(BUILD) tests
 
-.DEFAULT: $(BUILD)/Makefile
+.DEFAULT:
+	@$(MAKE) $(BUILD)/Makefile
 	@$(MAKE) -C $(BUILD) $(MAKECMDGOALS)
 endif
 
