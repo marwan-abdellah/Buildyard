@@ -1,7 +1,7 @@
 src
 Debug
 Release
-config.*
+config.*/
 CMakeLists.txt.user*
 build
 CMakeFiles
