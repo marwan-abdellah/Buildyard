@@ -14,7 +14,7 @@ package:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-package
 
 configure:
-	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-configure
+	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-Makefile
 
 test:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-testonly
