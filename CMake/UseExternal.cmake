@@ -7,7 +7,7 @@ find_package(Subversion REQUIRED)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(USE_EXTERNAL_SUBTARGETS update build buildonly configure test testonly
-  install package doxygen download deps)
+  install package doxygen download deps Makefile)
 foreach(subtarget ${USE_EXTERNAL_SUBTARGETS})
   add_custom_target(${subtarget}s)
   set_target_properties(${subtarget}s PROPERTIES FOLDER "00_Meta")
@@ -40,7 +40,7 @@ if(IS_DIRECTORY \"${work_dir}/${src_name}/.git\")
     RESULT_VARIABLE error_code
     )
   if(error_code)
-    message(FATAL_ERROR \"Failed to checkout ${git_tag} in '${source_dir}'\")
+    message(WARNING \"Failed to checkout ${git_tag} in '${source_dir}'\")
   endif()
 else()
   execute_process(
@@ -215,7 +215,7 @@ function(USE_EXTERNAL_MAKEFILE NAME)
          @ONLY)
      endif()")
 
-  ExternalProject_Add_Step(${NAME} cpMakefile
+  ExternalProject_Add_Step(${NAME} Makefile
     COMMENT "Adding in-source Makefile"
     COMMAND ${CMAKE_COMMAND} -P ${_scriptdir}/cpMakefile.cmake
     DEPENDEES configure DEPENDERS build ALWAYS 1
@@ -399,6 +399,7 @@ function(USE_EXTERNAL NAME)
     set(fakeroot fakeroot)
   endif()
 
+  use_external_makefile(${NAME})
   add_custom_target(${NAME}-package
     COMMAND ${fakeroot} ${cmd} package
     DEPENDS ${NAME}
@@ -449,5 +450,4 @@ function(USE_EXTERNAL NAME)
     set(${${UPPER_NAME}_ROOT_VAR} "${INSTALL_PATH}" PARENT_SCOPE)
   endif()
 
-  use_external_makefile(${NAME})
 endfunction()
