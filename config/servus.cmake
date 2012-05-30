@@ -1,4 +1,4 @@
-find_package(DNSSD)
+find_package(DNSSD QUIET)
 if(NOT DNSSD_FOUND) # keep servus & gpu-sd optional
   return()
 endif()
