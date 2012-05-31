@@ -7,7 +7,7 @@ find_package(Subversion REQUIRED)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(USE_EXTERNAL_SUBTARGETS update build buildonly configure test testonly
-  install package doxygen download deps Makefile)
+  install package doxygen clean download deps Makefile)
 foreach(subtarget ${USE_EXTERNAL_SUBTARGETS})
   add_custom_target(${subtarget}s)
   set_target_properties(${subtarget}s PROPERTIES FOLDER "00_Meta")
@@ -415,6 +415,13 @@ function(USE_EXTERNAL NAME)
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
     )
   set_target_properties(${NAME}-doxygen PROPERTIES EXCLUDE_FROM_ALL ON)
+
+  add_custom_target(${NAME}-clean
+    COMMAND ${cmd} clean
+    COMMENT "Cleaning ${NAME}"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
+    )
+  set_target_properties(${NAME}-clean PROPERTIES EXCLUDE_FROM_ALL ON)
 
   add_custom_target(${NAME}-deps
     DEPENDS ${DEPENDS}
