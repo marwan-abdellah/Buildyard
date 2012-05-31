@@ -1,6 +1,7 @@
 
 set(CMAKE_REPO_URL https://github.com/Eyescale/CMake.git)
 set(CMAKE_REPO_TAG master)
+set(CMAKE_NOTEST ON)
 
 set(CMAKE_EXTRA
   CONFIGURE_COMMAND touch ${CMAKE_BINARY_DIR}

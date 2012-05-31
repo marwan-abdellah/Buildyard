@@ -422,6 +422,11 @@ function(USE_EXTERNAL NAME)
     )
   set_target_properties(${NAME}-deps PROPERTIES EXCLUDE_FROM_ALL ON)
 
+  # disable tests if requested
+  if(${${UPPER_NAME}_NOTEST})
+    set(${UPPER_NAME}_NOTESTONLY ON)
+  endif()
+
   # make optional if requested
   if(${${UPPER_NAME}_OPTIONAL})
     set_target_properties(${NAME} PROPERTIES EXCLUDE_FROM_ALL ON)
