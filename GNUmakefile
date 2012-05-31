@@ -20,8 +20,8 @@ normal: $(BUILD)/Makefile
 
 all: debug release
 clean:
-	@-$(MAKE) -C Debug clean
-	@-$(MAKE) -C Release clean
+	@-$(MAKE) -C Debug clean cleans
+	@-$(MAKE) -C Release clean cleans
 
 packages: Release/Makefile
 	@$(MAKE) -C Release packages
@@ -50,6 +50,3 @@ release: Release/Makefile
 Release/Makefile:
 	@mkdir -p Release
 	@cd Release; cmake .. -DCMAKE_BUILD_TYPE=Release
-
-%-clean: $(BUILD)/%
-	@$(MAKE) -C $< clean
