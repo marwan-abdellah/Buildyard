@@ -1,3 +1,6 @@
+if(MSVC)
+  return()
+endif()
 
 set(QT_STEERER_VERSION 3.5.1)
 set(QT_STEERER_DEPENDS steer_lib)
