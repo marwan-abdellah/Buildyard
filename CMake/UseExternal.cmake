@@ -7,7 +7,7 @@ find_package(Subversion REQUIRED)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(USE_EXTERNAL_SUBTARGETS update build buildonly configure test testonly
-  install package doxygen clean download deps Makefile)
+  install package doxygen github clean download deps Makefile)
 foreach(subtarget ${USE_EXTERNAL_SUBTARGETS})
   add_custom_target(${subtarget}s)
   set_target_properties(${subtarget}s PROPERTIES FOLDER "00_Meta")
@@ -387,7 +387,7 @@ function(USE_EXTERNAL NAME)
     unset(${REPO_ORIGIN_NAME} CACHE)
   endif()
 
-  # add optional targets: package, doxygen
+  # add optional targets: package, doxygen, github
   get_property(cmd_set TARGET ${NAME} PROPERTY _EP_BUILD_COMMAND SET)
   if(cmd_set)
     get_property(cmd TARGET ${NAME} PROPERTY _EP_BUILD_COMMAND)
@@ -415,6 +415,14 @@ function(USE_EXTERNAL NAME)
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
     )
   set_target_properties(${NAME}-doxygen PROPERTIES EXCLUDE_FROM_ALL ON)
+
+  add_custom_target(${NAME}-github
+    COMMAND ${cmd} github
+    DEPENDS ${NAME}
+    COMMENT "Building github API documentation"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
+    )
+  set_target_properties(${NAME}-github PROPERTIES EXCLUDE_FROM_ALL ON)
 
   add_custom_target(${NAME}-clean
     COMMAND ${cmd} clean

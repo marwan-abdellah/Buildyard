@@ -25,5 +25,8 @@ clean:
 doxygen:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-doxygen
 
+github:
+	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-github
+
 .DEFAULT:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ $(MAKECMDGOALS)

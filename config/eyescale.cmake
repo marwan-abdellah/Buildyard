@@ -1,0 +1,10 @@
+
+set(EYESCALE_REPO_URL https://github.com/Eyescale/eyescale.github.com)
+set(EYESCALE_REPO_TAG master)
+set(EYESCALE_NOTEST ON)
+
+set(EYESCALE_EXTRA
+  CONFIGURE_COMMAND touch ${CMAKE_BINARY_DIR}
+  BUILD_COMMAND touch ${CMAKE_BINARY_DIR}
+  INSTALL_COMMAND touch ${CMAKE_BINARY_DIR}
+)
