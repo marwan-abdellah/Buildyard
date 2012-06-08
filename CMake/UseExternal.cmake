@@ -413,7 +413,7 @@ function(USE_EXTERNAL NAME)
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
     )
   set_target_properties(${NAME}-doxygen PROPERTIES EXCLUDE_FROM_ALL ON)
-  
+
   add_custom_target(${NAME}-doxygen-upload
     COMMAND ${cmd} doxygen-upload
     COMMENT "Upload doxygen documentation"
