@@ -7,7 +7,7 @@ find_package(Subversion REQUIRED)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(USE_EXTERNAL_SUBTARGETS update build buildonly configure test testonly
-  install package doxygen github clean download deps Makefile)
+  install package doxygen doxygen-upload github clean download deps Makefile)
 foreach(subtarget ${USE_EXTERNAL_SUBTARGETS})
   add_custom_target(${subtarget}s)
   set_target_properties(${subtarget}s PROPERTIES FOLDER "00_Meta")
@@ -387,7 +387,7 @@ function(USE_EXTERNAL NAME)
     unset(${REPO_ORIGIN_NAME} CACHE)
   endif()
 
-  # add optional targets: package, doxygen, github
+  # add optional targets: package, doxygen, doxygen-upload, github
   get_property(cmd_set TARGET ${NAME} PROPERTY _EP_BUILD_COMMAND SET)
   if(cmd_set)
     get_property(cmd TARGET ${NAME} PROPERTY _EP_BUILD_COMMAND)
@@ -402,7 +402,6 @@ function(USE_EXTERNAL NAME)
   use_external_makefile(${NAME})
   add_custom_target(${NAME}-package
     COMMAND ${fakeroot} ${cmd} package
-    DEPENDS ${NAME}
     COMMENT "Building package"
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
     )
@@ -410,11 +409,17 @@ function(USE_EXTERNAL NAME)
 
   add_custom_target(${NAME}-doxygen
     COMMAND ${cmd} doxygen
-    DEPENDS ${NAME}
     COMMENT "Running doxygen"
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
     )
   set_target_properties(${NAME}-doxygen PROPERTIES EXCLUDE_FROM_ALL ON)
+  
+  add_custom_target(${NAME}-doxygen-upload
+    COMMAND ${cmd} doxygen-upload
+    COMMENT "Upload doxygen documentation"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
+    )
+  set_target_properties(${NAME}-doxygen-upload PROPERTIES EXCLUDE_FROM_ALL ON)
 
   add_custom_target(${NAME}-github
     COMMAND ${cmd} github
