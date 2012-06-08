@@ -24,6 +24,9 @@ clean:
 
 doxygen:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-doxygen
+	
+doxygen-upload:
+	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-doxygen-upload
 
 github:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-github
