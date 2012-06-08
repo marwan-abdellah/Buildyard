@@ -7,7 +7,7 @@ find_package(Subversion REQUIRED)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(USE_EXTERNAL_SUBTARGETS update build buildonly configure test testonly
-  install package doxygen doxygen-upload github clean download deps Makefile)
+  install package doxygen github clean download deps Makefile)
 foreach(subtarget ${USE_EXTERNAL_SUBTARGETS})
   add_custom_target(${subtarget}s)
   set_target_properties(${subtarget}s PROPERTIES FOLDER "00_Meta")
@@ -387,7 +387,7 @@ function(USE_EXTERNAL NAME)
     unset(${REPO_ORIGIN_NAME} CACHE)
   endif()
 
-  # add optional targets: package, doxygen, doxygen-upload, github
+  # add optional targets: package, package-upload, doxygen, doxygen-upload, github
   get_property(cmd_set TARGET ${NAME} PROPERTY _EP_BUILD_COMMAND SET)
   if(cmd_set)
     get_property(cmd TARGET ${NAME} PROPERTY _EP_BUILD_COMMAND)
@@ -401,11 +401,20 @@ function(USE_EXTERNAL NAME)
 
   use_external_makefile(${NAME})
   add_custom_target(${NAME}-package
-    COMMAND ${fakeroot} ${cmd} package
+    COMMAND ${cmd} package
     COMMENT "Building package"
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
     )
   set_target_properties(${NAME}-package PROPERTIES EXCLUDE_FROM_ALL ON)
+  
+  if(${${UPPER_NAME}_PACKAGEUPLOAD})
+    add_custom_target(${NAME}-package-upload
+      COMMAND ${cmd} package-upload
+      COMMENT "Uploading package"
+      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
+      )
+    set_target_properties(${NAME}-package-upload PROPERTIES EXCLUDE_FROM_ALL ON)
+  endif()
 
   add_custom_target(${NAME}-doxygen
     COMMAND ${cmd} doxygen
@@ -414,12 +423,14 @@ function(USE_EXTERNAL NAME)
     )
   set_target_properties(${NAME}-doxygen PROPERTIES EXCLUDE_FROM_ALL ON)
   
-  add_custom_target(${NAME}-doxygen-upload
-    COMMAND ${cmd} doxygen-upload
-    COMMENT "Upload doxygen documentation"
-    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
-    )
-  set_target_properties(${NAME}-doxygen-upload PROPERTIES EXCLUDE_FROM_ALL ON)
+  if(${${UPPER_NAME}_DOXYGENUPLOAD})
+    add_custom_target(${NAME}-doxygen-upload
+      COMMAND ${cmd} doxygen-upload
+      COMMENT "Uploading doxygen documentation"
+      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
+      )
+    set_target_properties(${NAME}-doxygen-upload PROPERTIES EXCLUDE_FROM_ALL ON)
+  endif()
 
   add_custom_target(${NAME}-github
     COMMAND ${cmd} github

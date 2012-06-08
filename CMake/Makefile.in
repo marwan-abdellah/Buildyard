@@ -12,6 +12,9 @@ deps:
 
 package:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-package
+	
+package-upload:
+	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-package-upload
 
 configure:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-Makefile
