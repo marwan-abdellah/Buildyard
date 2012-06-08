@@ -279,7 +279,7 @@ function(USE_EXTERNAL NAME)
     set(${NAME}_FOUND 1) # compat with Foo_FOUND and FOO_FOUND usage
   endif()
   if(${NAME}_FOUND)
-    message(STATUS "${USE_EXTERNAL_INDENT}${NAME}: installed in "
+    message(STATUS "  ${USE_EXTERNAL_INDENT}${NAME}: installed in "
       "${${UPPER_NAME}_INCLUDE_DIRS}${${NAME}_INCLUDE_DIRS}")
     set(${NAME}_FOUND 1 PARENT_SCOPE)
     return()
@@ -292,7 +292,7 @@ function(USE_EXTERNAL NAME)
   unset(${NAME}_LIBRARY_DIRS CACHE)
   unset(${UPPER_NAME}_LIBRARy_DIRS CACHE)
 
-  message(STATUS "${USE_EXTERNAL_INDENT}${NAME}: building from "
+  message(STATUS "  ${USE_EXTERNAL_INDENT}${NAME}: building from "
     "${${UPPER_NAME}_REPO_URL}:${${UPPER_NAME}_REPO_TAG}")
   set(USE_EXTERNAL_INDENT "${USE_EXTERNAL_INDENT}  ")
 
