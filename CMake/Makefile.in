@@ -13,9 +13,6 @@ deps:
 package:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-package
 	
-package-upload:
-	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-package-upload
-
 configure:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-Makefile
 
@@ -28,11 +25,12 @@ clean:
 doxygen:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-doxygen
 
-doxygen-upload:
-	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-doxygen-upload
-
 github:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-github
-
+	
+%:
+	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-$@
+	
 .DEFAULT:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ $(MAKECMDGOALS)
+

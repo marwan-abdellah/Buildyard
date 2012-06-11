@@ -407,15 +407,6 @@ function(USE_EXTERNAL NAME)
     )
   set_target_properties(${NAME}-package PROPERTIES EXCLUDE_FROM_ALL ON)
   
-  if(${${UPPER_NAME}_PACKAGEUPLOAD})
-    add_custom_target(${NAME}-package-upload
-      COMMAND ${cmd} package-upload
-      COMMENT "Uploading package"
-      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
-      )
-    set_target_properties(${NAME}-package-upload PROPERTIES EXCLUDE_FROM_ALL ON)
-  endif()
-
   add_custom_target(${NAME}-doxygen
     COMMAND ${cmd} doxygen
     COMMENT "Running doxygen"
@@ -423,15 +414,6 @@ function(USE_EXTERNAL NAME)
     )
   set_target_properties(${NAME}-doxygen PROPERTIES EXCLUDE_FROM_ALL ON)
   
-  if(${${UPPER_NAME}_DOXYGENUPLOAD})
-    add_custom_target(${NAME}-doxygen-upload
-      COMMAND ${cmd} doxygen-upload
-      COMMENT "Uploading doxygen documentation"
-      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
-      )
-    set_target_properties(${NAME}-doxygen-upload PROPERTIES EXCLUDE_FROM_ALL ON)
-  endif()
-
   add_custom_target(${NAME}-github
     COMMAND ${cmd} github
     DEPENDS ${NAME}
@@ -452,6 +434,14 @@ function(USE_EXTERNAL NAME)
     COMMENT "Building ${NAME} dependencies"
     )
   set_target_properties(${NAME}-deps PROPERTIES EXCLUDE_FROM_ALL ON)
+
+  # add specified (if any) additional targets
+  foreach(target ${${UPPER_NAME}_TARGETS})
+    add_custom_target(${NAME}-${target}
+      COMMAND ${cmd} ${target}
+      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
+      )
+  endforeach()
 
   # disable tests if requested
   if(${${UPPER_NAME}_NOTEST})
