@@ -1,9 +1,15 @@
 # Buildyard
 
+## Introduction
+
 Buildyard facilitates the build and development of multiple, dependent
 projects from installed packages, git or svn repositories.
 
 ![Depency Graph](https://github.com/Eyescale/Buildyard/raw/master/config/all.png)
+
+## Presentation
+
+![Presentation](https://github.com/Eyescale/Buildyard/raw/master/Presentation.pdf)
 
 ## Using
 
