@@ -47,7 +47,7 @@ Release/Makefile:
 	@mkdir -p Release
 	@cd Release; cmake .. -DCMAKE_BUILD_TYPE=Release
 
-ifeq ($(wildcard Makefile), Makefile)
+ifneq ($(wildcard Makefile), Makefile)
 -include ${BUILD}/projects.make
 
 .DEFAULT:
