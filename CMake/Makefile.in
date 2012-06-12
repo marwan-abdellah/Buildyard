@@ -29,4 +29,4 @@ github:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-github
 
 %:
-	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-$@
+	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@_$@
