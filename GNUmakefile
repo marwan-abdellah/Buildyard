@@ -48,7 +48,10 @@ Release/Makefile:
 	@cd Release; cmake .. -DCMAKE_BUILD_TYPE=Release
 
 ifneq ($(wildcard Makefile), Makefile)
--include ${BUILD}/projects.make
+
+${BUILD}/projects.make: $(BUILD)/Makefile
+
+include ${BUILD}/projects.make
 
 .DEFAULT:
 	@$(MAKE) $(BUILD)/Makefile
