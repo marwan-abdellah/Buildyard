@@ -29,6 +29,8 @@ packages: Release/Makefile
 tests: $(BUILD)/Makefile
 	@$(MAKE) -C $(BUILD) tests
 
+-include ${BUILD}/projects.make
+
 .DEFAULT:
 	@$(MAKE) $(BUILD)/Makefile
 	@$(MAKE) -C $(BUILD) $(MAKECMDGOALS)

@@ -12,7 +12,7 @@ deps:
 
 package:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-package
-	
+
 configure:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-Makefile
 
@@ -27,10 +27,6 @@ doxygen:
 
 github:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-github
-	
+
 %:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-$@
-	
-.DEFAULT:
-	@$(MAKE) -C @CMAKE_SOURCE_DIR@ $(MAKECMDGOALS)
-

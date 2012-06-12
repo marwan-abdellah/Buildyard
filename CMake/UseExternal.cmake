@@ -5,6 +5,7 @@ include(ExternalProject)
 find_package(Git REQUIRED)
 find_package(Subversion REQUIRED)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+file(REMOVE ${CMAKE_BINARY_DIR}/projects.make)
 
 set(USE_EXTERNAL_SUBTARGETS update build buildonly configure test testonly
   install package doxygen github clean download deps Makefile)
@@ -378,6 +379,10 @@ function(USE_EXTERNAL NAME)
     STEP_TARGETS ${USE_EXTERNAL_SUBTARGETS}
     )
   use_external_buildonly(${NAME})
+  file(APPEND ${CMAKE_BINARY_DIR}/projects.make
+    "${NAME}-%:\n"
+    "	@\$(MAKE) -C ${CMAKE_BINARY_DIR}/${NAME} $*\n\n"
+    )
 
   if(REPO_TYPE STREQUAL "GIT")
     use_external_change_origin(${NAME} "${REPO_ORIGIN_URL}" "${REPO_USER_URL}"
@@ -406,14 +411,14 @@ function(USE_EXTERNAL NAME)
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
     )
   set_target_properties(${NAME}-package PROPERTIES EXCLUDE_FROM_ALL ON)
-  
+
   add_custom_target(${NAME}-doxygen
     COMMAND ${cmd} doxygen
     COMMENT "Running doxygen"
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
     )
   set_target_properties(${NAME}-doxygen PROPERTIES EXCLUDE_FROM_ALL ON)
-  
+
   add_custom_target(${NAME}-github
     COMMAND ${cmd} github
     DEPENDS ${NAME}
@@ -434,14 +439,6 @@ function(USE_EXTERNAL NAME)
     COMMENT "Building ${NAME} dependencies"
     )
   set_target_properties(${NAME}-deps PROPERTIES EXCLUDE_FROM_ALL ON)
-
-  # add specified (if any) additional targets
-  foreach(target ${${UPPER_NAME}_TARGETS})
-    add_custom_target(${NAME}-${target}
-      COMMAND ${cmd} ${target}
-      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
-      )
-  endforeach()
 
   # disable tests if requested
   if(${${UPPER_NAME}_NOTEST})
