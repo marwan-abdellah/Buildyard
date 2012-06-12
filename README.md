@@ -9,7 +9,7 @@ projects from installed packages, git or svn repositories.
 
 ## Presentation
 
-![Presentation](https://github.com/Eyescale/Buildyard/blob/master/Presentation.pdf)
+[Presentation.pdf](https://github.com/BlueBrain/Buildyard/blob/master/Presentation.pdf?raw=true)
 
 ## Using
 
