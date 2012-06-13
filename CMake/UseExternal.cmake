@@ -380,6 +380,8 @@ function(USE_EXTERNAL NAME)
     )
   use_external_buildonly(${NAME})
   file(APPEND ${CMAKE_BINARY_DIR}/projects.make
+    "${NAME}-%:\n"
+    "	@\$(MAKE) -C ${CMAKE_BINARY_DIR} $@\n"
     "${NAME}_%:\n"
     "	@\$(MAKE) -C ${CMAKE_BINARY_DIR}/${NAME} $*\n\n"
     )
