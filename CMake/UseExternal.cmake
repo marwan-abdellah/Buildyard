@@ -23,7 +23,6 @@ function(_ep_write_gitclone_script script_filename source_dir git_EXECUTABLE git
   set(TAIL_REVISION ${${UPPER_NAME}_TAIL_REVISION})
   if(TAIL_REVISION)
       set(TAIL_REVISION_CMD "-r"${TAIL_REVISION})
-      message(${TAIL_REVISION_CMD})
   endif(TAIL_REVISION)
 
   file(WRITE ${script_filename}
