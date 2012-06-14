@@ -3,6 +3,7 @@ set(BOOST_VERSION 1.41.0)
 set(BOOST_REPO_URL http://svn.boost.org/svn/boost/tags/release/Boost_1_49_0)
 set(BOOST_REPO_TYPE SVN)
 set(BOOST_SOURCE "${CMAKE_SOURCE_DIR}/src/Boost")
+set(BOOST_OPTIONAL ON)
 # set(BOOST_FORCE_BUILD ON)
 
 if(MSVC)

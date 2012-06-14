@@ -3,11 +3,17 @@ find_program(DOT_EXECUTABLE dot)
 
 function(CREATE_DEPENDENCY_GRAPH_R NAME ALL FILE)
   string(TOUPPER ${NAME} UPPER_NAME)
+  if(${UPPER_NAME}_OPTIONAL)
+    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/${ALL}.dot
+      "${NAME} [style=dashed]\n")
+    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/${FILE}.dot
+      "${NAME} [style=dashed]\n")
+  endif()
 
   foreach(_dep ${${UPPER_NAME}_DEPENDS})
-    file(APPEND ${FILE} "\"${_dep}\" -> \"${NAME}\";" )
+    file(APPEND ${FILE} "\"${_dep}\" -> \"${NAME}\"\n" )
     file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/${ALL}.dot
-      "\"${_dep}\" -> \"${NAME}\";" )
+      "\"${_dep}\" -> \"${NAME}\"\n" )
     create_dependency_graph_r(${_dep} ${ALL} ${FILE})
   endforeach()
 endfunction()
