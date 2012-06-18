@@ -22,11 +22,7 @@ test:
 clean:
 	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-clean
 
-doxygen:
-	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-doxygen
-
-github:
-	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-github
+include @CMAKE_BINARY_DIR@/projects.make
 
 %:
-	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-$@
+	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@_$@

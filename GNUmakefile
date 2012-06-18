@@ -28,12 +28,6 @@ packages: Release/Makefile
 
 tests: $(BUILD)/Makefile
 	@$(MAKE) -C $(BUILD) tests
-
--include ${BUILD}/projects.make
-
-.DEFAULT:
-	@$(MAKE) $(BUILD)/Makefile
-	@$(MAKE) -C $(BUILD) $(MAKECMDGOALS)
 endif
 
 clobber:
@@ -52,3 +46,14 @@ release: Release/Makefile
 Release/Makefile:
 	@mkdir -p Release
 	@cd Release; cmake .. -DCMAKE_BUILD_TYPE=Release
+
+ifneq ($(wildcard Makefile), Makefile)
+
+${BUILD}/projects.make: $(BUILD)/Makefile
+
+include ${BUILD}/projects.make
+
+.DEFAULT:
+	@$(MAKE) $(BUILD)/Makefile
+	@$(MAKE) -C $(BUILD) $(MAKECMDGOALS)
+endif

@@ -23,7 +23,6 @@ function(_ep_write_gitclone_script script_filename source_dir git_EXECUTABLE git
   set(TAIL_REVISION ${${UPPER_NAME}_TAIL_REVISION})
   if(TAIL_REVISION)
       set(TAIL_REVISION_CMD "-r"${TAIL_REVISION})
-      message(${TAIL_REVISION_CMD})
   endif(TAIL_REVISION)
 
   file(WRITE ${script_filename}
@@ -293,7 +292,7 @@ function(USE_EXTERNAL NAME)
   unset(${NAME}_LIBRARY_DIRS CACHE)
   unset(${UPPER_NAME}_LIBRARy_DIRS CACHE)
 
-  message(STATUS "  ${USE_EXTERNAL_INDENT}${NAME}: building from "
+  message(STATUS "  ${USE_EXTERNAL_INDENT}${NAME}: use "
     "${${UPPER_NAME}_REPO_URL}:${${UPPER_NAME}_REPO_TAG}")
   set(USE_EXTERNAL_INDENT "${USE_EXTERNAL_INDENT}  ")
 
@@ -381,6 +380,8 @@ function(USE_EXTERNAL NAME)
   use_external_buildonly(${NAME})
   file(APPEND ${CMAKE_BINARY_DIR}/projects.make
     "${NAME}-%:\n"
+    "	@\$(MAKE) -C ${CMAKE_BINARY_DIR} $@\n"
+    "${NAME}_%:\n"
     "	@\$(MAKE) -C ${CMAKE_BINARY_DIR}/${NAME} $*\n\n"
     )
 
