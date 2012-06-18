@@ -8,7 +8,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 file(REMOVE ${CMAKE_BINARY_DIR}/projects.make)
 
 set(USE_EXTERNAL_SUBTARGETS update build buildonly configure test testonly
-  install package doxygen github clean download deps Makefile)
+  install package download deps Makefile stat)
 foreach(subtarget ${USE_EXTERNAL_SUBTARGETS})
   add_custom_target(${subtarget}s)
   set_target_properties(${subtarget}s PROPERTIES FOLDER "00_Meta")
@@ -94,6 +94,7 @@ endfunction(_ep_write_gitclone_script)
 # renames existing origin and adds user URL as new origin (git only)
 function(USE_EXTERNAL_CHANGE_ORIGIN NAME ORIGIN_URL USER_URL ORIGIN_RENAME)
   if(ORIGIN_URL AND USER_URL)
+    string(TOUPPER ${NAME} UPPER_NAME)
     set(CHANGE_ORIGIN ${GIT_EXECUTABLE} remote set-url origin "${USER_URL}")
     set(RM_REMOTE ${GIT_EXECUTABLE} remote rm ${ORIGIN_RENAME} || ${GIT_EXECUTABLE} status) #workaround to ignore remote rm return value
     set(ADD_REMOTE ${GIT_EXECUTABLE} remote add ${ORIGIN_RENAME} "${ORIGIN_URL}")
@@ -102,7 +103,7 @@ function(USE_EXTERNAL_CHANGE_ORIGIN NAME ORIGIN_URL USER_URL ORIGIN_RENAME)
       COMMAND ${CHANGE_ORIGIN}
       COMMAND ${RM_REMOTE}
       COMMAND ${ADD_REMOTE}
-      WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/${NAME}"
+      WORKING_DIRECTORY "${${UPPER_NAME}_SOURCE}"
       DEPENDERS build
       DEPENDEES download
       ALWAYS 1
@@ -210,7 +211,7 @@ function(USE_EXTERNAL_MAKEFILE NAME)
   file(WRITE ${_scriptdir}/cpMakefile.cmake
     "if(NOT EXISTS \"${_makefile}\")
        set(NAME ${NAME})
-       set(CMAKE_SOURCE_DIR ${CMAKE_SOURCE_DIR})
+       set(CMAKE_SOURCE_DIR ${${UPPER_NAME}_SOURCE})
        configure_file(${CMAKE_SOURCE_DIR}/CMake/Makefile.in \"${_makefile}\"
          @ONLY)
      endif()")
@@ -261,7 +262,6 @@ function(USE_EXTERNAL NAME)
     list(APPEND CMAKE_MODULE_PATH "${ENVROOT}/share/${NAME}/CMake")
   endif()
 
-  list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/${NAME}/CMake")
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_INSTALL_PREFIX}/share/${NAME}/CMake")
   list(APPEND CMAKE_MODULE_PATH /usr/share/${NAME}/CMake)
   list(APPEND CMAKE_MODULE_PATH /usr/local/share/${NAME}/CMake)
@@ -413,27 +413,24 @@ function(USE_EXTERNAL NAME)
     )
   set_target_properties(${NAME}-package PROPERTIES EXCLUDE_FROM_ALL ON)
 
-  add_custom_target(${NAME}-doxygen
-    COMMAND ${cmd} doxygen
-    COMMENT "Running doxygen"
-    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
-    )
-  set_target_properties(${NAME}-doxygen PROPERTIES EXCLUDE_FROM_ALL ON)
+  get_property(cvs_repository TARGET ${NAME} PROPERTY _EP_CVS_REPOSITORY)
+  get_property(svn_repository TARGET ${NAME} PROPERTY _EP_SVN_REPOSITORY)
+  get_property(git_repository TARGET ${NAME} PROPERTY _EP_GIT_REPOSITORY)
 
-  add_custom_target(${NAME}-github
-    COMMAND ${cmd} github
-    DEPENDS ${NAME}
-    COMMENT "Building github API documentation"
-    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
-    )
-  set_target_properties(${NAME}-github PROPERTIES EXCLUDE_FROM_ALL ON)
+  if(cvs_repository)
+    set(cmd ${CVS_EXECUTABLE} status)
+  elseif(svn_repository)
+    set(cmd ${Subversion_SVN_EXECUTABLE} st -q)
+  elseif(git_repository)
+    set(cmd ${GIT_EXECUTABLE} status --untracked-files=no -s)
+  endif()
 
-  add_custom_target(${NAME}-clean
-    COMMAND ${cmd} clean
-    COMMENT "Cleaning ${NAME}"
-    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
+  add_custom_target(${NAME}-stat
+    COMMAND ${cmd}
+    COMMENT "${NAME} Status:"
+    WORKING_DIRECTORY "${${UPPER_NAME}_SOURCE}"
     )
-  set_target_properties(${NAME}-clean PROPERTIES EXCLUDE_FROM_ALL ON)
+  set_target_properties(${NAME}-stat PROPERTIES EXCLUDE_FROM_ALL ON)
 
   add_custom_target(${NAME}-deps
     DEPENDS ${DEPENDS}
