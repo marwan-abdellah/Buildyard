@@ -6,8 +6,7 @@ function(CREATE_DEPENDENCY_GRAPH_R NAME ALL FILE)
   if(${UPPER_NAME}_OPTIONAL)
     file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/${ALL}.dot
       "${NAME} [style=dashed]\n")
-    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/${FILE}.dot
-      "${NAME} [style=dashed]\n")
+    file(APPEND ${FILE} "${NAME} [style=dashed]\n")
   endif()
 
   foreach(_dep ${${UPPER_NAME}_DEPENDS})
