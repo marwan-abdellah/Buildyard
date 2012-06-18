@@ -1,49 +1,47 @@
 #!gmake
 .PHONY: debug release clean clobber package tests
 
-MYMAKE=${MAKE} --no-print-directory
-
 ifeq ($(wildcard Makefile), Makefile)
 all:
-	@$(MYMAKE) -f Makefile $(MAKECMDGOALS)
+	@$(MAKE) --no-print-directory -f Makefile $(MAKECMDGOALS)
 
 clean:
-	@$(MYMAKE) -f Makefile $(MAKECMDGOALS)
+	@$(MAKE) --no-print-directory -f Makefile $(MAKECMDGOALS)
 
 .DEFAULT:
-	@$(MYMAKE) -f Makefile $(MAKECMDGOALS)
+	@$(MAKE) --no-print-directory -f Makefile $(MAKECMDGOALS)
 
 else
 
 BUILD ?= Debug
 
 normal: $(BUILD)/Makefile
-	@$(MYMAKE) -C $(BUILD)
+	@$(MAKE) --no-print-directory -C $(BUILD)
 
 all: debug release
 clean:
-	@-$(MYMAKE) -C Debug clean cleans
-	@-$(MYMAKE) -C Release clean cleans
+	@-$(MAKE) --no-print-directory -C Debug clean cleans
+	@-$(MAKE) --no-print-directory -C Release clean cleans
 
 packages: Release/Makefile
-	@$(MYMAKE) -C Release packages
+	@$(MAKE) --no-print-directory -C Release packages
 
 tests: $(BUILD)/Makefile
-	@$(MYMAKE) -C $(BUILD) tests
+	@$(MAKE) --no-print-directory -C $(BUILD) tests
 endif
 
 clobber:
 	rm -rf Debug Release
 
 debug: Debug/Makefile
-	@$(MYMAKE) -C Debug
+	@$(MAKE) --no-print-directory -C Debug
 
 Debug/Makefile:
 	@mkdir -p Debug
 	@cd Debug; cmake .. -DCMAKE_BUILD_TYPE=Debug
 
 release: Release/Makefile
-	@$(MYMAKE) -C Release
+	@$(MAKE) --no-print-directory -C Release
 
 Release/Makefile:
 	@mkdir -p Release
@@ -56,6 +54,6 @@ ${BUILD}/projects.make: $(BUILD)/Makefile
 include ${BUILD}/projects.make
 
 .DEFAULT:
-	@$(MYMAKE) $(BUILD)/Makefile
-	@$(MYMAKE) -C $(BUILD) $(MAKECMDGOALS)
+	@$(MAKE) --no-print-directory $(BUILD)/Makefile
+	@$(MAKE) --no-print-directory -C $(BUILD) $(MAKECMDGOALS)
 endif
