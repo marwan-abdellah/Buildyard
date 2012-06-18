@@ -16,6 +16,14 @@ endforeach()
 add_custom_target(AllProjects)
 set_target_properties(AllProjects PROPERTIES FOLDER "00_Main")
 
+add_custom_target(Buildyard-stat
+  COMMAND ${GIT_EXECUTABLE} status -s --untracked-files=no
+  COMMENT "Buildyard Status:"
+  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+  )
+set_target_properties(Buildyard-stat PROPERTIES EXCLUDE_FROM_ALL ON)
+add_dependencies(stats Buildyard-stat)
+
 # overwrite git clone script generation to avoid excessive cloning
 function(_ep_write_gitclone_script script_filename source_dir git_EXECUTABLE git_repository git_tag src_name work_dir)
 
