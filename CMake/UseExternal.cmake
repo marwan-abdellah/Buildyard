@@ -198,6 +198,7 @@ endfunction()
 
 function(USE_EXTERNAL_MAKEFILE NAME)
   set(_makefile "${${UPPER_NAME}_SOURCE}/Makefile")
+  set(_gnumakefile "${${UPPER_NAME}_SOURCE}/GNUmakefile")
   set(_scriptdir ${CMAKE_CURRENT_BINARY_DIR}/${NAME})
 
   # Remove our old file before updating
@@ -206,6 +207,12 @@ function(USE_EXTERNAL_MAKEFILE NAME)
        file(READ \"${_makefile}\" _makefile_contents)
        if(_makefile_contents MATCHES \"MAGIC_IS_BUILDYARD_MAKEFILE\")
          file(REMOVE \"${_makefile}\")
+       endif()
+     endif()
+     if(EXISTS \"${_gnumakefile}\")
+       file(READ \"${_gnumakefile}\" _gnumakefile_contents)
+       if(_gnumakefile_contents MATCHES \"MAGIC_IS_BUILDYARD_GNUMAKEFILE\")
+         file(REMOVE \"${_gnumakefile}\")
        endif()
      endif()")
 
@@ -221,6 +228,11 @@ function(USE_EXTERNAL_MAKEFILE NAME)
        set(NAME ${NAME})
        set(CMAKE_SOURCE_DIR ${${UPPER_NAME}_SOURCE})
        configure_file(${CMAKE_SOURCE_DIR}/CMake/Makefile.in \"${_makefile}\"
+         @ONLY)
+     elseif(NOT EXISTS \"${_gnumakefile}\")
+       set(NAME ${NAME})
+       set(CMAKE_SOURCE_DIR ${${UPPER_NAME}_SOURCE})
+       configure_file(${CMAKE_SOURCE_DIR}/CMake/Makefile.in \"${_gnumakefile}\"
          @ONLY)
      endif()")
 
