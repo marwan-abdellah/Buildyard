@@ -33,7 +33,7 @@ function(CREATE_DEPENDENCY_GRAPH SRC DST NAME)
     add_custom_command(OUTPUT ${DST}/${NAME}.png
       COMMAND ${DOT_EXECUTABLE} -o ${DST}/${NAME}.png -Tpng
         ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.dot
-      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.dot
+      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.dot eyescale
      )
     add_custom_target(${NAME}-png ALL DEPENDS ${DST}/${NAME}.png)
  endif()
@@ -46,7 +46,7 @@ function(CREATE_DEPENDENCY_GRAPH_END SRC DST)
     add_custom_command(OUTPUT ${DST}/all.png
       COMMAND ${DOT_EXECUTABLE} -o ${DST}/all.png -Tpng
       ${CMAKE_CURRENT_BINARY_DIR}/${dir}.dot
-      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${dir}.dot
+      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${dir}.dot eyescale
       )
     add_custom_target(${dir}_png ALL DEPENDS ${DST}/all.png)
   endif()
