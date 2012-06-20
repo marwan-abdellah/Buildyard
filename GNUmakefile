@@ -1,5 +1,5 @@
 #!gmake
-.PHONY: debug release clean clobber package tests
+.PHONY: debug release build clean clobber package tests
 
 ifeq ($(wildcard Makefile), Makefile)
 all:
@@ -13,13 +13,14 @@ clean:
 
 else
 
-BUILD ?= Debug
+BUILD ?= Build
 
 normal: $(BUILD)/Makefile
 	@$(MAKE) --no-print-directory -C $(BUILD)
 
 all: debug release
 clean:
+	@-$(MAKE) --no-print-directory -C Build clean cleans
 	@-$(MAKE) --no-print-directory -C Debug clean cleans
 	@-$(MAKE) --no-print-directory -C Release clean cleans
 
@@ -31,7 +32,7 @@ tests: $(BUILD)/Makefile
 endif
 
 clobber:
-	rm -rf Debug Release
+	rm -rf Debug Release Build
 
 debug: Debug/Makefile
 	@$(MAKE) --no-print-directory -C Debug
@@ -47,11 +48,15 @@ Release/Makefile:
 	@mkdir -p Release
 	@cd Release; cmake .. -DCMAKE_BUILD_TYPE=Release
 
+%/Makefile:
+	@mkdir -p $*
+	@cd $*; cmake ..
+
 ifneq ($(wildcard Makefile), Makefile)
 
 ${BUILD}/projects.make: $(BUILD)/Makefile
 
-include ${BUILD}/projects.make
+-include ${BUILD}/projects.make
 
 .DEFAULT:
 	@$(MAKE) --no-print-directory $(BUILD)/Makefile
