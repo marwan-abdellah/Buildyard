@@ -173,17 +173,16 @@ macro(FIND_LIBRARY_PACKAGE name)
         set(_flp_EPIC_FAIL TRUE)
         if(_flp_output)
           message(${_flp_version_output_type}
-            "Version ${${name}_FIND_VERSION} of ${name} is required exactly."
+            "Version ${${name}_FIND_VERSION} of ${name} is required exactly. "
             "Version ${${_flp_NAME}_VERSION} was found.")
         endif()
       endif()
     else()
-      if( NOT ${name}_FIND_VERSION VERSION_EQUAL ${_flp_NAME}_VERSION AND 
-          NOT ${name}_FIND_VERSION VERSION_GREATER ${_flp_NAME}_VERSION )
+      if( ${name}_FIND_VERSION VERSION_GREATER ${_flp_NAME}_VERSION )
         set(_flp_EPIC_FAIL TRUE)
         if(_flp_output)
           message(${_flp_version_output_type}
-            "Version ${${name}_FIND_VERSION} or higher of ${name} is required."
+            "Version ${${name}_FIND_VERSION} or higher of ${name} is required. "
             "Version ${${_flp_NAME}_VERSION} was found in ${${_flp_NAME}_INCLUDE_DIR}.")
         endif()
       endif()
@@ -214,8 +213,15 @@ macro(FIND_LIBRARY_PACKAGE name)
     set(${_flp_NAME}_LIBRARIES)
     set(${_flp_NAME}_INCLUDE_DIRS)
   else()
+    string(TOLOWER ${name} _flp_name)
+
     set(${_flp_NAME}_FOUND TRUE)
-    get_filename_component(${_flp_NAME}_LIBRARY_DIRS ${${_flp_NAME}_LIBRARY} PATH)
+    set(${_flp_NAME}_DEB_DEPENDENCIES
+      "${_flp_name}${${_flp_NAME}_VERSION_ABI}-lib")
+    set(${_flp_NAME}_DEB_BUILD_DEPENDENCIES
+      "${_flp_name}${${_flp_NAME}_VERSION_ABI}-dev")
+    get_filename_component(${_flp_NAME}_LIBRARY_DIRS ${${_flp_NAME}_LIBRARY}
+      PATH)
 
     if(_flp_output)
       message(STATUS "Found ${name} ${${_flp_NAME}_VERSION} in "
