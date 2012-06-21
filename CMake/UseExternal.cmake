@@ -458,6 +458,13 @@ function(USE_EXTERNAL NAME)
     )
   set_target_properties(${NAME}-deps PROPERTIES EXCLUDE_FROM_ALL ON)
 
+  add_custom_target(${NAME}-clean
+    COMMAND ${cmd} clean
+    COMMENT "Cleaning ${NAME}"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
+    )
+  set_target_properties(${NAME}-clean PROPERTIES EXCLUDE_FROM_ALL ON)
+
   # disable tests if requested
   if(${${UPPER_NAME}_NOTEST})
     set(${UPPER_NAME}_NOTESTONLY ON)
