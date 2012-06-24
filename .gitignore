@@ -3,5 +3,5 @@ Debug
 Release
 config.*/
 CMakeLists.txt.user*
-build
+build*
 CMakeFiles

@@ -1,6 +1,3 @@
-if(MSVC)
-  return()
-endif()
 
 set(MONSTEER_VERSION 0.1.0)
 set(MONSTEER_DEPENDS Boost Equalizer dash codash Lunchbox steer_lib)
