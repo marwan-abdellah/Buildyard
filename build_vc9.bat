@@ -1,0 +1,24 @@
+REM Simple one-click batch file for executing Release builds on all Buildyard
+REM projects using the Visual Studio 2008 aka vc9 compiler. Note that cmake.exe,
+REM git.exe and svn.exe must be part of %PATH%.
+
+REM load environment for Visual Studio 2008
+set PWD=%~dp0
+echo %PWD%
+cd /D %VS90COMNTOOLS%
+CALL vsvars32.bat
+cd /D %PWD%
+
+REM do initial configuration if required
+IF not exist build_vc9 (
+  mkdir build_vc9
+  cd build_vc9
+  cmake .. -G "Visual Studio 9 2008"
+) ELSE (
+  cd build_vc9
+)
+
+REM build Release configuration and use all local CPU cores
+msbuild /p:Configuration=Release /m Buildyard.sln /t:ALL_BUILD
+cd /D %PWD%
+pause
