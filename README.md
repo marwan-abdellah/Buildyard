@@ -9,7 +9,7 @@ projects from installed packages, git or svn repositories.
 
 ## Presentation
 
-[Presentation.pdf](https://github.com/BlueBrain/Buildyard/blob/master/Presentation.pdf?raw=true)
+[Presentation.pdf](https://github.com/BlueBrain/Buildyard/blob/master/doc/Presentation.pdf?raw=true)
 
 ## Using
 

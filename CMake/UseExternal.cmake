@@ -3,7 +3,6 @@
 
 include(ExternalProject)
 find_package(Git REQUIRED)
-find_package(Subversion REQUIRED)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 file(REMOVE ${CMAKE_BINARY_DIR}/projects.make)
 
@@ -368,6 +367,7 @@ function(USE_EXTERNAL NAME)
           ALWAYS TRUE)
     endif()
   elseif(REPO_TYPE STREQUAL "SVN")
+    find_package(Subversion REQUIRED)
     set(REPO_TAG SVN_REVISION)
   else()
     message(FATAL_ERROR "Unknown repository type ${REPO_TYPE}")
