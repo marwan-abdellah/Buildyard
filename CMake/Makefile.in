@@ -2,27 +2,27 @@
 # MAGIC_IS_BUILDYARD_MAKEFILE
 
 all:
-	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-buildonly
+	@$(MAKE) --no-print-directory -C @CMAKE_SOURCE_DIR@ @NAME@-buildonly
 
 install:
-	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-install
+	@$(MAKE) --no-print-directory -C @CMAKE_SOURCE_DIR@ @NAME@-install
 
 deps:
-	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-deps
+	@$(MAKE) --no-print-directory -C @CMAKE_SOURCE_DIR@ @NAME@-deps
 
 package:
-	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-package
+	@$(MAKE) --no-print-directory -C @CMAKE_SOURCE_DIR@ @NAME@-package
 
 configure:
-	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-Makefile
+	@$(MAKE) --no-print-directory -C @CMAKE_SOURCE_DIR@ @NAME@-Makefile
 
 test:
-	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-testonly
+	@$(MAKE) --no-print-directory -C @CMAKE_SOURCE_DIR@ @NAME@-testonly
 
 clean:
-	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@-clean
+	@$(MAKE) --no-print-directory -C @CMAKE_SOURCE_DIR@ @NAME@-clean
 
 include @CMAKE_BINARY_DIR@/projects.make
 
 %:
-	@$(MAKE) -C @CMAKE_SOURCE_DIR@ @NAME@_$@
+	@$(MAKE) --no-print-directory -C @CMAKE_SOURCE_DIR@ @NAME@_$@
