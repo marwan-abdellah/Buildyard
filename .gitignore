@@ -4,4 +4,5 @@ Release
 config.*/
 CMakeLists.txt.user*
 build*
+Build*
 CMakeFiles
