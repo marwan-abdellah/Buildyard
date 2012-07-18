@@ -476,6 +476,7 @@ function(USE_EXTERNAL NAME)
     foreach(subtarget ${USE_EXTERNAL_SUBTARGETS})
       set_target_properties(${NAME}-${subtarget} PROPERTIES EXCLUDE_FROM_ALL ON)
     endforeach()
+    add_dependencies(stats ${NAME}-stat)
   else()
     # add to meta sub-targets
     foreach(subtarget ${USE_EXTERNAL_SUBTARGETS})
