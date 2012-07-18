@@ -4,7 +4,7 @@ if(MSVC OR APPLE)
   return()
 endif()
 
-set(BINO_VERSION 1.2.0)
+set(BINO_VERSION 1.4.0)
 set(BINO_REPO_URL git://git.savannah.nongnu.org/bino.git)
 set(BINO_DEPENDS Equalizer)
 set(BINO_SOURCE "${CMAKE_SOURCE_DIR}/src/bino")
