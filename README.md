@@ -55,7 +55,8 @@ configuration file, which contains the following variables:
   as required by the project find script. Default is  NAME\_ROOT
 * NAME\_TAIL\_REVISION: The oldest revision a git-svn repository should
   be cloned with.
-* NAME\_CMAKE\_ARGS Additional CMake arguments for the configure step
+* NAME\_CMAKE\_ARGS Additional CMake arguments for the configure
+  step. The character '!' can be used to separate list items.
 
 ## Extending
 
