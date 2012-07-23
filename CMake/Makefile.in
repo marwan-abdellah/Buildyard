@@ -1,6 +1,8 @@
 #!gmake
 # MAGIC_IS_BUILDYARD_MAKEFILE
 
+BUILD ?= Build
+
 all:
 	@$(MAKE) --no-print-directory -C @CMAKE_SOURCE_DIR@ @NAME@-buildonly
 
@@ -22,7 +24,7 @@ test:
 clean:
 	@$(MAKE) --no-print-directory -C @CMAKE_SOURCE_DIR@ @NAME@-clean
 
-include @CMAKE_BINARY_DIR@/projects.make
+include @BUILDYARD@/$(BUILD)/projects.make
 
 %:
 	@$(MAKE) --no-print-directory -C @CMAKE_SOURCE_DIR@ @NAME@_$@
