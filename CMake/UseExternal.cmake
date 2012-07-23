@@ -381,7 +381,7 @@ function(USE_EXTERNAL NAME)
   use_external_gather_args(${NAME})
   set(ARGS -DBUILDYARD:BOOL=ON -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
            -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH}
-           ${${UPPER_NAME}_ARGS})
+           ${${UPPER_NAME}_ARGS} ${${UPPER_NAME}_CMAKE_ARGS})
 
   ExternalProject_Add(${NAME}
     PREFIX "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
