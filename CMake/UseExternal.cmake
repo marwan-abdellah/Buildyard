@@ -237,7 +237,7 @@ function(USE_EXTERNAL_MAKEFILE NAME)
 
   ExternalProject_Add_Step(${NAME} Makefile
     COMMENT "Adding in-source Makefile"
-    COMMAND ${CMAKE_COMMAND} -P ${_scriptdir}/cpMakefile.cmake
+    COMMAND ${CMAKE_COMMAND} -DBUILDYARD:PATH=${CMAKE_SOURCE_DIR} -P ${_scriptdir}/cpMakefile.cmake
     DEPENDEES configure DEPENDERS build ALWAYS 1
     )
 endfunction()
