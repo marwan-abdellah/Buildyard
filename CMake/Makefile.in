@@ -4,27 +4,27 @@
 BUILD ?= Build
 
 all:
-	@$(MAKE) --no-print-directory -C @CMAKE_SOURCE_DIR@ @NAME@-buildonly
+	@$(MAKE) --no-print-directory -C @BUILDYARD@ @NAME@-buildonly
 
 install:
-	@$(MAKE) --no-print-directory -C @CMAKE_SOURCE_DIR@ @NAME@-install
+	@$(MAKE) --no-print-directory -C @BUILDYARD@ @NAME@-install
 
 deps:
-	@$(MAKE) --no-print-directory -C @CMAKE_SOURCE_DIR@ @NAME@-deps
+	@$(MAKE) --no-print-directory -C @BUILDYARD@ @NAME@-deps
 
 package:
-	@$(MAKE) --no-print-directory -C @CMAKE_SOURCE_DIR@ @NAME@-package
+	@$(MAKE) --no-print-directory -C @BUILDYARD@ @NAME@-package
 
 configure:
-	@$(MAKE) --no-print-directory -C @CMAKE_SOURCE_DIR@ @NAME@-Makefile
+	@$(MAKE) --no-print-directory -C @BUILDYARD@ @NAME@-Makefile
 
 test:
-	@$(MAKE) --no-print-directory -C @CMAKE_SOURCE_DIR@ @NAME@-testonly
+	@$(MAKE) --no-print-directory -C @BUILDYARD@ @NAME@-testonly
 
 clean:
-	@$(MAKE) --no-print-directory -C @CMAKE_SOURCE_DIR@ @NAME@-clean
+	@$(MAKE) --no-print-directory -C @BUILDYARD@ @NAME@-clean
 
 include @BUILDYARD@/$(BUILD)/projects.make
 
 %:
-	@$(MAKE) --no-print-directory -C @CMAKE_SOURCE_DIR@ @NAME@_$@
+	@$(MAKE) --no-print-directory -C @BUILDYARD@ @NAME@_$@
