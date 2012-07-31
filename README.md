@@ -3,7 +3,9 @@
 ## Introduction
 
 Buildyard facilitates the build and development of multiple, dependent
-projects from installed packages, git or svn repositories.
+projects from installed packages, git or svn repositories. The following
+projects are currently available, with optional dependencies drawn as
+dotted bubbles:
 
 ![Depency Graph](http://eyescale.github.com/images/all.png)
 
