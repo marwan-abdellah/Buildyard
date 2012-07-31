@@ -1,6 +1,6 @@
 
 set(EQUALIZER_VERSION 1.5.0)
-set(EQUALIZER_DEPENDS gpu-sd Boost hwloc vmmlib Lunchbox GLStats OpenGL)
+set(EQUALIZER_DEPENDS gpu-sd Boost hwloc vmmlib Lunchbox Collage GLStats OpenGL)
 set(EQUALIZER_ROOT_VAR EQ_ROOT)
 set(EQUALIZER_REPO_URL https://github.com/Eyescale/Equalizer.git)
 set(EQUALIZER_REPO_TAG master)
