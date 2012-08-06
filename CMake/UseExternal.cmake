@@ -138,7 +138,12 @@ function(USE_EXTERNAL name)
   # ** External project settings are read from $name.cmake
 
   get_target_property(_check ${name} _EP_IS_EXTERNAL_PROJECT)
-  if(_check EQUAL 1) # already used
+  if(_check OR ${name}_CHECK) # tested, be quiet and propagate upwards
+    set(${name}_CHECK 1 PARENT_SCOPE)
+    set(${name}_FOUND ${${name}_FOUND} PARENT_SCOPE)
+    if(name_external)
+      set(${name}_FOUND 1 PARENT_SCOPE)
+    endif()
     return()
   endif()
 
@@ -169,11 +174,7 @@ function(USE_EXTERNAL name)
   list(APPEND CMAKE_MODULE_PATH /usr/local/share/${name}/CMake)
 
   # try find_package
-  if(${name}_FOUND) # Opt: already found, be quiet and propagate upwards
-    set(${name}_FOUND 1 PARENT_SCOPE)
-    return()
-  endif()
-
+  set(USE_EXTERNAL_INDENT "${USE_EXTERNAL_INDENT}  ")
   if(NOT ${NAME}_FORCE_BUILD)
     find_package(${name} ${${NAME}_VERSION} QUIET)
   endif()
@@ -181,9 +182,10 @@ function(USE_EXTERNAL name)
     set(${name}_FOUND 1) # compat with Foo_FOUND and FOO_FOUND usage
   endif()
   if(${name}_FOUND)
-    message(STATUS "  ${USE_EXTERNAL_INDENT}${name}: installed in "
+    message(STATUS "${USE_EXTERNAL_INDENT}${name}: installed in "
       "${${NAME}_INCLUDE_DIRS}${${name}_INCLUDE_DIRS}")
     set(${name}_FOUND 1 PARENT_SCOPE)
+    set(${name}_CHECK 1 PARENT_SCOPE)
     return()
   endif()
 
@@ -194,31 +196,45 @@ function(USE_EXTERNAL name)
   unset(${name}_LIBRARY_DIRS CACHE)
   unset(${NAME}_LIBRARy_DIRS CACHE)
 
-  set(USE_EXTERNAL_INDENT "${USE_EXTERNAL_INDENT}  ")
-
   if("${${NAME}_REPO_URL}" STREQUAL "")
     message(STATUS
-      "${USE_EXTERNAL_INDENT}${name}: No source repository, fix ${name}.cmake?")
-    set(${name}_FOUND 1 PARENT_SCOPE) # ugh: removes dependency
+      "${USE_EXTERNAL_INDENT}${name}: No source repo, update ${name}.cmake?")
+    set(${name}_CHECK 1 PARENT_SCOPE)
     return()
   endif()
 
-  message(STATUS "${USE_EXTERNAL_INDENT}${name}: use "
-    "${${NAME}_REPO_URL}:${${NAME}_REPO_TAG}")
+  message(STATUS
+    "${USE_EXTERNAL_INDENT}${name}: use ${${NAME}_REPO_URL}:${${NAME}_REPO_TAG}")
 
   # pull in dependent projects first
   set(DEPENDS)
+  set(MISSING)
+  set(DEPMODE)
   foreach(_dep ${${NAME}_DEPENDS})
-    get_target_property(_dep_check ${_dep} _EP_IS_EXTERNAL_PROJECT)
-    if(NOT _dep_check EQUAL 1)
-      use_external(${_dep})
-    endif()
-    if(${_dep}_FOUND)
-      set(${_dep}_FOUND 1 PARENT_SCOPE)
+    if(${_dep} STREQUAL "OPTIONAL")
+      set(DEPMODE)
+    elseif(${_dep} STREQUAL "REQUIRED")
+      set(DEPMODE REQUIRED)
     else()
-      list(APPEND DEPENDS ${_dep})
+      if(NOT ${_dep}_CHECK)
+        use_external(${_dep})
+      endif()
+      if("${DEPMODE}" STREQUAL "REQUIRED" AND NOT ${_dep}_FOUND)
+        set(MISSING "${MISSING} ${_dep}")
+      endif()
+
+      get_target_property(_dep_check ${_dep} _EP_IS_EXTERNAL_PROJECT)
+      if(_dep_check EQUAL 1)
+        list(APPEND DEPENDS ${_dep})
+      endif()
+      set(${_dep}_CHECK 1 PARENT_SCOPE)
+      set(${_dep}_FOUND ${${_dep}_FOUND} PARENT_SCOPE)
     endif()
   endforeach()
+  if(MISSING)
+    message(STATUS "${USE_EXTERNAL_INDENT}${name}: SKIP, missing${MISSING}")
+    return()
+  endif()
 
   # External Project
   set(UPDATE_CMD)
@@ -379,10 +395,12 @@ function(USE_EXTERNAL name)
     set_target_properties(${name}-${subtarget} PROPERTIES FOLDER ${name})
   endforeach()
 
+  set(${name}_FOUND 1 PARENT_SCOPE)
+  set(${name}_CHECK 1 PARENT_SCOPE)
+
   if("${NAME}_ROOT_VAR" STREQUAL "")
     set(${NAME}_ROOT "${INSTALL_PATH}" PARENT_SCOPE)
   else()
     set(${${NAME}_ROOT_VAR} "${INSTALL_PATH}" PARENT_SCOPE)
   endif()
-
 endfunction()

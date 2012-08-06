@@ -3,7 +3,7 @@ if(MSVC)
 endif()
 
 set(EQUALIZERGRAPHICS_OPTIONAL true)
-set(EQUALIZERGRAPHICS_DEPENDS Equalizer)
+set(EQUALIZERGRAPHICS_DEPENDS REQUIRED Equalizer)
 set(EQUALIZERGRAPHICS_REPO_URL https://github.com/Eyescale/equalizergraphics.com.git)
 set(EQUALIZERGRAPHICS_REPO_TAG master)
 set(EQUALIZERGRAPHICS_SOURCE "${CMAKE_SOURCE_DIR}/src/equalizergraphics")
