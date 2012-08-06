@@ -1,7 +1,7 @@
 
 set(LIBXML2_VERSION 2.7)
 set(LIBXML2_REPO_URL git://git.gnome.org/libxml2)
-set(LIBXML2_REPO_TAG master)
+set(LIBXML2_REPO_TAG v2.8.0)
 set(LIBXML2_SOURCE "${CMAKE_SOURCE_DIR}/src/libxml2")
 set(LIBXML2_OPTIONAL ON)
 
