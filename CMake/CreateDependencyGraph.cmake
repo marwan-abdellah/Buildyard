@@ -2,15 +2,15 @@
 find_program(DOT_EXECUTABLE dot)
 find_program(TRED_EXECUTABLE tred)
 
-function(CREATE_DEPENDENCY_GRAPH_R NAME ALL FILE)
-  string(TOUPPER ${NAME} UPPER_NAME)
-  if(${UPPER_NAME}_OPTIONAL)
+function(CREATE_DEPENDENCY_GRAPH_R name ALL FILE)
+  string(TOUPPER ${name} NAME)
+  if(${NAME}_OPTIONAL)
     file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/${ALL}.dot
       "${NAME} [style=dashed]\n")
     file(APPEND ${FILE} "${NAME} [style=dashed]\n")
   endif()
 
-  foreach(_dep ${${UPPER_NAME}_DEPENDS})
+  foreach(_dep ${${NAME}_DEPENDS})
     file(APPEND ${FILE} "\"${_dep}\" -> \"${NAME}\"\n" )
     file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/${ALL}.dot
       "\"${_dep}\" -> \"${NAME}\"\n" )
