@@ -144,6 +144,7 @@ function(USE_EXTERNAL name)
     if(name_external)
       set(${name}_FOUND 1 PARENT_SCOPE)
     endif()
+    set(BUILDING ${BUILDING} PARENT_SCOPE)
     return()
   endif()
 
@@ -397,6 +398,7 @@ function(USE_EXTERNAL name)
 
   set(${name}_FOUND 1 PARENT_SCOPE)
   set(${name}_CHECK 1 PARENT_SCOPE)
+  set(BUILDING ${BUILDING} ${name} PARENT_SCOPE)
 
   if("${NAME}_ROOT_VAR" STREQUAL "")
     set(${NAME}_ROOT "${INSTALL_PATH}" PARENT_SCOPE)
