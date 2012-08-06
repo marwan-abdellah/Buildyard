@@ -1,7 +1,9 @@
 
 # Copyright (c) 2012 Stefan Eilemann <Stefan.Eilemann@epfl.ch>
 
+# remove / update_src / add in-source Makefile
 function(USE_EXTERNAL_MAKEFILE NAME)
+  string(TOUPPER ${NAME} UPPER_NAME)
   set(_makefile "${${UPPER_NAME}_SOURCE}/Makefile")
   set(_gnumakefile "${${UPPER_NAME}_SOURCE}/GNUmakefile")
   set(_scriptdir ${CMAKE_CURRENT_BINARY_DIR}/${NAME})

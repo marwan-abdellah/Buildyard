@@ -5,6 +5,7 @@ include(ExternalProject)
 find_package(Git REQUIRED)
 include(UseExternalClone)
 include(UseExternalMakefile)
+include(UseExternalDeps)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 file(REMOVE ${CMAKE_BINARY_DIR}/projects.make)
@@ -310,6 +311,7 @@ function(USE_EXTERNAL NAME)
   endif()
 
   use_external_makefile(${NAME})
+  use_external_deps(${NAME})
   add_custom_target(${NAME}-package
     COMMAND ${fakeroot} ${cmd} package
     COMMENT "Building package"
