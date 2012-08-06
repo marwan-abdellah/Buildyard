@@ -43,6 +43,6 @@ function(USE_EXTERNAL_DEPS name)
     COMMENT "Updating ${_depsOut}"
     COMMAND ${CMAKE_COMMAND} -DBUILDYARD:PATH=${CMAKE_SOURCE_DIR}
             -P ${_scriptdir}/writeDeps.cmake
-    DEPENDEES configure DEPENDERS Makefile ALWAYS 1
+    DEPENDEES configure DEPENDERS Makefile build ALWAYS 1
     )
 endfunction()
