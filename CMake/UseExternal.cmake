@@ -311,16 +311,17 @@ function(USE_EXTERNAL NAME)
   unset(${NAME}_LIBRARY_DIRS CACHE)
   unset(${UPPER_NAME}_LIBRARy_DIRS CACHE)
 
-  message(STATUS "  ${USE_EXTERNAL_INDENT}${NAME}: use "
-    "${${UPPER_NAME}_REPO_URL}:${${UPPER_NAME}_REPO_TAG}")
   set(USE_EXTERNAL_INDENT "${USE_EXTERNAL_INDENT}  ")
 
   if("${${UPPER_NAME}_REPO_URL}" STREQUAL "")
     message(STATUS
-      "Missing dependency ${NAME}: No source repository, fix ${NAME}.cmake?")
+      "${USE_EXTERNAL_INDENT}${NAME}: No source repository, fix ${NAME}.cmake?")
     set(${NAME}_FOUND 1 PARENT_SCOPE) # ugh: removes dependency
     return()
   endif()
+
+  message(STATUS "${USE_EXTERNAL_INDENT}${NAME}: use "
+    "${${UPPER_NAME}_REPO_URL}:${${UPPER_NAME}_REPO_TAG}")
 
   # pull in dependent projects first
   set(DEPENDS)
