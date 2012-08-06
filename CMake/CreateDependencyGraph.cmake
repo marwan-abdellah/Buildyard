@@ -6,15 +6,18 @@ function(CREATE_DEPENDENCY_GRAPH_R name ALL FILE)
   string(TOUPPER ${name} NAME)
   if(${NAME}_OPTIONAL)
     file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/${ALL}.dot
-      "${NAME} [style=dashed]\n")
-    file(APPEND ${FILE} "${NAME} [style=dashed]\n")
+      "${name} [style=dashed]\n")
+    file(APPEND ${FILE} "${name} [style=dashed]\n")
   endif()
 
   foreach(_dep ${${NAME}_DEPENDS})
-    file(APPEND ${FILE} "\"${_dep}\" -> \"${NAME}\"\n" )
-    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/${ALL}.dot
-      "\"${_dep}\" -> \"${NAME}\"\n" )
-    create_dependency_graph_r(${_dep} ${ALL} ${FILE})
+    if(_dep STREQUAL "OPTIONAL" OR _dep STREQUAL "REQUIRED")
+    else()
+      file(APPEND ${FILE} "\"${_dep}\" -> \"${name}\"\n" )
+      file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/${ALL}.dot
+        "\"${_dep}\" -> \"${name}\"\n" )
+      create_dependency_graph_r(${_dep} ${ALL} ${FILE})
+    endif()
   endforeach()
 endfunction()
 
@@ -23,25 +26,25 @@ function(CREATE_DEPENDENCY_GRAPH_START DIR)
   file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${dir}.dot "strict digraph G {" )
 endfunction()
 
-function(CREATE_DEPENDENCY_GRAPH SRC DST NAME)
+function(CREATE_DEPENDENCY_GRAPH SRC DST name)
   get_filename_component(dir ${SRC} NAME)
-  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.dot "strict digraph G {" )
+  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${name}.dot "strict digraph G {" )
 
-  create_dependency_graph_r(${NAME} ${dir}
-    ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.dot)
-  file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.dot "}" )
+  create_dependency_graph_r(${name} ${dir}
+    ${CMAKE_CURRENT_BINARY_DIR}/${name}.dot)
+  file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/${name}.dot "}" )
   if(DOT_EXECUTABLE AND TRED_EXECUTABLE)
-    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${NAME}_tred.dot
-      COMMAND ${TRED_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.dot >
-               ${CMAKE_CURRENT_BINARY_DIR}/${NAME}_tred.dot
-      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.dot
+    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${name}_tred.dot
+      COMMAND ${TRED_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/${name}.dot >
+               ${CMAKE_CURRENT_BINARY_DIR}/${name}_tred.dot
+      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${name}.dot
       )
-    add_custom_command(OUTPUT ${DST}/${NAME}.png
-      COMMAND ${DOT_EXECUTABLE} -o ${DST}/${NAME}.png -Tpng
-        ${CMAKE_CURRENT_BINARY_DIR}/${NAME}_tred.dot
-      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${NAME}_tred.dot eyescale
+    add_custom_command(OUTPUT ${DST}/${name}.png
+      COMMAND ${DOT_EXECUTABLE} -o ${DST}/${name}.png -Tpng
+        ${CMAKE_CURRENT_BINARY_DIR}/${name}_tred.dot
+      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${name}_tred.dot eyescale
       )
-    add_custom_target(${NAME}-png ALL DEPENDS ${DST}/${NAME}.png)
+    add_custom_target(${name}-png ALL DEPENDS ${DST}/${name}.png)
  endif()
 endfunction()
 
