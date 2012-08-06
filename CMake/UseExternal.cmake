@@ -3,6 +3,9 @@
 
 include(ExternalProject)
 find_package(Git REQUIRED)
+include(UseExternalClone)
+include(UseExternalMakefile)
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 file(REMOVE ${CMAKE_BINARY_DIR}/projects.make)
 
@@ -23,81 +26,8 @@ add_custom_target(Buildyard-stat
 set_target_properties(Buildyard-stat PROPERTIES EXCLUDE_FROM_ALL ON)
 add_dependencies(stats Buildyard-stat)
 
+
 # overwrite git clone script generation to avoid excessive cloning
-function(_ep_write_gitclone_script script_filename source_dir git_EXECUTABLE git_repository git_tag src_name work_dir)
-
-  string(TOUPPER ${src_name} UPPER_NAME)
-  set(TAIL_REVISION ${${UPPER_NAME}_TAIL_REVISION})
-  if(TAIL_REVISION)
-      set(TAIL_REVISION_CMD "-r"${TAIL_REVISION})
-  endif(TAIL_REVISION)
-
-  file(WRITE ${script_filename}
-"if(\"${git_tag}\" STREQUAL \"\")
-  message(FATAL_ERROR \"Tag for git checkout should not be empty.\")
-endif()
-if(IS_DIRECTORY \"${work_dir}/${src_name}/.git\")
-  execute_process(
-    COMMAND \"${git_EXECUTABLE}\" fetch
-    WORKING_DIRECTORY \"${work_dir}/${src_name}\"
-    )
-  execute_process(
-    COMMAND \"${git_EXECUTABLE}\" checkout ${git_tag}
-    WORKING_DIRECTORY \"${work_dir}/${src_name}\"
-    RESULT_VARIABLE error_code
-    )
-  if(error_code)
-    message(WARNING \"Failed to checkout ${git_tag} in '${source_dir}'\")
-  endif()
-else()
-  execute_process(
-    COMMAND \${CMAKE_COMMAND} -E remove_directory \"${source_dir}\"
-    RESULT_VARIABLE error_code
-    )
-  if(error_code)
-    message(FATAL_ERROR \"Failed to remove directory: '${source_dir}'\")
-  endif()
-  execute_process(
-    COMMAND \"${git_EXECUTABLE}\" ${GIT_SVN} clone ${TAIL_REVISION_CMD} \"${git_repository}\" \"${src_name}\"
-    WORKING_DIRECTORY \"${work_dir}\"
-    RESULT_VARIABLE error_code
-    )
-  if(error_code)
-    message(FATAL_ERROR \"Failed to clone repository: '${git_repository}'\")
-  endif()
-
-  execute_process(
-    COMMAND \"${git_EXECUTABLE}\" checkout ${git_tag}
-    WORKING_DIRECTORY \"${work_dir}/${src_name}\"
-    RESULT_VARIABLE error_code
-    )
-  if(error_code)
-    message(FATAL_ERROR \"Failed to checkout tag: '${git_tag}'\")
-  endif()
-endif()
-
-execute_process(
-  COMMAND \"${git_EXECUTABLE}\" submodule init
-  WORKING_DIRECTORY \"${work_dir}/${src_name}\"
-  RESULT_VARIABLE error_code
-  )
-if(error_code)
-  message(FATAL_ERROR \"Failed to init submodules in: '${work_dir}/${src_name}'\")
-endif()
-
-execute_process(
-  COMMAND \"${git_EXECUTABLE}\" submodule update --recursive
-  WORKING_DIRECTORY \"${work_dir}/${src_name}\"
-  RESULT_VARIABLE error_code
-  )
-if(error_code)
-  message(FATAL_ERROR \"Failed to update submodules in: '${work_dir}/${src_name}'\")
-endif()
-
-"
-)
-endfunction(_ep_write_gitclone_script)
-
 # renames existing origin and adds user URL as new origin (git only)
 function(USE_EXTERNAL_CHANGE_ORIGIN NAME ORIGIN_URL USER_URL ORIGIN_RENAME)
   if(ORIGIN_URL AND USER_URL)
@@ -191,54 +121,6 @@ function(_ep_add_test_command name)
     COMMAND ${cmd}
     COMMENT "Testing ${name}"
     WORKING_DIRECTORY ${binary_dir}
-    )
-endfunction()
-
-
-function(USE_EXTERNAL_MAKEFILE NAME)
-  set(_makefile "${${UPPER_NAME}_SOURCE}/Makefile")
-  set(_gnumakefile "${${UPPER_NAME}_SOURCE}/GNUmakefile")
-  set(_scriptdir ${CMAKE_CURRENT_BINARY_DIR}/${NAME})
-
-  # Remove our old file before updating
-  file(WRITE ${_scriptdir}/rmMakefile.cmake
-    "if(EXISTS \"${_makefile}\")
-       file(READ \"${_makefile}\" _makefile_contents)
-       if(_makefile_contents MATCHES \"MAGIC_IS_BUILDYARD_MAKEFILE\")
-         file(REMOVE \"${_makefile}\")
-       endif()
-     endif()
-     if(EXISTS \"${_gnumakefile}\")
-       file(READ \"${_gnumakefile}\" _gnumakefile_contents)
-       if(_gnumakefile_contents MATCHES \"MAGIC_IS_BUILDYARD_GNUMAKEFILE\")
-         file(REMOVE \"${_gnumakefile}\")
-       endif()
-     endif()")
-
-  ExternalProject_Add_Step(${NAME} rmMakefile
-    COMMENT "Removing in-source Makefile"
-    COMMAND ${CMAKE_COMMAND} -P ${_scriptdir}/rmMakefile.cmake
-    DEPENDEES mkdir DEPENDERS download ALWAYS 1
-    )
-
-  # Move our Makefile in place if no other exists
-  file(WRITE ${_scriptdir}/cpMakefile.cmake
-    "if(NOT EXISTS \"${_makefile}\")
-       set(NAME ${NAME})
-       set(CMAKE_SOURCE_DIR ${${UPPER_NAME}_SOURCE})
-       configure_file(${CMAKE_SOURCE_DIR}/CMake/Makefile.in \"${_makefile}\"
-         @ONLY)
-     elseif(NOT EXISTS \"${_gnumakefile}\")
-       set(NAME ${NAME})
-       set(CMAKE_SOURCE_DIR ${${UPPER_NAME}_SOURCE})
-       configure_file(${CMAKE_SOURCE_DIR}/CMake/Makefile.in \"${_gnumakefile}\"
-         @ONLY)
-     endif()")
-
-  ExternalProject_Add_Step(${NAME} Makefile
-    COMMENT "Adding in-source Makefile"
-    COMMAND ${CMAKE_COMMAND} -DBUILDYARD:PATH=${CMAKE_SOURCE_DIR} -P ${_scriptdir}/cpMakefile.cmake
-    DEPENDEES configure DEPENDERS build ALWAYS 1
     )
 endfunction()
 
