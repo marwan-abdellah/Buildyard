@@ -49,7 +49,9 @@ per-project configuration file. Each project has a config/name.cmake
 configuration file, which contains the following variables:
 
 * NAME\_VERSION: the required version of the project
-* NAME\_DEPENDS: optional name list of dependencies
+* NAME\_DEPENDS: list of dependencies, OPTIONAL and REQUIRED keywords
+  are recognized. Projects with missing required dependencies will not
+  be configured
 * NAME\_REPO\_TYPE: optional, git, git-svn or svn. Default is git
 * NAME\_REPO\_URL: git or svn repository URL
 * NAME\_REPO\_TAG: The svn revision or git tag to use to build the project
