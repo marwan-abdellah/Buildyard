@@ -325,12 +325,18 @@ function(USE_EXTERNAL name)
     _ep_get_build_command(${name} BUILD cmd)
   endif()
 
+  use_external_makefile(${name})
+  use_external_deps(${name})
+  add_custom_target(${name}-clean
+    COMMAND ${cmd} clean
+    COMMENT "Cleaning ${name}"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${name}"
+    )
+  set_target_properties(${name}-clean PROPERTIES EXCLUDE_FROM_ALL ON)
+
   if(NOT APPLE)
     set(fakeroot fakeroot)
   endif()
-
-  use_external_makefile(${name})
-  use_external_deps(${name})
   add_custom_target(${name}-package
     COMMAND ${fakeroot} ${cmd} package
     COMMENT "Building package"
@@ -362,13 +368,6 @@ function(USE_EXTERNAL name)
     COMMENT "Building ${name} dependencies"
     )
   set_target_properties(${name}-deps PROPERTIES EXCLUDE_FROM_ALL ON)
-
-  add_custom_target(${name}-clean
-    COMMAND ${cmd} clean
-    COMMENT "Cleaning ${name}"
-    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${name}"
-    )
-  set_target_properties(${name}-clean PROPERTIES EXCLUDE_FROM_ALL ON)
 
   # disable tests if requested
   if(${${NAME}_NOTEST})
