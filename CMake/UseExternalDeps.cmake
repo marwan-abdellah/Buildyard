@@ -14,12 +14,16 @@ function(USE_EXTERNAL_DEPS name)
     if(${_dep} STREQUAL "OPTIONAL")
       set(DEPMODE)
     elseif(${_dep} STREQUAL "REQUIRED")
-      set(DEPMODE REQUIRED)
+      set(DEPMODE " REQUIRED")
     else()
       string(TOUPPER ${_dep} _DEP)
+      set(COMPONENTS)
+      if(${NAME}_${_DEP}_COMPONENTS)
+        set(COMPONENTS " COMPONENTS ${${NAME}_${_DEP}_COMPONENTS}")
+      endif()
       if(NOT "${${_DEP}_VERSION}" STREQUAL "")
         file(APPEND ${_depsIn}
-          "find_package(${_dep} ${${_DEP}_VERSION} ${DEPMODE})\n"
+          "find_package(${_dep} ${${_DEP}_VERSION}${DEPMODE}${COMPONENTS})\n"
           "if(${_dep}_FOUND)\n"
           "  set(${_dep}_name ${_dep})\n"
           "elseif(${_DEP}_FOUND)\n"
