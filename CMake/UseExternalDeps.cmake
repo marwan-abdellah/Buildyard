@@ -4,6 +4,10 @@
 # write in-source FindPackages.cmake
 function(USE_EXTERNAL_DEPS name)
   string(TOUPPER ${name} NAME)
+  if(${NAME}_SKIPFIND)
+    return()
+  endif()
+
   set(_depsIn "${CMAKE_CURRENT_BINARY_DIR}/${name}FindPackages.cmake")
   set(_depsOut "${${NAME}_SOURCE}/CMake/FindPackages.cmake")
   set(_scriptdir ${CMAKE_CURRENT_BINARY_DIR}/${name})
