@@ -1,4 +1,4 @@
-set(QT4_VERSION 4.7)
+set(QT4_VERSION 4.6)
 # Building from Qt from source is not that trivial and not necessary for most
 # systems as pre-build packages can be used, even for Windows:
 # http://qt.nokia.com/downloads/
