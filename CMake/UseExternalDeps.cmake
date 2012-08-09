@@ -4,7 +4,7 @@
 # write in-source FindPackages.cmake
 function(USE_EXTERNAL_DEPS name)
   string(TOUPPER ${name} NAME)
-  if(${NAME}_SKIPFIND)
+  if(${NAME}_SKIPFIND OR NOT ${NAME}_DEPENDS)
     return()
   endif()
 
