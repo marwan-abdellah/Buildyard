@@ -1,4 +1,4 @@
-if(MSVC OR APPLE) # needed?
+if(MSVC OR APPLE OR LINUX_PPC)
   return()
 endif()
 
