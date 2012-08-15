@@ -6,6 +6,7 @@ find_package(Git REQUIRED)
 include(UseExternalClone)
 include(UseExternalMakefile)
 include(UseExternalDeps)
+include(LSBInfo)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 file(REMOVE ${CMAKE_BINARY_DIR}/projects.make)
@@ -336,7 +337,12 @@ function(USE_EXTERNAL name)
 
   if(NOT APPLE)
     set(fakeroot fakeroot)
+    if(LSB_DISTRIBUTOR_ID STREQUAL "Ubuntu" AND
+        CMAKE_VERSION VERSION_GREATER 2.8.6)
+      set(fakeroot) # done by deb generator
+    endif()
   endif()
+
   add_custom_target(${name}-package
     COMMAND ${fakeroot} ${cmd} package
     COMMENT "Building package"
