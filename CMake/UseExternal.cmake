@@ -285,6 +285,7 @@ function(USE_EXTERNAL name)
   use_external_gather_args(${name})
   set(ARGS -DBUILDYARD:BOOL=ON -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
            -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH}
+           -DCMAKE_OSX_ARCHITECTURES:STRING=${CMAKE_OSX_ARCHITECTURES}
            ${${NAME}_ARGS} ${${NAME}_CMAKE_ARGS})
 
   ExternalProject_Add(${name}
