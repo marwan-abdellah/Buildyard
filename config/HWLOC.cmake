@@ -3,7 +3,8 @@ set(HWLOC_VERSION 1.4.0)
 
 # can't autopain on Windows without too much hassle
 # can't build universal on OS X
-if(MSVC OR APPLE)
+# Haven't bothered on BlueGene yet
+if(MSVC OR APPLE OR LINUX_PPC)
   return()
 endif()
 
