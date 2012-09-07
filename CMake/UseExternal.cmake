@@ -196,7 +196,7 @@ function(USE_EXTERNAL name)
   unset(${name}_INCLUDE_DIRS CACHE) # runs if it failed
   unset(${NAME}_INCLUDE_DIRS CACHE)
   unset(${name}_LIBRARY_DIRS CACHE)
-  unset(${NAME}_LIBRARy_DIRS CACHE)
+  unset(${NAME}_LIBRARY_DIRS CACHE)
 
   if("${${NAME}_REPO_URL}" STREQUAL "")
     message(STATUS

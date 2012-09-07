@@ -29,6 +29,9 @@ function(USE_EXTERNAL_DEPS name)
           set(COMPONENTS " COMPONENTS ${${NAME}_${_DEP}_COMPONENTS}")
         endif()
       endif()
+      if(${_DEP}_CMAKE_INCLUDE)
+        set(${_DEP}_CMAKE_INCLUDE "${${_DEP}_CMAKE_INCLUDE} ")
+      endif()
       if(NOT ${_DEP}_SKIPFIND)
         file(APPEND ${_depsIn}
           "find_package(${_dep} ${${_DEP}_VERSION}${DEPMODE}${COMPONENTS})\n"
@@ -39,7 +42,7 @@ function(USE_EXTERNAL_DEPS name)
           "endif()\n"
           "if(${_dep}_name)\n"
           "  link_directories(\${\${${_dep}_name}_LIBRARY_DIRS})\n"
-          "  include_directories(\${\${${_dep}_name}_INCLUDE_DIRS})\n"
+          "  include_directories(${${_DEP}_CMAKE_INCLUDE}\${\${${_dep}_name}_INCLUDE_DIRS})\n"
           "endif()\n\n"
           )
       endif()
@@ -55,6 +58,6 @@ function(USE_EXTERNAL_DEPS name)
     COMMENT "Updating ${_depsOut}"
     COMMAND ${CMAKE_COMMAND} -DBUILDYARD:PATH=${CMAKE_SOURCE_DIR}
             -P ${_scriptdir}/writeDeps.cmake
-    DEPENDEES update patch DEPENDERS configure ALWAYS 1
+    DEPENDEES update DEPENDERS configure DEPENDS ${${NAME}_CONFIGFILE}
     )
 endfunction()
