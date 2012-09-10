@@ -6,6 +6,7 @@ find_package(Git REQUIRED)
 include(UseExternalClone)
 include(UseExternalMakefile)
 include(UseExternalDeps)
+include(LSBInfo)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 file(REMOVE ${CMAKE_BINARY_DIR}/projects.make)
@@ -195,7 +196,7 @@ function(USE_EXTERNAL name)
   unset(${name}_INCLUDE_DIRS CACHE) # runs if it failed
   unset(${NAME}_INCLUDE_DIRS CACHE)
   unset(${name}_LIBRARY_DIRS CACHE)
-  unset(${NAME}_LIBRARy_DIRS CACHE)
+  unset(${NAME}_LIBRARY_DIRS CACHE)
 
   if("${${NAME}_REPO_URL}" STREQUAL "")
     message(STATUS
@@ -284,6 +285,7 @@ function(USE_EXTERNAL name)
   use_external_gather_args(${name})
   set(ARGS -DBUILDYARD:BOOL=ON -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
            -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH}
+           -DCMAKE_OSX_ARCHITECTURES:STRING=${CMAKE_OSX_ARCHITECTURES}
            ${${NAME}_ARGS} ${${NAME}_CMAKE_ARGS})
 
   ExternalProject_Add(${name}
@@ -336,7 +338,12 @@ function(USE_EXTERNAL name)
 
   if(NOT APPLE)
     set(fakeroot fakeroot)
+    if(LSB_DISTRIBUTOR_ID STREQUAL "Ubuntu" AND
+        CMAKE_VERSION VERSION_GREATER 2.8.6)
+      set(fakeroot) # done by deb generator
+    endif()
   endif()
+
   add_custom_target(${name}-package
     COMMAND ${fakeroot} ${cmd} package
     COMMENT "Building package"
