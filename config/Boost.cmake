@@ -5,7 +5,7 @@ set(BOOST_REPO_TYPE SVN)
 set(BOOST_SOURCE "${CMAKE_SOURCE_DIR}/src/Boost")
 set(BOOST_OPTIONAL ON)
 if(LINUX_PPC)
-  set(BOOST_FORCE_BUILD ON) # until module is available...
+  set(BOOST_FORCE_BUILD ON) # until 64 bit module is available...
 endif()
 
 if(MSVC)
