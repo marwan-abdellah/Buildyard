@@ -12,7 +12,11 @@ endif()
 set(BOOST_BUILD_LIBRARIES serialization system regex date_time thread filesystem
                           program_options)
 if(NOT LINUX_PPC)
-  list(APPEND BOOST_BUILD_LIBRARIES test python)
+  list(APPEND BOOST_BUILD_LIBRARIES test)
+  find_package(PythonLibs QUIET)
+  if(PYTHONLIBS_FOUND)
+    list(APPEND BOOST_BUILD_LIBRARIES python)
+  endif()
 endif()
 set(WITH_LIBRARIES)
 
@@ -27,8 +31,9 @@ if(MSVC)
   endif()
   set(BATFILE "${BOOST_SOURCE}/b3_${TOOLSET}.${ADDRESS}.bat")
   foreach(WITH_LIBRARY ${BOOST_BUILD_LIBRARIES})
-    list(APPEND WITH_LIBRARIES "--with-${WITH_LIBRARY} ")
+    list(APPEND WITH_LIBRARIES " --with-${WITH_LIBRARY}")
   endforeach()
+  string(REGEX REPLACE ";" " " WITH_LIBRARIES ${WITH_LIBRARIES})
   file(WRITE "${BATFILE}"
     "set VS_UNICODE_OUTPUT=\n"
     "b2 --layout=tagged toolset=${TOOLSET} address-model=${ADDRESS} ${WITH_LIBRARIES} \"--prefix=${CMAKE_CURRENT_BINARY_DIR}/install\" %1 %2 %3 %4\n"
