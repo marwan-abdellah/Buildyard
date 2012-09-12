@@ -85,3 +85,26 @@ are only valid for git repositories:
 
 Setting NAME\_FORCE\_BUILD to ON will disable finding installed versions
 of the project, causing the project to be always build from source.
+
+## Targets
+
+Below are the targets in addition to the standard targets of
+ExternalProject.cmake:
+
+### NAME-buildonly
+
+Builds only the the given project without considering dependencies,
+update and configure steps.
+
+### NAME-projects
+
+Builds all non-optional dependees of the given project, useful for
+testing downstream projects after API changes.
+
+### NAME-deps
+
+Builds all dependencies of the given project.
+
+### stats
+
+Runs 'SCM status' on all projects.
