@@ -41,6 +41,7 @@ function(USE_EXTERNAL_DEPS name)
           "  set(${_dep}_name ${_DEP})\n"
           "endif()\n"
           "if(${_dep}_name)\n"
+          "  add_definitions(-D${NAME}_USE_${_DEP})\n"
           "  link_directories(\${\${${_dep}_name}_LIBRARY_DIRS})\n"
           "  include_directories(${${_DEP}_CMAKE_INCLUDE}\${\${${_dep}_name}_INCLUDE_DIRS})\n"
           "endif()\n\n"
