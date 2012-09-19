@@ -6,7 +6,7 @@ set(BOOST_SOURCE "${CMAKE_SOURCE_DIR}/src/Boost")
 set(BOOST_OPTIONAL ON)
 set(BOOST_CMAKE_INCLUDE "SYSTEM")
 if(LINUX_PPC)
-  set(BOOST_FORCE_BUILD ON) # until module is available...
+  set(BOOST_FORCE_BUILD ON) # until 64 bit module is available...
 endif()
 
 set(BOOST_BUILD_LIBRARIES serialization system regex date_time thread filesystem
