@@ -241,6 +241,7 @@ function(USE_EXTERNAL name)
   endforeach()
   if(MISSING)
     message(STATUS "${USE_EXTERNAL_INDENT}${name}: SKIP, missing${MISSING}")
+    set(${name}_CHECK 1 PARENT_SCOPE)
     return()
   endif()
 
