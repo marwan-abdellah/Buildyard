@@ -33,6 +33,8 @@ function(USE_EXTERNAL_DEPS name)
         set(${_DEP}_CMAKE_INCLUDE "${${_DEP}_CMAKE_INCLUDE} ")
       endif()
       if(NOT ${_DEP}_SKIPFIND)
+        set(DEFDEP "${NAME}_USE_${_DEP}")
+        string(REGEX REPLACE "-" "_" DEFDEP ${DEFDEP})
         file(APPEND ${_depsIn}
           "find_package(${_dep} ${${_DEP}_VERSION}${DEPMODE}${COMPONENTS})\n"
           "if(${_dep}_FOUND)\n"
@@ -41,6 +43,7 @@ function(USE_EXTERNAL_DEPS name)
           "  set(${_dep}_name ${_DEP})\n"
           "endif()\n"
           "if(${_dep}_name)\n"
+          "  add_definitions(-D${DEFDEP})\n"
           "  link_directories(\${\${${_dep}_name}_LIBRARY_DIRS})\n"
           "  include_directories(${${_DEP}_CMAKE_INCLUDE}\${\${${_dep}_name}_INCLUDE_DIRS})\n"
           "endif()\n\n"
