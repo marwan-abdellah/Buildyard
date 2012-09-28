@@ -184,8 +184,12 @@ function(USE_EXTERNAL name)
     set(${name}_FOUND 1) # compat with Foo_FOUND and FOO_FOUND usage
   endif()
   if(${name}_FOUND)
-    message(STATUS "${USE_EXTERNAL_INDENT}${name}: installed in "
-      "${${NAME}_INCLUDE_DIRS}${${name}_INCLUDE_DIRS}")
+    if(NOT "${${NAME}_INCLUDE_DIRS}${${name}_INCLUDE_DIRS}" STREQUAL "")
+      message(STATUS "${USE_EXTERNAL_INDENT}${name}: installed in "
+        "${${NAME}_INCLUDE_DIRS}${${name}_INCLUDE_DIRS}")
+    else()
+      message(STATUS "${USE_EXTERNAL_INDENT}${name}: found")
+    endif()
     set(${name}_FOUND 1 PARENT_SCOPE)
     set(${name}_CHECK 1 PARENT_SCOPE)
     return()
