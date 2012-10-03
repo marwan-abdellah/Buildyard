@@ -12,7 +12,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 file(REMOVE ${CMAKE_BINARY_DIR}/projects.make)
 
 set(USE_EXTERNAL_SUBTARGETS update build buildonly configure test testonly
-  install package download deps Makefile stat clean)
+  install package download deps Makefile stat clean reset)
 foreach(subtarget ${USE_EXTERNAL_SUBTARGETS})
   add_custom_target(${subtarget}s)
   set_target_properties(${subtarget}s PROPERTIES FOLDER "00_Meta")
@@ -365,19 +365,37 @@ function(USE_EXTERNAL name)
   get_property(git_repository TARGET ${name} PROPERTY _EP_GIT_REPOSITORY)
 
   if(cvs_repository)
-    set(cmd ${CVS_EXECUTABLE} status)
+    set(STATUS_COMMAND ${CVS_EXECUTABLE} status)
+    set(RESET_COMMAND)
   elseif(svn_repository)
-    set(cmd ${Subversion_SVN_EXECUTABLE} st -q)
+    set(STATUS_COMMAND ${Subversion_SVN_EXECUTABLE} st -q)
+    set(RESET_COMMAND ${Subversion_SVN_EXECUTABLE} revert -R .)
   elseif(git_repository)
-    set(cmd ${GIT_EXECUTABLE} status --untracked-files=no -s)
+    set(STATUS_COMMAND ${GIT_EXECUTABLE} status --untracked-files=no -s)
+    set(RESET_COMMAND ${GIT_EXECUTABLE} reset HEAD -- && ${GIT_EXECUTABLE} checkout -- . && ${GIT_EXECUTABLE} clean -dxf)
   endif()
 
   add_custom_target(${name}-stat
-    COMMAND ${cmd}
+    COMMAND ${STATUS_COMMAND}
     COMMENT "${name} Status:"
     WORKING_DIRECTORY "${${NAME}_SOURCE}"
     )
   set_target_properties(${name}-stat PROPERTIES EXCLUDE_FROM_ALL ON)
+
+  add_custom_target(${name}-reset
+    COMMAND ${RESET_COMMAND}
+    COMMENT "SCM reset on ${name}"
+    WORKING_DIRECTORY "${${NAME}_SOURCE}"
+    DEPENDS ${name}-download
+    )
+  set_target_properties(${name}-reset PROPERTIES EXCLUDE_FROM_ALL ON)
+
+  foreach(_dep ${${NAME}_DEPENDS})
+    get_target_property(_dep_check ${_dep} _EP_IS_EXTERNAL_PROJECT)
+    if(_dep_check EQUAL 1)
+      add_dependencies(${name}-reset ${_dep}-reset)
+    endif()
+  endforeach()
 
   add_custom_target(${name}-deps
     DEPENDS ${DEPENDS}
