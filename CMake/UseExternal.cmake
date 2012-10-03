@@ -28,8 +28,6 @@ add_custom_target(Buildyard-stat
 set_target_properties(Buildyard-stat PROPERTIES EXCLUDE_FROM_ALL ON)
 add_dependencies(stats Buildyard-stat)
 
-
-# overwrite git clone script generation to avoid excessive cloning
 # renames existing origin and adds user URL as new origin (git only)
 function(USE_EXTERNAL_CHANGE_ORIGIN name ORIGIN_URL USER_URL ORIGIN_RENAME)
   if(ORIGIN_URL AND USER_URL)

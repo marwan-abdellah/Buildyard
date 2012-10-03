@@ -1,6 +1,11 @@
 
 # Copyright (c) 2012 Stefan Eilemann <Stefan.Eilemann@epfl.ch>
 
+if(CMAKE_VERSION VERSION_GREATER 2.8.8)
+  return()
+endif()
+
+# WAR for bug fixed in 2.8.9: http://public.kitware.com/Bug/view.php?id=12564
 # overwrite git clone script generation to avoid excessive cloning
 function(_ep_write_gitclone_script script_filename source_dir git_EXECUTABLE git_repository git_tag name work_dir)
 
