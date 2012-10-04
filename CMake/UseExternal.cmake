@@ -370,7 +370,7 @@ function(USE_EXTERNAL name)
     set(RESET_COMMAND ${Subversion_SVN_EXECUTABLE} revert -R .)
   elseif(git_repository)
     set(STATUS_COMMAND ${GIT_EXECUTABLE} status --untracked-files=no -s)
-    set(RESET_COMMAND ${GIT_EXECUTABLE} reset HEAD -- COMMAND ${GIT_EXECUTABLE} checkout -- . COMMAND ${GIT_EXECUTABLE} clean -dxf)
+    set(RESET_COMMAND ${GIT_EXECUTABLE} reset -q HEAD -- COMMAND ${GIT_EXECUTABLE} checkout -- . COMMAND ${GIT_EXECUTABLE} clean -qdxf)
   endif()
 
   add_custom_target(${name}-stat
@@ -386,12 +386,14 @@ function(USE_EXTERNAL name)
     WORKING_DIRECTORY "${${NAME}_SOURCE}"
     DEPENDS ${name}-download
     )
+  add_custom_target(${name}-resetall DEPENDS ${name}-reset)
   set_target_properties(${name}-reset PROPERTIES EXCLUDE_FROM_ALL ON)
+  set_target_properties(${name}-resetall PROPERTIES EXCLUDE_FROM_ALL ON)
 
   foreach(_dep ${${NAME}_DEPENDS})
     get_target_property(_dep_check ${_dep} _EP_IS_EXTERNAL_PROJECT)
     if(_dep_check EQUAL 1)
-      add_dependencies(${name}-reset ${_dep}-reset)
+      add_dependencies(${name}-resetall ${_dep}-resetall)
     endif()
   endforeach()
 
