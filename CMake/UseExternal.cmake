@@ -370,7 +370,7 @@ function(USE_EXTERNAL name)
     set(RESET_COMMAND ${Subversion_SVN_EXECUTABLE} revert -R .)
   elseif(git_repository)
     set(STATUS_COMMAND ${GIT_EXECUTABLE} status --untracked-files=no -s)
-    set(RESET_COMMAND ${GIT_EXECUTABLE} reset HEAD -- && ${GIT_EXECUTABLE} checkout -- . && ${GIT_EXECUTABLE} clean -dxf)
+    set(RESET_COMMAND ${GIT_EXECUTABLE} reset HEAD -- COMMAND ${GIT_EXECUTABLE} checkout -- . COMMAND ${GIT_EXECUTABLE} clean -dxf)
   endif()
 
   add_custom_target(${name}-stat
