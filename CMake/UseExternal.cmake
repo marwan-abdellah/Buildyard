@@ -270,7 +270,7 @@ function(USE_EXTERNAL name)
       if(NOT REPO_ORIGIN_NAME)
         set(REPO_ORIGIN_NAME "root")
       endif()
-      set(UPDATE_CMD ${GIT_EXECUTABLE} pull ${REPO_ORIGIN_NAME} master || ${GIT_EXECUTABLE} status
+      set(UPDATE_CMD ${GIT_EXECUTABLE} pull ${REPO_ORIGIN_NAME} ${${NAME}_REPO_TAG} || ${GIT_EXECUTABLE} status
           ALWAYS TRUE)
     else()
       # pull fails if tag is a SHA hash, use git status to set exit value to true
