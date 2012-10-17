@@ -254,10 +254,12 @@ function(USE_EXTERNAL name)
     set(REPO_TYPE git)
   endif()
   string(TOUPPER ${REPO_TYPE} REPO_TYPE)
+  set(DOWNLOAD_CMD ${REPO_TYPE}_REPOSITORY)
   if(REPO_TYPE STREQUAL "GIT-SVN")
     set(REPO_TYPE GIT)
     set(REPO_TAG GIT_TAG)
     set(GIT_SVN "svn")
+    set(DOWNLOAD_CMD ${REPO_TYPE}_REPOSITORY)
     # svn rebase fails with local modifications, ignore
     set(UPDATE_CMD ${GIT_EXECUTABLE} svn rebase || ${GIT_EXECUTABLE} status
       ALWAYS TRUE)
@@ -280,6 +282,8 @@ function(USE_EXTERNAL name)
   elseif(REPO_TYPE STREQUAL "SVN")
     find_package(Subversion REQUIRED)
     set(REPO_TAG SVN_REVISION)
+  elseif(REPO_TYPE STREQUAL "FILE")
+    set(DOWNLOAD_CMD URL)
   else()
     message(FATAL_ERROR "Unknown repository type ${REPO_TYPE}")
   endif()
@@ -302,7 +306,7 @@ function(USE_EXTERNAL name)
     SOURCE_DIR "${${NAME}_SOURCE}"
     INSTALL_DIR "${INSTALL_PATH}"
     DEPENDS "${DEPENDS}"
-    ${REPO_TYPE}_REPOSITORY ${${NAME}_REPO_URL}
+    ${DOWNLOAD_CMD} ${${NAME}_REPO_URL}
     ${REPO_TAG} ${${NAME}_REPO_TAG}
     UPDATE_COMMAND ${UPDATE_CMD}
     CMAKE_ARGS ${ARGS}
