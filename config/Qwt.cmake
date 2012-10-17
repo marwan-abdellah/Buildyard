@@ -16,6 +16,7 @@ endif()
 # - disable building of QwtDesigner (not building at least with VS2010, Qwt 5.2
 #   and Qt 4.8)
 set(QWT_EXTRA
+  SVN_TRUST_CERT 1
   CONFIGURE_COMMAND cd ${QWT_SOURCE} && qmake qwt.pro
   BUILD_COMMAND cd ${QWT_SOURCE} && nmake
   INSTALL_COMMAND cd ${QWT_SOURCE} && nmake install
