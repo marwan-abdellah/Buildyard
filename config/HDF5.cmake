@@ -1,5 +1,5 @@
 
-set(HDF5_VERSION 1.8.8)
+set(HDF5_VERSION 1.8)
 set(HDF5_REPO_URL http://www.hdfgroup.org/ftp/HDF5/current/src/hdf5-1.8.9.tar.gz)
 set(HDF5_REPO_TYPE FILE)
 set(HDF5_SOURCE "${CMAKE_SOURCE_DIR}/src/hdf5")
