@@ -136,9 +136,8 @@ function(USE_EXTERNAL name)
   # * If no pre-installed package is found, use ExternalProject to get dependency
   # ** External project settings are read from $name.cmake
 
-  get_target_property(_check ${name} _EP_IS_EXTERNAL_PROJECT)
-  if(_check OR ${name}_CHECK) # tested, be quiet and propagate upwards
-    set(${name}_CHECK 1 PARENT_SCOPE)
+  get_property(_check GLOBAL PROPERTY USE_EXTERNAL_${name})
+  if(_check) # tested, be quiet and propagate upwards
     set(${name}_FOUND ${${name}_FOUND} PARENT_SCOPE)
     if(name_external)
       set(${name}_FOUND 1 PARENT_SCOPE)
@@ -189,7 +188,7 @@ function(USE_EXTERNAL name)
       message(STATUS "${USE_EXTERNAL_INDENT}${name}: found")
     endif()
     set(${name}_FOUND 1 PARENT_SCOPE)
-    set(${name}_CHECK 1 PARENT_SCOPE)
+    set_property(GLOBAL PROPERTY USE_EXTERNAL_${name} ON)
     return()
   endif()
 
@@ -203,7 +202,7 @@ function(USE_EXTERNAL name)
   if("${${NAME}_REPO_URL}" STREQUAL "")
     message(STATUS
       "${USE_EXTERNAL_INDENT}${name}: No source repo, update ${name}.cmake?")
-    set(${name}_CHECK 1 PARENT_SCOPE)
+    set_property(GLOBAL PROPERTY USE_EXTERNAL_${name} ON)
     return()
   endif()
 
@@ -221,7 +220,8 @@ function(USE_EXTERNAL name)
     elseif(${_dep} STREQUAL "REQUIRED")
       set(DEPMODE REQUIRED)
     else()
-      if(NOT ${_dep}_CHECK)
+      get_property(_check GLOBAL PROPERTY USE_EXTERNAL_${_dep})
+      if(NOT _check)
         use_external(${_dep})
       endif()
       get_target_property(_dep_check ${_dep} _EP_IS_EXTERNAL_PROJECT)
@@ -237,13 +237,12 @@ function(USE_EXTERNAL name)
         set(MISSING "${MISSING} ${_dep}")
       endif()
 
-      set(${_dep}_CHECK 1 PARENT_SCOPE)
       set(${_dep}_FOUND ${${_dep}_FOUND} PARENT_SCOPE)
     endif()
   endforeach()
   if(MISSING)
     message(STATUS "${USE_EXTERNAL_INDENT}${name}: SKIP, missing${MISSING}")
-    set(${name}_CHECK 1 PARENT_SCOPE)
+    set_property(GLOBAL PROPERTY USE_EXTERNAL_${name} ON)
     return()
   endif()
 
@@ -436,7 +435,7 @@ function(USE_EXTERNAL name)
   endforeach()
 
   set(${name}_FOUND 1 PARENT_SCOPE)
-  set(${name}_CHECK 1 PARENT_SCOPE)
+  set_property(GLOBAL PROPERTY USE_EXTERNAL_${name} ON)
   set(BUILDING ${BUILDING} ${name} PARENT_SCOPE)
 
   if("${NAME}_ROOT_VAR" STREQUAL "")
