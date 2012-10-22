@@ -48,8 +48,9 @@ endmacro()
 
 set(_configs)
 file(GLOB _dirs "${CMAKE_SOURCE_DIR}/config*")
-if(NOT _dirs)
-  message(STATUS "No configuration found, cloning Eyescale config")
+list(LENGTH _dirs _dirs_num)
+if(_dirs_num LESS 2)
+  message(STATUS "No configurations found, cloning Eyescale config")
   execute_process(
     COMMAND "${GIT_EXECUTABLE}" clone https://github.com/Eyescale/config.git
       config.eyescale)
