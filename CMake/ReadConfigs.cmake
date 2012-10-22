@@ -29,8 +29,6 @@ macro(READ_CONFIG_DIR DIR)
 
     if(NOT EXISTS "${READ_CONFIG_DIR_DEPENDS_DIR}/.git")
       execute_process(
-        COMMAND ${CMAKE_COMMAND} -E remove_directory
-          "${READ_CONFIG_DIR_DEPENDS_DIR}"
         COMMAND "${GIT_EXECUTABLE}" clone "${READ_CONFIG_DIR_DEPENDS_REPO}"
           "${READ_CONFIG_DIR_DEPENDS_DIR}"
         WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
@@ -50,6 +48,14 @@ endmacro()
 
 set(_configs)
 file(GLOB _dirs "${CMAKE_SOURCE_DIR}/config*")
+if(NOT _dirs)
+  message(STATUS "No configuration found, cloning Eyescale config")
+  execute_process(
+    COMMAND "${GIT_EXECUTABLE}" clone https://github.com/Eyescale/config.git
+      config.eyescale)
+  file(GLOB _dirs "${CMAKE_SOURCE_DIR}/config*")
+endif()
+
 foreach(_dir ${_dirs})
   if(IS_DIRECTORY "${_dir}" AND NOT "${_dir}" MATCHES "config.local$")
     read_config_dir("${_dir}")
