@@ -5,15 +5,54 @@
 include(UseExternal)
 include(CreateDependencyGraph)
 
+macro(READ_CONFIG_DIR DIR)
+  get_property(READ_CONFIG_DIR_DONE GLOBAL PROPERTY READ_CONFIG_DIR_${DIR})
+  if(READ_CONFIG_DIR_DONE)
+    return()
+  endif()
+  set_property(GLOBAL PROPERTY READ_CONFIG_DIR_${DIR} ON)
+
+  set(READ_CONFIG_DIR_DEPENDS "")
+  if(EXISTS ${DIR}/depends.txt)
+    file(READ ${DIR}/depends.txt READ_CONFIG_DIR_DEPENDS)
+    string(REGEX REPLACE "[ \n]" ";" READ_CONFIG_DIR_DEPENDS
+      "${READ_CONFIG_DIR_DEPENDS}")
+  endif()
+  
+  list(LENGTH READ_CONFIG_DIR_DEPENDS READ_CONFIG_DIR_DEPENDS_LEFT)
+  while(READ_CONFIG_DIR_DEPENDS_LEFT GREATER 2)
+    list(GET READ_CONFIG_DIR_DEPENDS 0 READ_CONFIG_DIR_DEPENDS_DIR)
+    list(GET READ_CONFIG_DIR_DEPENDS 1 READ_CONFIG_DIR_DEPENDS_REPO)
+    list(GET READ_CONFIG_DIR_DEPENDS 2 READ_CONFIG_DIR_DEPENDS_TAG)
+    list(REMOVE_AT READ_CONFIG_DIR_DEPENDS 0 1 2)
+    list(LENGTH READ_CONFIG_DIR_DEPENDS READ_CONFIG_DIR_DEPENDS_LEFT)
+
+    if(NOT EXISTS "${READ_CONFIG_DIR_DEPENDS_DIR}/.git")
+      execute_process(
+        COMMAND ${CMAKE_COMMAND} -E remove_directory
+          "${READ_CONFIG_DIR_DEPENDS_DIR}"
+        COMMAND "${GIT_EXECUTABLE}" clone "${READ_CONFIG_DIR_DEPENDS_REPO}"
+          "${READ_CONFIG_DIR_DEPENDS_DIR}"
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+      execute_process(
+        COMMAND "${GIT_EXECUTABLE}" checkout "${READ_CONFIG_DIR_DEPENDS_TAG}"
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/${READ_CONFIG_DIR_DEPENDS_DIR}")
+    endif()
+
+    read_config_dir(${READ_CONFIG_DIR_DEPENDS_DIR})
+  endwhile()
+
+  file(GLOB _files "${DIR}/*.cmake")
+  foreach(_config ${_files})
+    include(${_config})
+  endforeach()
+endmacro()
+
 set(_configs)
 file(GLOB _dirs "${CMAKE_SOURCE_DIR}/config*")
-list(SORT _dirs)
 foreach(_dir ${_dirs})
   if(IS_DIRECTORY "${_dir}" AND NOT "${_dir}" MATCHES "config.local$")
-    file(GLOB _files "${_dir}/*.cmake")
-    foreach(_config ${_files})
-      include(${_config})
-    endforeach()
+    read_config_dir("${_dir}")
   endif()
 endforeach()
 
@@ -25,11 +64,8 @@ if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/config.local)
   endforeach()
 endif()
 
-foreach(_file ${_configs})
-  get_filename_component(_dir ${_file} PATH)
-endforeach()
-
 set(_configdone)
+file(GLOB _dirs "${CMAKE_SOURCE_DIR}/config*")
 foreach(_dir ${_dirs})
   if(IS_DIRECTORY "${_dir}" AND NOT "${_dir}" MATCHES "config.local$")
     message(STATUS "Loading ${_dir}")
