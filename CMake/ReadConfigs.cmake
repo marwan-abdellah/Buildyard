@@ -53,7 +53,8 @@ if(_dirs_num LESS 2)
   message(STATUS "No configurations found, cloning Eyescale config")
   execute_process(
     COMMAND "${GIT_EXECUTABLE}" clone https://github.com/Eyescale/config.git
-      config.eyescale)
+      config.eyescale
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
   file(GLOB _dirs "${CMAKE_SOURCE_DIR}/config*")
 endif()
 
