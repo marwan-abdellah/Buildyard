@@ -202,9 +202,6 @@ function(USE_EXTERNAL name)
     return()
   endif()
 
-  message(STATUS
-    "${USE_EXTERNAL_INDENT}${name}: use ${${NAME}_REPO_URL}:${${NAME}_REPO_TAG}")
-
   # pull in dependent projects first
   add_custom_target(${name}-projects)
   set(DEPENDS)
@@ -217,11 +214,12 @@ function(USE_EXTERNAL name)
       set(DEPMODE REQUIRED)
     else()
       get_property(_check GLOBAL PROPERTY USE_EXTERNAL_${_dep})
-      get_property(_found GLOBAL PROPERTY USE_EXTERNAL_${_dep}_FOUND)
       if(NOT _check)
         use_external(${_dep})
       endif()
+      get_property(_found GLOBAL PROPERTY USE_EXTERNAL_${_dep}_FOUND)
       get_target_property(_dep_check ${_dep} _EP_IS_EXTERNAL_PROJECT)
+
       if(_dep_check EQUAL 1)
         list(APPEND DEPENDS ${_dep})
         if("${DEPMODE}" STREQUAL "REQUIRED")
@@ -292,6 +290,9 @@ function(USE_EXTERNAL name)
            -DCMAKE_OSX_ARCHITECTURES:STRING=${CMAKE_OSX_ARCHITECTURES}
            ${${NAME}_ARGS} ${${NAME}_CMAKE_ARGS})
 
+  message(STATUS
+    "${USE_EXTERNAL_INDENT}${name}: use ${${NAME}_REPO_URL}:${${NAME}_REPO_TAG}"
+    )
   ExternalProject_Add(${name}
     LIST_SEPARATOR !
     PREFIX "${CMAKE_CURRENT_BINARY_DIR}/${name}"
