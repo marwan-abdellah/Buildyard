@@ -78,6 +78,8 @@ if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/config.local)
 endif()
 
 set(_configdone)
+add_custom_target(update)
+
 file(GLOB _dirs "${CMAKE_SOURCE_DIR}/config*")
 foreach(_dir ${_dirs})
   if(IS_DIRECTORY "${_dir}" AND NOT "${_dir}" MATCHES "config.local$")
@@ -86,6 +88,14 @@ foreach(_dir ${_dirs})
       set(_dest "${CMAKE_SOURCE_DIR}/src/eyescale/images")
     else()
       set(_dest "${_dir}")
+
+      get_filename_component(_dirName ${_dir} NAME)
+      add_custom_target(${_dirName}-update
+        COMMAND ${GIT_EXECUTABLE} pull
+        COMMENT "Updating ${_dirName}"
+        WORKING_DIRECTORY "${_dir}"
+        )
+      add_dependencies(update ${_dirName}-update)
     endif()
 
     create_dependency_graph_start(${_dir})

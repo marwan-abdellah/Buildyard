@@ -108,3 +108,9 @@ Builds all dependencies of the given project.
 ### stats
 
 Runs 'SCM status' on all projects.
+
+### update
+
+Updates all Buildyard configurations when called from Buildyard source
+directory, and updates project when called from project source
+directory.
