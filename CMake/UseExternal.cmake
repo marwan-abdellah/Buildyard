@@ -202,6 +202,10 @@ function(USE_EXTERNAL name)
     return()
   endif()
 
+  message(STATUS   # print first for nicer output
+    "${USE_EXTERNAL_INDENT}${name}: use ${${NAME}_REPO_URL}:${${NAME}_REPO_TAG}"
+    )
+
   # pull in dependent projects first
   add_custom_target(${name}-projects)
   set(DEPENDS)
@@ -290,9 +294,6 @@ function(USE_EXTERNAL name)
            -DCMAKE_OSX_ARCHITECTURES:STRING=${CMAKE_OSX_ARCHITECTURES}
            ${${NAME}_ARGS} ${${NAME}_CMAKE_ARGS})
 
-  message(STATUS
-    "${USE_EXTERNAL_INDENT}${name}: use ${${NAME}_REPO_URL}:${${NAME}_REPO_TAG}"
-    )
   ExternalProject_Add(${name}
     LIST_SEPARATOR !
     PREFIX "${CMAKE_CURRENT_BINARY_DIR}/${name}"
