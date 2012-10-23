@@ -60,6 +60,7 @@ if(_dirs_num LESS 2)
   file(GLOB _dirs "${CMAKE_SOURCE_DIR}/config*")
 endif()
 
+list(SORT _dirs) # read config/ first
 foreach(_dir ${_dirs})
   if(IS_DIRECTORY "${_dir}" AND NOT "${_dir}" MATCHES "config.local$")
     read_config_dir("${_dir}")
