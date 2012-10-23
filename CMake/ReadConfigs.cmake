@@ -7,48 +7,49 @@ include(CreateDependencyGraph)
 
 macro(READ_CONFIG_DIR DIR)
   get_property(READ_CONFIG_DIR_DONE GLOBAL PROPERTY READ_CONFIG_DIR_${DIR})
-  if(READ_CONFIG_DIR_DONE)
-    return()
-  endif()
-  set_property(GLOBAL PROPERTY READ_CONFIG_DIR_${DIR} ON)
+  if(NOT READ_CONFIG_DIR_DONE)
+    message(STATUS "Reading ${DIR}")
+    set_property(GLOBAL PROPERTY READ_CONFIG_DIR_${DIR} ON)
 
-  message(STATUS "Reading ${_dir}")
-  set(READ_CONFIG_DIR_DEPENDS "")
-  if(EXISTS ${DIR}/depends.txt)
-    file(READ ${DIR}/depends.txt READ_CONFIG_DIR_DEPENDS)
-    string(REGEX REPLACE "[ \n]" ";" READ_CONFIG_DIR_DEPENDS
-      "${READ_CONFIG_DIR_DEPENDS}")
-  endif()
-  
-  list(LENGTH READ_CONFIG_DIR_DEPENDS READ_CONFIG_DIR_DEPENDS_LEFT)
-  while(READ_CONFIG_DIR_DEPENDS_LEFT GREATER 2)
-    list(GET READ_CONFIG_DIR_DEPENDS 0 READ_CONFIG_DIR_DEPENDS_DIR)
-    list(GET READ_CONFIG_DIR_DEPENDS 1 READ_CONFIG_DIR_DEPENDS_REPO)
-    list(GET READ_CONFIG_DIR_DEPENDS 2 READ_CONFIG_DIR_DEPENDS_TAG)
-    list(REMOVE_AT READ_CONFIG_DIR_DEPENDS 0 1 2)
-    list(LENGTH READ_CONFIG_DIR_DEPENDS READ_CONFIG_DIR_DEPENDS_LEFT)
-
-    if(NOT EXISTS "${READ_CONFIG_DIR_DEPENDS_DIR}/.git")
-      execute_process(
-        COMMAND "${GIT_EXECUTABLE}" clone "${READ_CONFIG_DIR_DEPENDS_REPO}"
-          "${READ_CONFIG_DIR_DEPENDS_DIR}"
-        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
-      execute_process(
-        COMMAND "${GIT_EXECUTABLE}" checkout "${READ_CONFIG_DIR_DEPENDS_TAG}"
-        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/${READ_CONFIG_DIR_DEPENDS_DIR}")
+    set(READ_CONFIG_DIR_DEPENDS)
+    if(EXISTS ${DIR}/depends.txt)
+      file(READ ${DIR}/depends.txt READ_CONFIG_DIR_DEPENDS)
+      string(REGEX REPLACE "[ \n]" ";" READ_CONFIG_DIR_DEPENDS
+        "${READ_CONFIG_DIR_DEPENDS}")
     endif()
+  
+    list(LENGTH READ_CONFIG_DIR_DEPENDS READ_CONFIG_DIR_DEPENDS_LEFT)
+    while(READ_CONFIG_DIR_DEPENDS_LEFT GREATER 2)
+      list(GET READ_CONFIG_DIR_DEPENDS 0 READ_CONFIG_DIR_DEPENDS_DIR)
+      list(GET READ_CONFIG_DIR_DEPENDS 1 READ_CONFIG_DIR_DEPENDS_REPO)
+      list(GET READ_CONFIG_DIR_DEPENDS 2 READ_CONFIG_DIR_DEPENDS_TAG)
+      list(REMOVE_AT READ_CONFIG_DIR_DEPENDS 0 1 2)
+      list(LENGTH READ_CONFIG_DIR_DEPENDS READ_CONFIG_DIR_DEPENDS_LEFT)
 
-    read_config_dir(${READ_CONFIG_DIR_DEPENDS_DIR})
-  endwhile()
+      if(NOT EXISTS "${READ_CONFIG_DIR_DEPENDS_DIR}/.git")
+        execute_process(
+          COMMAND "${GIT_EXECUTABLE}" clone "${READ_CONFIG_DIR_DEPENDS_REPO}"
+            "${READ_CONFIG_DIR_DEPENDS_DIR}"
+          WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+        execute_process(
+          COMMAND "${GIT_EXECUTABLE}" checkout "${READ_CONFIG_DIR_DEPENDS_TAG}"
+          WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/${READ_CONFIG_DIR_DEPENDS_DIR}"
+          )
+      endif()
 
-  file(GLOB _files "${DIR}/*.cmake")
-  foreach(_config ${_files})
-    include(${_config})
-  endforeach()
+      read_config_dir(${READ_CONFIG_DIR_DEPENDS_DIR})
+    endwhile()
+
+    file(GLOB _files "${DIR}/*.cmake")
+    foreach(_config ${_files})
+      include(${_config})
+    endforeach()
+  endif()
 endmacro()
 
 set(_configs)
 file(GLOB _dirs "${CMAKE_SOURCE_DIR}/config*")
+
 list(LENGTH _dirs _dirs_num)
 if(_dirs_num LESS 2)
   message(STATUS "No configurations found, cloning Eyescale config")
