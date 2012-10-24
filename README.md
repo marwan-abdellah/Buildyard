@@ -44,8 +44,12 @@ BUILD=[directory]; make'.
 
 ## Configuration
 
+Configurations are grouped in a per-organisation config.<org> folder,
+for example for Eyescale projects: https://github.com/Eyescale/config.
+Simply check out these repositories into the Buildyard directory.
+
 The ExternalProject CMake module is the foundation for a simplified
-per-project configuration file. Each project has a config/name.cmake
+per-project configuration file. Each project has a config*/name.cmake
 configuration file, which contains the following variables:
 
 * NAME\_VERSION: the required version of the project
@@ -67,7 +71,10 @@ configuration file, which contains the following variables:
 
 The top-level CMakeLists reads all .cmake files from all config*
 directories, and use them as a project. This allows extending the base
-configuration with custom projects from other sources.
+configuration with custom projects from other sources. A depends.txt
+file can be used to automatically pull in other configuration folders,
+e.g.: https://github.com/Eyescale/config/blob/master/depends.txt
+
 
 ## Options
 ### Local overrides
