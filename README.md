@@ -46,7 +46,7 @@ BUILD=[directory]; make'.
 
 Configurations are grouped in a per-organisation config.<org> folder,
 for example for Eyescale projects: https://github.com/Eyescale/config.
-Simply check out these repositories into the Buildyard directory.
+Simply clone these repositories into the Buildyard directory.
 
 The ExternalProject CMake module is the foundation for a simplified
 per-project configuration file. Each project has a config*/name.cmake
