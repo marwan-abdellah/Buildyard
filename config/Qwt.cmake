@@ -1,4 +1,4 @@
-set(QWT_VERSION 5.2)
+set(QWT_PACKAGE_VERSION 5.2)
 set(QWT_DEPENDS REQUIRED Qt4)
 set(QWT_REPO_URL https://qwt.svn.sourceforge.net/svnroot/qwt/tags/qwt-5.2.2)
 set(QWT_REPO_TYPE svn)

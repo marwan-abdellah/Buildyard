@@ -1,5 +1,5 @@
 
-set(XDR_VERSION 1.0)
+set(XDR_PACKAGE_VERSION 1.0)
 set(XDR_REPO_URL https://github.com/marayl/openxdr.git)
 set(XDR_REPO_TAG master)
 set(XDR_SOURCE "${CMAKE_SOURCE_DIR}/src/openxdr")

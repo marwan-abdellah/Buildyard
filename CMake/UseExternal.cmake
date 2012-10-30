@@ -171,7 +171,7 @@ function(USE_EXTERNAL name)
   # try find_package
   set(USE_EXTERNAL_INDENT "${USE_EXTERNAL_INDENT}  ")
   if(NOT ${NAME}_FORCE_BUILD)
-    find_package(${name} ${${NAME}_VERSION} QUIET)
+    find_package(${name} ${${NAME}_PACKAGE_VERSION} QUIET)
   endif()
   if(${NAME}_FOUND)
     set(${name}_FOUND 1) # compat with Foo_FOUND and FOO_FOUND usage

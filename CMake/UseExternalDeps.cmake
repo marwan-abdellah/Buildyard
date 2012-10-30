@@ -36,7 +36,7 @@ function(USE_EXTERNAL_DEPS name)
         set(DEFDEP "${NAME}_USE_${_DEP}")
         string(REGEX REPLACE "-" "_" DEFDEP ${DEFDEP})
         file(APPEND ${_depsIn}
-          "find_package(${_dep} ${${_DEP}_VERSION}${DEPMODE}${COMPONENTS})\n"
+          "find_package(${_dep} ${${_DEP}_PACKAGE_VERSION}${DEPMODE}${COMPONENTS})\n"
           "if(${_dep}_FOUND)\n"
           "  set(${_dep}_name ${_dep})\n"
           "elseif(${_DEP}_FOUND)\n"

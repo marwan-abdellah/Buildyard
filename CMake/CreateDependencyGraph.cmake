@@ -5,7 +5,7 @@ add_custom_target(pngs)
 
 function(CREATE_DEPENDENCY_GRAPH_R name ALL FILE)
   string(TOUPPER ${name} NAME)
-  if(${NAME}_OPTIONAL OR NOT ${NAME}_VERSION)
+  if(${NAME}_OPTIONAL OR NOT ${NAME}_PACKAGE_VERSION)
     file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/${ALL}.dot
       "${name} [style=dashed]\n")
     file(APPEND ${FILE} "${name} [style=dashed]\n")
@@ -57,7 +57,7 @@ function(CREATE_DEPENDENCY_GRAPH SRC DST GRP name)
 endfunction()
 
 function(CREATE_DEPENDENCY_GRAPH_END SRC DST GRP)
-  get_filename_component(dir ${SRC} NAME)  
+  get_filename_component(dir ${SRC} NAME)
   file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/${dir}.dot "}" )
   if(DOT_EXECUTABLE AND TRED_EXECUTABLE)
     add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${dir}_tred.dot
@@ -74,4 +74,4 @@ function(CREATE_DEPENDENCY_GRAPH_END SRC DST GRP)
     add_custom_target(${dir}_png ALL DEPENDS ${DST}/all.png)
     add_dependencies(pngs ${dir}_png)
   endif()
-endfunction() 
+endfunction()
