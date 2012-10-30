@@ -84,11 +84,24 @@ file(GLOB _dirs "${CMAKE_SOURCE_DIR}/config*")
 foreach(_dir ${_dirs})
   if(IS_DIRECTORY "${_dir}" AND NOT "${_dir}" MATCHES "config.local$")
     message(STATUS "Configuring ${_dir}")
-    if(_dir STREQUAL "${CMAKE_SOURCE_DIR}/config")
-      set(_dest "${CMAKE_SOURCE_DIR}/src/eyescale/images")
+
+    string(REGEX REPLACE ".*\\.(.+)" "\\1" _group ${_dir})
+    if(_group STREQUAL _dir)
+      set(_group)
+    else()
+      string(TOUPPER ${_group} _GROUP)
+      if(NOT ${_GROUP}_REPO_URL)
+        set(_group)
+      endif()
+    endif()
+
+    if(_group)
+      set(_dest "${CMAKE_SOURCE_DIR}/src/${_group}/images")
     else()
       set(_dest "${_dir}")
+    endif()
 
+    if(NOT _dir STREQUAL "config")
       get_filename_component(_dirName ${_dir} NAME)
       add_custom_target(${_dirName}-update
         COMMAND ${GIT_EXECUTABLE} pull
@@ -108,14 +121,14 @@ foreach(_dir ${_dirs})
       list(FIND _configdone ${_config} _configfound)
       if(_configfound EQUAL -1)
         list(APPEND _configdone ${_config})
-        create_dependency_graph(${_dir} ${_dest} ${_config})
+        create_dependency_graph(${_dir} ${_dest} "${_group}" ${_config})
 
         string(TOUPPER ${_config} _CONFIG)
         set(${_CONFIG}_CONFIGFILE "${_configfile}")
         use_external(${_config})
       endif()
     endforeach()
-    create_dependency_graph_end(${_dir} ${_dest})
+    create_dependency_graph_end(${_dir} ${_dest} "${_group}")
 
     # Output configured projects:
     if(BUILDING)

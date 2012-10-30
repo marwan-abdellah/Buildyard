@@ -32,7 +32,7 @@ function(CREATE_DEPENDENCY_GRAPH_START DIR)
   file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${dir}.dot "strict digraph G {" )
 endfunction()
 
-function(CREATE_DEPENDENCY_GRAPH SRC DST name)
+function(CREATE_DEPENDENCY_GRAPH SRC DST GRP name)
   get_filename_component(dir ${SRC} NAME)
   file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${name}.dot "strict digraph G {" )
 
@@ -46,16 +46,17 @@ function(CREATE_DEPENDENCY_GRAPH SRC DST name)
       DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${name}.dot
       )
     add_custom_command(OUTPUT ${DST}/${name}.png
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${DST}
       COMMAND ${DOT_EXECUTABLE} -o ${DST}/${name}.png -Tpng
         ${CMAKE_CURRENT_BINARY_DIR}/${name}_tred.dot
-      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${name}_tred.dot eyescale
+      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${name}_tred.dot ${GRP}
       )
     add_custom_target(${name}-png ALL DEPENDS ${DST}/${name}.png)
     add_dependencies(pngs ${name}-png)
  endif()
 endfunction()
 
-function(CREATE_DEPENDENCY_GRAPH_END SRC DST)
+function(CREATE_DEPENDENCY_GRAPH_END SRC DST GRP)
   get_filename_component(dir ${SRC} NAME)  
   file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/${dir}.dot "}" )
   if(DOT_EXECUTABLE AND TRED_EXECUTABLE)
@@ -65,9 +66,10 @@ function(CREATE_DEPENDENCY_GRAPH_END SRC DST)
       DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${dir}.dot
       )
     add_custom_command(OUTPUT ${DST}/all.png
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${DST}
       COMMAND ${DOT_EXECUTABLE} -o ${DST}/all.png -Tpng
       ${CMAKE_CURRENT_BINARY_DIR}/${dir}_tred.dot
-      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${dir}_tred.dot eyescale
+      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${dir}_tred.dot ${GRP}
       )
     add_custom_target(${dir}_png ALL DEPENDS ${DST}/all.png)
     add_dependencies(pngs ${dir}_png)
