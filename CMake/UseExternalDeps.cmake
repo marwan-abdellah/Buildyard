@@ -9,7 +9,7 @@ function(USE_EXTERNAL_DEPS name)
   endif()
 
   # Choosing the output name for the FindPackages script
-  if("${${NAME}_FINDPACKAGES_FILENAME}" STREQUAL "")
+  if(NOT ${NAME}_FINDPACKAGES_FILENAME)
     set(_findPackagesFileName "FindPackages.cmake")
   else()
     set(_findPackagesFileName "${${NAME}_FINDPACKAGES_FILENAME}.cmake")
