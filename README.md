@@ -21,7 +21,7 @@ Use cmake to build a Visual Studio Solution. Build this solution at
 least once to download and install all dependencies. Do not use
 'Build->Build Solution', but build the project 'ALL_BUILD' or
 '00_Main->AllProjects' instead. The solution contains sub-targets without
-proper depencies, which will cause build failures.
+proper dependencies, which will cause build failures.
 
 For development, open [build]/[Project]/[Project].sln and work there as
 usual. This solution will build the (pre-configured) project without
@@ -111,6 +111,10 @@ testing downstream projects after API changes.
 ### NAME-deps
 
 Builds all dependencies of the given project.
+
+### NAME-reset
+
+Cleans all working changes in the project's source directory.
 
 ### stats
 
