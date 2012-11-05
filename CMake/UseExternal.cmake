@@ -18,6 +18,7 @@ foreach(subtarget ${USE_EXTERNAL_SUBTARGETS})
   set_target_properties(${subtarget}s PROPERTIES FOLDER "00_Meta")
 endforeach()
 add_custom_target(AllProjects)
+add_dependencies(updates update)
 set_target_properties(AllProjects PROPERTIES FOLDER "00_Main")
 
 add_custom_target(Buildyard-stat
