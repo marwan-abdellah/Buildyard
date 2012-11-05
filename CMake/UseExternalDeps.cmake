@@ -99,6 +99,12 @@ function(USE_EXTERNAL_DEPS name)
     "include(UpdateFile)\n"
     "update_file(${_depsIn} ${_depsOut})")
 
+  ExternalProject_Add_Step(${name} rmFindPackages
+    COMMENT "Removing in-source FindPackages"
+    COMMAND ${CMAKE_COMMAND} -E remove ${_depsOut}
+    DEPENDEES mkdir DEPENDERS download ALWAYS 1
+    )
+
   ExternalProject_Add_Step(${name} FindPackages
     COMMENT "Updating ${_depsOut}"
     COMMAND ${CMAKE_COMMAND} -DBUILDYARD:PATH=${CMAKE_SOURCE_DIR}
