@@ -369,8 +369,8 @@ function(USE_EXTERNAL name)
   set_target_properties(${name}-stat PROPERTIES EXCLUDE_FROM_ALL ON)
 
   add_custom_target(${name}-reset
-    COMMAND ${SCM_UNTRACK}
-    COMMAND ${SCM_RESET}
+    COMMAND ${SCM_UNSTAGE}
+    COMMAND ${SCM_RESET} .
     COMMAND ${SCM_CLEAN}
     COMMENT "SCM reset on ${name}"
     WORKING_DIRECTORY "${${NAME}_SOURCE}"
