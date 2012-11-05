@@ -99,9 +99,11 @@ function(USE_EXTERNAL_DEPS name)
     "include(UpdateFile)\n"
     "update_file(${_depsIn} ${_depsOut})")
 
+  setup_scm(${name})
   ExternalProject_Add_Step(${name} rmFindPackages
-    COMMENT "Removing in-source FindPackages"
-    COMMAND ${CMAKE_COMMAND} -E remove ${_depsOut}
+    COMMENT "Resetting FindPackages"
+    COMMAND ${SCM_RESET_FILE} CMake/${_findPackagesFileName} || ${SCM_STATUS}
+    WORKING_DIRECTORY "${${NAME}_SOURCE}"
     DEPENDEES mkdir DEPENDERS download ALWAYS 1
     )
 

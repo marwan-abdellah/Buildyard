@@ -1,6 +1,7 @@
 
 # Copyright (c) 2012 Stefan Eilemann <Stefan.Eilemann@epfl.ch>
 
+include(SCM)
 include(ExternalProject)
 find_package(Git REQUIRED)
 include(UseExternalClone)
@@ -358,30 +359,19 @@ function(USE_EXTERNAL name)
     )
   set_target_properties(${name}-package PROPERTIES EXCLUDE_FROM_ALL ON)
 
-  get_property(cvs_repository TARGET ${name} PROPERTY _EP_CVS_REPOSITORY)
-  get_property(svn_repository TARGET ${name} PROPERTY _EP_SVN_REPOSITORY)
-  get_property(git_repository TARGET ${name} PROPERTY _EP_GIT_REPOSITORY)
-
-  if(cvs_repository)
-    set(STATUS_COMMAND ${CVS_EXECUTABLE} status)
-    set(RESET_COMMAND)
-  elseif(svn_repository)
-    set(STATUS_COMMAND ${Subversion_SVN_EXECUTABLE} st -q)
-    set(RESET_COMMAND ${Subversion_SVN_EXECUTABLE} revert -R .)
-  elseif(git_repository)
-    set(STATUS_COMMAND ${GIT_EXECUTABLE} status --untracked-files=no -s)
-    set(RESET_COMMAND ${GIT_EXECUTABLE} reset -q HEAD -- COMMAND ${GIT_EXECUTABLE} checkout -- . COMMAND ${GIT_EXECUTABLE} clean -qdxf)
-  endif()
+  setup_scm(${name})
 
   add_custom_target(${name}-stat
-    COMMAND ${STATUS_COMMAND}
+    COMMAND ${SCM_STATUS}
     COMMENT "${name} Status:"
     WORKING_DIRECTORY "${${NAME}_SOURCE}"
     )
   set_target_properties(${name}-stat PROPERTIES EXCLUDE_FROM_ALL ON)
 
   add_custom_target(${name}-reset
-    COMMAND ${RESET_COMMAND}
+    COMMAND ${SCM_UNTRACK}
+    COMMAND ${SCM_RESET}
+    COMMAND ${SCM_CLEAN}
     COMMENT "SCM reset on ${name}"
     WORKING_DIRECTORY "${${NAME}_SOURCE}"
     DEPENDS ${name}-download
