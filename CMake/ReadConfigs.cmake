@@ -80,6 +80,15 @@ endif()
 set(_configdone)
 add_custom_target(update)
 
+if(IS_DIRECTORY "${CMAKE_SOURCE_DIR}/config.local")
+  add_custom_target(config.local-update
+    COMMAND ${GIT_EXECUTABLE} pull
+    COMMENT "Updating config.local"
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/config.local"
+    )
+  add_dependencies(update config.local-update)
+endif()
+
 file(GLOB _dirs "${CMAKE_SOURCE_DIR}/config*")
 foreach(_dir ${_dirs})
   if(IS_DIRECTORY "${_dir}" AND NOT "${_dir}" MATCHES "config.local$")
