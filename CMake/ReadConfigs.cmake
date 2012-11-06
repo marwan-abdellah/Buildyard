@@ -110,7 +110,7 @@ foreach(_dir ${_dirs})
       set(_dest "${_dir}")
     endif()
 
-    if(NOT _dir STREQUAL "config")
+    if(_dir MATCHES "config.")
       get_filename_component(_dirName ${_dir} NAME)
       add_custom_target(${_dirName}-update
         COMMAND ${GIT_EXECUTABLE} pull
