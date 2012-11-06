@@ -387,6 +387,19 @@ function(USE_EXTERNAL name)
   add_custom_target(${name}-resetall DEPENDS ${name}-reset)
   set_target_properties(${name}-resetall PROPERTIES EXCLUDE_FROM_ALL ON)
 
+  # bootstrapping
+  set(BOOTSTRAPFILE ${CMAKE_CURRENT_BINARY_DIR}/${name}/bootstrap.cmake)
+  file(WRITE ${BOOTSTRAPFILE}
+    "file(GLOB sourcedir_list ${${NAME}_SOURCE}/*)\n
+     list(LENGTH sourcedir_list numsourcefiles)\n
+     if(numsourcefiles EQUAL 0)\n
+       message(FATAL_ERROR \"No sources for ${name} found. Run ${name}-build before.\")\n
+     endif()\n"
+  )
+  add_custom_target(${name}-bootstrap COMMAND ${CMAKE_COMMAND} -P ${BOOTSTRAPFILE})
+  add_dependencies(${name}-buildall ${name}-bootstrap)
+  set_target_properties(${name}-bootstrap PROPERTIES EXCLUDE_FROM_ALL ON)
+
   foreach(_dep ${${NAME}_DEPENDS})
     get_target_property(_dep_check ${_dep} _EP_IS_EXTERNAL_PROJECT)
     if(_dep_check EQUAL 1)
