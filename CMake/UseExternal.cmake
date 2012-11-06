@@ -19,6 +19,7 @@ foreach(subtarget ${USE_EXTERNAL_SUBTARGETS})
   set_target_properties(${subtarget}s PROPERTIES FOLDER "00_Meta")
 endforeach()
 add_custom_target(AllProjects)
+add_custom_target(buildall)
 add_dependencies(updates update)
 set_target_properties(AllProjects PROPERTIES FOLDER "00_Main")
 
@@ -95,6 +96,11 @@ function(USE_EXTERNAL_BUILDONLY name)
   endif()
 
   add_custom_target(${name}-buildonly
+    COMMAND ${cmd}
+    COMMENT "Building ${name}"
+    WORKING_DIRECTORY ${binary_dir}
+    )
+  add_custom_target(${name}-buildall
     COMMAND ${cmd}
     COMMENT "Building ${name}"
     WORKING_DIRECTORY ${binary_dir}
@@ -376,14 +382,16 @@ function(USE_EXTERNAL name)
     WORKING_DIRECTORY "${${NAME}_SOURCE}"
     DEPENDS ${name}-download
     )
-  add_custom_target(${name}-resetall DEPENDS ${name}-reset)
   set_target_properties(${name}-reset PROPERTIES EXCLUDE_FROM_ALL ON)
+
+  add_custom_target(${name}-resetall DEPENDS ${name}-reset)
   set_target_properties(${name}-resetall PROPERTIES EXCLUDE_FROM_ALL ON)
 
   foreach(_dep ${${NAME}_DEPENDS})
     get_target_property(_dep_check ${_dep} _EP_IS_EXTERNAL_PROJECT)
     if(_dep_check EQUAL 1)
       add_dependencies(${name}-resetall ${_dep}-resetall)
+      add_dependencies(${name}-buildall ${_dep}-buildall)
     endif()
   endforeach()
 
@@ -414,6 +422,7 @@ function(USE_EXTERNAL name)
       endif()
     endforeach()
     add_dependencies(AllProjects ${name})
+    add_dependencies(buildall ${name}-buildall)
   endif()
 
   set_target_properties(${name} PROPERTIES FOLDER "00_Main")
