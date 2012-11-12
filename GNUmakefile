@@ -18,6 +18,9 @@ BUILD ?= Build
 normal: $(BUILD)/Makefile
 	@$(MAKE) --no-print-directory -C $(BUILD) buildall
 
+build: $(BUILD)/Makefile
+	@$(MAKE) --no-print-directory -C $(BUILD)
+
 all: debug release
 clean:
 	@-$(MAKE) --no-print-directory -C Build clean cleans

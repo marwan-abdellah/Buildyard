@@ -393,7 +393,10 @@ function(USE_EXTERNAL name)
     "file(GLOB sourcedir_list ${${NAME}_SOURCE}/*)\n
      list(LENGTH sourcedir_list numsourcefiles)\n
      if(numsourcefiles EQUAL 0)\n
-       message(FATAL_ERROR \"No sources for ${name} found. Please run '${name}-build' or 'builds'.\")\n
+       message(FATAL_ERROR \"No sources for ${name} found. Please run '${name}' or 'build'.\")\n
+     endif()\n
+     if(NOT EXISTS \"${CMAKE_CURRENT_BINARY_DIR}/${name}/CMakeCache.txt\")\n
+       message(FATAL_ERROR \"${name} not configured. Please build '${name}' or 'build'.\")\n
      endif()\n"
   )
   add_custom_target(${name}-bootstrap COMMAND ${CMAKE_COMMAND} -P ${BOOTSTRAPFILE})
