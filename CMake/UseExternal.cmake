@@ -395,7 +395,8 @@ function(USE_EXTERNAL name)
      if(numsourcefiles EQUAL 0)\n
        message(FATAL_ERROR \"No sources for ${name} found. Please run '${name}' or 'build'.\")\n
      endif()\n
-     if(NOT EXISTS \"${CMAKE_CURRENT_BINARY_DIR}/${name}/CMakeCache.txt\")\n
+     if(NOT EXISTS \"${CMAKE_CURRENT_BINARY_DIR}/${name}/CMakeCache.txt\" AND\n
+        NOT EXISTS \"${CMAKE_CURRENT_BINARY_DIR}/${name}/config.status\")\n
        message(FATAL_ERROR \"${name} not configured. Please build '${name}' or 'build'.\")\n
      endif()\n"
   )
