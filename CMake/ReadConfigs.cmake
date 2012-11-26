@@ -4,6 +4,8 @@
 
 include(UseExternal)
 include(CreateDependencyGraph)
+include(GitTargets)
+find_program(TAR_EXE tar)
 
 macro(READ_CONFIG_DIR DIR)
   get_property(READ_CONFIG_DIR_DONE GLOBAL PROPERTY READ_CONFIG_DIR_${DIR})
@@ -43,9 +45,27 @@ macro(READ_CONFIG_DIR DIR)
     endwhile()
 
     file(GLOB _files "${DIR}/*.cmake")
+    set(_localFiles)
+    if(EXISTS "${DIR}/depends.txt")
+      set(_localFiles "${DIR}/depends.txt")
+      string(REPLACE "${CMAKE_SOURCE_DIR}/" "" _localFiles ${_localFiles})
+    endif()
     foreach(_config ${_files})
       include(${_config})
+      string(REPLACE "${CMAKE_SOURCE_DIR}/" "" _config ${_config})
+      list(APPEND _localFiles ${_config})
     endforeach()
+
+    if(TAR_EXE)
+      string(REGEX REPLACE ".*\\.([a-zA-Z0-9]+)$" "\\1" DIRID ${DIR})
+      if(NOT "${DIR}" STREQUAL "${DIRID}")
+        add_custom_target(tarball-${DIRID}
+          COMMAND ${TAR_EXE} rf ${TARBALL} -s ":^:${CMAKE_PROJECT_NAME}-${VERSION}/:" -C "${CMAKE_SOURCE_DIR}" ${_localFiles}
+          COMMENT "Adding ${DIRID}"
+          DEPENDS tarball-${TARBALL_CHAIN})
+        set(TARBALL_CHAIN ${DIRID})
+      endif()
+    endif()
   endif()
 endmacro()
 
@@ -61,6 +81,8 @@ if(_dirs_num LESS 2)
     WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
   file(GLOB _dirs "${CMAKE_SOURCE_DIR}/config*")
 endif()
+
+set(TARBALL_CHAIN create)
 
 list(SORT _dirs) # read config/ first
 foreach(_dir ${_dirs})
@@ -151,3 +173,7 @@ foreach(_dir ${_dirs})
     endif()
   endif()
 endforeach()
+
+if(TAR_EXE)
+  add_dependencies(tarball DEPENDS tarball-${TARBALL_CHAIN})
+endif()
