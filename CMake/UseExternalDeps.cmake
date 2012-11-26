@@ -8,15 +8,8 @@ function(USE_EXTERNAL_DEPS name)
     return()
   endif()
 
-  # Choosing the output name for the FindPackages script
-  if(NOT ${NAME}_FINDPACKAGES_FILENAME)
-    set(_findPackagesFileName "FindPackages.cmake")
-  else()
-    set(_findPackagesFileName "${${NAME}_FINDPACKAGES_FILENAME}.cmake")
-  endif()
-
   set(_depsIn "${CMAKE_CURRENT_BINARY_DIR}/${name}FindPackages.cmake")
-  set(_depsOut "${${NAME}_SOURCE}/CMake/${_findPackagesFileName}")
+  set(_depsOut "${${NAME}_SOURCE}/CMake/FindPackages.cmake")
   set(_scriptdir ${CMAKE_CURRENT_BINARY_DIR}/${name})
   set(DEPMODE)
 
