@@ -125,3 +125,18 @@ Runs 'SCM status' on all projects.
 Updates all Buildyard configurations when called from Buildyard source
 directory, and updates project when called from project source
 directory.
+
+## Tips and Tricks
+
+### Macports files
+
+Buildyard automatically creates portfiles for MacPorts. Simply add
+Buildyard/Build/install/ports to your sources:
+
+```
+sudo vi /opt/local/etc/macports/sources.conf
+[...]
+file:///Users/eilemann/Software/Buildyard/Build/install/ports/
+[...]
+sudo port install Equalizer +universal
+```
