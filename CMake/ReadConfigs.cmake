@@ -5,7 +5,10 @@
 include(UseExternal)
 include(CreateDependencyGraph)
 include(GitTargets)
-find_program(TAR_EXE tar)
+find_program(TAR_EXE gnutar)
+if(NOT TAR_EXE)
+  find_program(TAR_EXE tar)
+endif()
 
 macro(READ_CONFIG_DIR DIR)
   get_property(READ_CONFIG_DIR_DONE GLOBAL PROPERTY READ_CONFIG_DIR_${DIR})
@@ -19,7 +22,7 @@ macro(READ_CONFIG_DIR DIR)
       string(REGEX REPLACE "[ \n]" ";" READ_CONFIG_DIR_DEPENDS
         "${READ_CONFIG_DIR_DEPENDS}")
     endif()
-  
+
     list(LENGTH READ_CONFIG_DIR_DEPENDS READ_CONFIG_DIR_DEPENDS_LEFT)
     while(READ_CONFIG_DIR_DEPENDS_LEFT GREATER 2)
       list(GET READ_CONFIG_DIR_DEPENDS 0 READ_CONFIG_DIR_DEPENDS_DIR)
@@ -60,7 +63,7 @@ macro(READ_CONFIG_DIR DIR)
       string(REGEX REPLACE ".*\\.([a-zA-Z0-9]+)$" "\\1" DIRID ${DIR})
       if(NOT "${DIR}" STREQUAL "${DIRID}")
         add_custom_target(tarball-${DIRID}
-          COMMAND ${TAR_EXE} rf ${TARBALL} -s ":^:${CMAKE_PROJECT_NAME}-${VERSION}/:" -C "${CMAKE_SOURCE_DIR}" ${_localFiles}
+          COMMAND ${TAR_EXE} rf ${TARBALL} --transform 's:^:${CMAKE_PROJECT_NAME}-${VERSION}/:' -C "${CMAKE_SOURCE_DIR}" ${_localFiles}
           COMMENT "Adding ${DIRID}"
           DEPENDS tarball-${TARBALL_CHAIN})
         set(TARBALL_CHAIN ${DIRID})
