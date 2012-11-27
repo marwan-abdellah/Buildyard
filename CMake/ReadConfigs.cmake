@@ -5,8 +5,9 @@
 include(UseExternal)
 include(CreateDependencyGraph)
 include(GitTargets)
-find_program(TAR_EXE gnutar)
-if(NOT TAR_EXE)
+if(APPLE)
+  find_program(TAR_EXE gnutar)
+else()
   find_program(TAR_EXE tar)
 endif()
 
