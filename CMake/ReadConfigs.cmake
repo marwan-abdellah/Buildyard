@@ -34,16 +34,19 @@ macro(READ_CONFIG_DIR DIR)
       set(READ_CONFIG_DIR_DEPENDS_DIR
         "${CMAKE_SOURCE_DIR}/${READ_CONFIG_DIR_DEPENDS_DIR}")
 
+      message(STATUS
+        "Using ${READ_CONFIG_DIR_DEPENDS_REPO}:${READ_CONFIG_DIR_DEPENDS_TAG}"
+        " for ${READ_CONFIG_DIR_DEPENDS_DIR}")
       if(NOT IS_DIRECTORY "${READ_CONFIG_DIR_DEPENDS_DIR}")
         execute_process(
           COMMAND "${GIT_EXECUTABLE}" clone "${READ_CONFIG_DIR_DEPENDS_REPO}"
             "${READ_CONFIG_DIR_DEPENDS_DIR}"
           WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
-        execute_process(
-          COMMAND "${GIT_EXECUTABLE}" checkout "${READ_CONFIG_DIR_DEPENDS_TAG}"
-          WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/${READ_CONFIG_DIR_DEPENDS_DIR}"
-          )
       endif()
+      execute_process(
+        COMMAND "${GIT_EXECUTABLE}" checkout -q "${READ_CONFIG_DIR_DEPENDS_TAG}"
+        WORKING_DIRECTORY "${READ_CONFIG_DIR_DEPENDS_DIR}"
+        )
 
       read_config_dir(${READ_CONFIG_DIR_DEPENDS_DIR})
     endwhile()
