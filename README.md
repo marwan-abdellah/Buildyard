@@ -11,7 +11,7 @@ dotted bubbles, and optional dependencies linked using dotted arrows:
 
 ## Presentation
 
-[Presentation.pdf](https://github.com/BlueBrain/Buildyard/blob/master/doc/Presentation.pdf?raw=true)
+[Presentation.pdf](https://github.com/Eyescale/Buildyard/blob/master/doc/Presentation.pdf?raw=true)
 
 ## Using
 
