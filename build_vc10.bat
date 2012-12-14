@@ -14,7 +14,7 @@ IF not exist build_vc10 (
   cmake .. -G "Visual Studio 10"
 ) ELSE (
   cd /D build_vc10
-  cmake ..
+  msbuild /p:Configuration=Release ZERO_CHECK.vcxproj
 )
 
 REM build Release configuration and use all local CPU cores

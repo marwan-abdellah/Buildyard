@@ -18,6 +18,6 @@ IF not exist build_vc9 (
 )
 
 REM build Release configuration and use all local CPU cores
-msbuild /p:Configuration=Release /m Buildyard.sln /t:ALL_BUILD
+msbuild Buildyard.sln /p:Configuration=Release /m /verbosity:detailed /t:ALL_BUILD
 cd /D %PWD%
 pause
