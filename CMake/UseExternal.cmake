@@ -9,6 +9,7 @@ include(UseExternalMakefile)
 include(UseExternalDeps)
 include(LSBInfo)
 
+set(Boost_NO_BOOST_CMAKE ON) #fix Boost find for CMake > 2.8.7
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 file(REMOVE ${CMAKE_BINARY_DIR}/projects.make)
 
@@ -300,7 +301,7 @@ function(USE_EXTERNAL name)
   set(ARGS -DBUILDYARD:BOOL=ON -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
            -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH}
            -DCMAKE_OSX_ARCHITECTURES:STRING=${CMAKE_OSX_ARCHITECTURES}
-           ${${NAME}_ARGS} ${${NAME}_CMAKE_ARGS})
+           -DBoost_NO_BOOST_CMAKE=ON ${${NAME}_ARGS} ${${NAME}_CMAKE_ARGS})
 
   ExternalProject_Add(${name}
     LIST_SEPARATOR !
