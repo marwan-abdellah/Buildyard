@@ -74,14 +74,6 @@ function(USE_EXTERNAL_GATHER_ARGS name)
     return()
   endif()
 
-  # self root '-DFOO_ROOT=<path>'
-  set(INSTALL_PATH "${CMAKE_CURRENT_BINARY_DIR}/install")
-  if("${${NAME}_ROOT_VAR}" STREQUAL "")
-    set(ARGS ${ARGS} "-D${NAME}_ROOT=${INSTALL_PATH}")
-  else()
-    set(ARGS ${ARGS} "-D${${NAME}_ROOT_VAR}=${INSTALL_PATH}")
-  endif()
-
   set(${NAME}_ARGS ${ARGS} PARENT_SCOPE) # return value
 endfunction()
 
@@ -136,8 +128,6 @@ endfunction()
 
 function(USE_EXTERNAL name)
   # Searches for an external project.
-  #  Sets NAME_ROOT to the installation directory when not found using
-  #  find_package().
   # * First searches using find_package taking into account:
   # ** NAME_ROOT CMake and environment variables
   # ** .../share/name/CMake
@@ -272,17 +262,20 @@ function(USE_EXTERNAL name)
     set(REPO_ORIGIN_URL ${${NAME}_REPO_URL})
     set(REPO_USER_URL ${${NAME}_USER_URL})
     set(REPO_ORIGIN_NAME ${${NAME}_ORIGIN_NAME})
-    if(REPO_ORIGIN_URL AND REPO_USER_URL)
-      if(NOT REPO_ORIGIN_NAME)
-        set(REPO_ORIGIN_NAME "root")
-      endif()
-      set(UPDATE_CMD ${GIT_EXECUTABLE} pull ${REPO_ORIGIN_NAME} ${${NAME}_REPO_TAG} || ${GIT_EXECUTABLE} status
-          ALWAYS TRUE)
-    else()
-      # pull fails if tag is a SHA hash, use git status to set exit value to true
-      set(UPDATE_CMD ${GIT_EXECUTABLE} pull || ${GIT_EXECUTABLE} status
-          ALWAYS TRUE)
+    set(REPO_TAG_VALUE ${${NAME}_REPO_TAG})
+    if(NOT REPO_TAG_VALUE)
+      set(REPO_TAG_VALUE "master")
     endif()
+    if(NOT REPO_ORIGIN_NAME)
+      if(REPO_ORIGIN_URL AND REPO_USER_URL)
+        set(REPO_ORIGIN_NAME "root")
+      else()
+        set(REPO_ORIGIN_NAME "origin")
+      endif()
+    endif()
+    # pull fails if tag is a SHA hash, use git status to set exit value to true
+    set(UPDATE_CMD ${GIT_EXECUTABLE} pull ${REPO_ORIGIN_NAME} ${REPO_TAG_VALUE} || ${GIT_EXECUTABLE} status
+        ALWAYS TRUE)
   elseif(REPO_TYPE STREQUAL "SVN")
     find_package(Subversion REQUIRED)
     set(REPO_TAG SVN_REVISION)
@@ -297,9 +290,11 @@ function(USE_EXTERNAL name)
   endif()
 
   set(INSTALL_PATH "${CMAKE_CURRENT_BINARY_DIR}/install")
+  list(APPEND CMAKE_PREFIX_PATH "${INSTALL_PATH}")
   use_external_gather_args(${name})
   set(ARGS -DBUILDYARD:BOOL=ON -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
            -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH}
+           -DCMAKE_PREFIX_PATH="${INSTALL_PATH}"
            -DCMAKE_OSX_ARCHITECTURES:STRING=${CMAKE_OSX_ARCHITECTURES}
            -DBoost_NO_BOOST_CMAKE=ON ${${NAME}_ARGS} ${${NAME}_CMAKE_ARGS})
 
@@ -317,7 +312,7 @@ function(USE_EXTERNAL name)
     TEST_AFTER_INSTALL 1
     ${${NAME}_EXTRA}
     STEP_TARGETS ${USE_EXTERNAL_SUBTARGETS}
-    )
+   )
   use_external_buildonly(${name})
   file(APPEND ${CMAKE_BINARY_DIR}/projects.make
     "${name}-%:\n"
@@ -451,10 +446,4 @@ function(USE_EXTERNAL name)
   set_property(GLOBAL PROPERTY USE_EXTERNAL_${name} ON)
   set_property(GLOBAL PROPERTY USE_EXTERNAL_${name}_FOUND ON)
   set(BUILDING ${BUILDING} ${name} PARENT_SCOPE)
-
-  if("${NAME}_ROOT_VAR" STREQUAL "")
-    set(${NAME}_ROOT "${INSTALL_PATH}" PARENT_SCOPE)
-  else()
-    set(${${NAME}_ROOT_VAR} "${INSTALL_PATH}" PARENT_SCOPE)
-  endif()
 endfunction()
