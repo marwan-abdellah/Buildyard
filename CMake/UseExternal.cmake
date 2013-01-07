@@ -177,8 +177,8 @@ function(USE_EXTERNAL name)
   endif()
   if(${name}_FOUND)
     if(NOT "${${NAME}_INCLUDE_DIRS}${${name}_INCLUDE_DIRS}" STREQUAL "")
-      message(STATUS "${USE_EXTERNAL_INDENT}${name}: installed in "
-        "${${NAME}_INCLUDE_DIRS}${${name}_INCLUDE_DIRS}")
+      message(STATUS "${USE_EXTERNAL_INDENT}${name}: ${${NAME}_VERSION} "
+        "installed in ${${NAME}_INCLUDE_DIRS}${${name}_INCLUDE_DIRS}")
     else()
       message(STATUS "${USE_EXTERNAL_INDENT}${name}: found")
     endif()
