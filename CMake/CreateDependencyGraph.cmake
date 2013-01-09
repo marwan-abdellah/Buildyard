@@ -34,7 +34,8 @@ endfunction()
 
 function(CREATE_DEPENDENCY_GRAPH SRC DST GRP name)
   get_filename_component(dir ${SRC} NAME)
-  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${name}.dot "strict digraph G {" )
+  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${name}.dot
+    "strict digraph G { rankdir=\"RL\";" )
 
   create_dependency_graph_r(${name} ${dir}
     ${CMAKE_CURRENT_BINARY_DIR}/${name}.dot)
