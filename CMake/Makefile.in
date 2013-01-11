@@ -16,7 +16,7 @@ package:
 	@$(MAKE) --no-print-directory -C @BUILDYARD@ @name@-package
 
 configure:
-	@$(MAKE) --no-print-directory -C @BUILDYARD@ @name@-Makefile
+	@@CMAKE_COMMAND@ @CMAKE_BINARY_DIR@/@name@
 
 test:
 	@$(MAKE) --no-print-directory -C @BUILDYARD@ @name@-testonly
