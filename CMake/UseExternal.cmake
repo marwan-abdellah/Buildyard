@@ -177,8 +177,8 @@ function(USE_EXTERNAL name)
   endif()
   if(${name}_FOUND)
     if(NOT "${${NAME}_INCLUDE_DIRS}${${name}_INCLUDE_DIRS}" STREQUAL "")
-      message(STATUS "${USE_EXTERNAL_INDENT}${name}: installed in "
-        "${${NAME}_INCLUDE_DIRS}${${name}_INCLUDE_DIRS}")
+      message(STATUS "${USE_EXTERNAL_INDENT}${name}: ${${NAME}_VERSION} "
+        "installed in ${${NAME}_INCLUDE_DIRS}${${name}_INCLUDE_DIRS}")
     else()
       message(STATUS "${USE_EXTERNAL_INDENT}${name}: found")
     endif()
@@ -290,11 +290,11 @@ function(USE_EXTERNAL name)
   endif()
 
   set(INSTALL_PATH "${CMAKE_CURRENT_BINARY_DIR}/install")
-  list(APPEND CMAKE_PREFIX_PATH "${INSTALL_PATH}")
+  list(APPEND CMAKE_PREFIX_PATH ${INSTALL_PATH})
   use_external_gather_args(${name})
   set(ARGS -DBUILDYARD:BOOL=ON -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
            -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH}
-           -DCMAKE_PREFIX_PATH="${INSTALL_PATH}"
+           -DCMAKE_PREFIX_PATH=${INSTALL_PATH}
            -DCMAKE_OSX_ARCHITECTURES:STRING=${CMAKE_OSX_ARCHITECTURES}
            -DBoost_NO_BOOST_CMAKE=ON ${${NAME}_ARGS} ${${NAME}_CMAKE_ARGS})
 
