@@ -1,12 +1,10 @@
 # Common settings
 
+cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 if(CMAKE_VERSION VERSION_LESS 2.8.3)
   # WAR bug
   get_filename_component(CMAKE_CURRENT_LIST_DIR ${CMAKE_CURRENT_LIST_FILE} PATH)
   list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/2.8.3)
-endif()
-if(CMAKE_VERSION VERSION_LESS 2.8)
-  list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/2.8)
 endif()
 
 include(${CMAKE_CURRENT_LIST_DIR}/System.cmake)
@@ -54,8 +52,11 @@ set(OUTPUT_INCLUDE_DIR ${CMAKE_BINARY_DIR}/include)
 file(MAKE_DIRECTORY ${OUTPUT_INCLUDE_DIR})
 include_directories(BEFORE ${CMAKE_SOURCE_DIR} ${OUTPUT_INCLUDE_DIR})
 
-string(REGEX REPLACE ".*\\/(share\\/.*)" "\\1/Modules" CMAKE_MODULE_INSTALL_PATH
-  ${CMAKE_ROOT})
+if(MSVC)
+  set(CMAKE_MODULE_INSTALL_PATH CMake)
+else()
+  set(CMAKE_MODULE_INSTALL_PATH "${CMAKE_PROJECT_NAME}/share/CMake")
+endif()
 
 # Boost settings
 if(MSVC)
@@ -171,7 +172,7 @@ if(APPLE)
     "Building ${CMAKE_PROJECT_NAME} ${VERSION} for ${CMAKE_OSX_ARCHITECTURES}")
 endif(APPLE)
 
-# hooks to gather all targets (libaries & executables)
+# hooks to gather all targets (libraries & executables)
 set(ALL_DEP_TARGETS "")
 macro(add_executable _target)
   _add_executable(${_target} ${ARGN})
