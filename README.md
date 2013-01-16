@@ -50,7 +50,7 @@ BUILD=[directory]; make'.
 * config.[name]/depends.txt : modules upon which the module
   depends, e.g.,
   [config.eyescale/depends.txt](https://github.com/Eyescale/config/blob/master/depends.txt).
-  Will be cloned by Buildyard automatically.
+  Dependencies will be cloned by Buildyard automatically.
 * config.[name]/[Project].cmake : A project configuration file (see
   Configuration)
 * Build/ : The build directory where all generated files land.
@@ -68,7 +68,9 @@ Simply clone these repositories into the Buildyard directory.
 
 The ExternalProject CMake module is the foundation for a simplified
 per-project configuration file. Each project has a config*/name.cmake
-configuration file, which contains the following variables:
+configuration file, for example
+[Equalizer.cmake](https://github.com/Eyescale/config/blob/master/Equalizer.cmake).
+It contains the following variables:
 
 * NAME\_VERSION: the required version of the project
 * NAME\_DEPENDS: list of dependencies, OPTIONAL and REQUIRED keywords
