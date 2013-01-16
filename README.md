@@ -42,7 +42,7 @@ Custom CMake binary directories are supported and can be used through
 the top-level make using 'make BUILD=[directory]' or 'export
 BUILD=[directory]; make'.
 
-## File Layout
+## Directory Layout
 
 * config/ : The builtin configuration files
 * config.[name] : a configuration module, e.g.,
