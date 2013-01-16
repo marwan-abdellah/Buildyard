@@ -45,9 +45,12 @@ BUILD=[directory]; make'.
 ## File Layout
 
 * config/ : The builtin configuration files
-* config.[name] : an configuration module
+* config.[name] : a configuration module, e.g.,
+  [config.eyescale](https://github.com/Eyescale/config)
 * config.[name]/depends.txt : modules upon which the module
-  depends. Will be cloned by Buildyard automatically.
+  depends, e.g.,
+  [config.eyescale/depends.txt](https://github.com/Eyescale/config/blob/master/depends.txt).
+  Will be cloned by Buildyard automatically.
 * config.[name]/[Project].cmake : A project configuration file (see
   Configuration)
 * Build/ : The build directory where all generated files land.
@@ -60,7 +63,7 @@ BUILD=[directory]; make'.
 ## Configuration
 
 Configurations are grouped in a per-organisation config.[org] folder,
-for example for Eyescale projects: https://github.com/Eyescale/config.
+for example [config.eyescale](https://github.com/Eyescale/config).
 Simply clone these repositories into the Buildyard directory.
 
 The ExternalProject CMake module is the foundation for a simplified
