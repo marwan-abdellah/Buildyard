@@ -6,6 +6,9 @@ if(CMAKE_VERSION VERSION_LESS 2.8.3)
   get_filename_component(CMAKE_CURRENT_LIST_DIR ${CMAKE_CURRENT_LIST_FILE} PATH)
   list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/2.8.3)
 endif()
+if(CMAKE_VERSION VERSION_LESS 2.8.8)
+  list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/2.8.8)
+endif()
 
 include(${CMAKE_CURRENT_LIST_DIR}/System.cmake)
 
@@ -23,6 +26,7 @@ endif(NOT CMAKE_BUILD_TYPE)
 
 set(VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
 string(TOUPPER ${CMAKE_PROJECT_NAME} UPPER_PROJECT_NAME)
+string(TOLOWER ${CMAKE_PROJECT_NAME} LOWER_PROJECT_NAME)
 add_definitions(-D${UPPER_PROJECT_NAME}_VERSION=${VERSION})
 if(NOT VERSION_ABI)
   if(RELEASE_VERSION)
@@ -53,9 +57,9 @@ file(MAKE_DIRECTORY ${OUTPUT_INCLUDE_DIR})
 include_directories(BEFORE ${CMAKE_SOURCE_DIR} ${OUTPUT_INCLUDE_DIR})
 
 if(MSVC)
-  set(CMAKE_MODULE_INSTALL_PATH CMake)
+  set(CMAKE_MODULE_INSTALL_PATH ${CMAKE_PROJECT_NAME})
 else()
-  set(CMAKE_MODULE_INSTALL_PATH "${CMAKE_PROJECT_NAME}/share/CMake")
+  set(CMAKE_MODULE_INSTALL_PATH share/${CMAKE_PROJECT_NAME}/CMake)
 endif()
 
 # Boost settings
@@ -173,12 +177,45 @@ if(APPLE)
 endif(APPLE)
 
 # hooks to gather all targets (libraries & executables)
+include(CMakeParseArguments)
 set(ALL_DEP_TARGETS "")
+set(ALL_LIB_TARGETS "")
 macro(add_executable _target)
   _add_executable(${_target} ${ARGN})
   set_property(GLOBAL APPEND PROPERTY ALL_DEP_TARGETS ${_target})
 endmacro()
 macro(add_library _target)
   _add_library(${_target} ${ARGN})
+
+  # ignore IMPORTED add_library from finders (e.g. Qt)
+  cmake_parse_arguments(_arg "IMPORTED" "" "" ${ARGN})
+  if(_arg_IMPORTED)
+    return()
+  endif()
+
+  # add defines TARGET_DSO_NAME and TARGET_SHARED for dlopen() usage
+  get_target_property(THIS_DEFINITIONS ${_target} COMPILE_DEFINITIONS)
+  if(NOT THIS_DEFINITIONS)
+    set(THIS_DEFINITIONS) # clear THIS_DEFINITIONS-NOTFOUND
+  endif()
+  string(TOUPPER ${_target} _TARGET)
+
+  if(MSVC OR XCODE_VERSION)
+    set(_libraryname ${CMAKE_SHARED_LIBRARY_PREFIX}${_target}${CMAKE_SHARED_LIBRARY_SUFFIX})
+  else()
+    if(APPLE)
+      set(_libraryname ${CMAKE_SHARED_LIBRARY_PREFIX}${_target}.${VERSION_ABI}${CMAKE_SHARED_LIBRARY_SUFFIX})
+    else()
+      set(_libraryname ${CMAKE_SHARED_LIBRARY_PREFIX}${_target}${CMAKE_SHARED_LIBRARY_SUFFIX}.${VERSION_ABI})
+    endif()
+  endif()
+
+  list(APPEND THIS_DEFINITIONS
+    ${_TARGET}_SHARED ${_TARGET}_DSO_NAME=\"${_libraryname}\")
+
+  set_target_properties(${_target} PROPERTIES
+    COMPILE_DEFINITIONS "${THIS_DEFINITIONS}")
+
   set_property(GLOBAL APPEND PROPERTY ALL_DEP_TARGETS ${_target})
+  set_property(GLOBAL APPEND PROPERTY ALL_LIB_TARGETS ${_target})
 endmacro()
