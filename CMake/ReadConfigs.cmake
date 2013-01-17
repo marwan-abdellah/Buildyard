@@ -108,13 +108,13 @@ endif()
 
 set(_configdone)
 add_custom_target(update
-  COMMAND ${GIT_EXECUTABLE} pull
+  COMMAND ${GIT_EXECUTABLE} pull || ${GIT_EXECUTABLE} status
   COMMENT "Updating Buildyard"
   WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
 
 if(IS_DIRECTORY "${CMAKE_SOURCE_DIR}/config.local")
   add_custom_target(config.local-update
-    COMMAND ${GIT_EXECUTABLE} pull
+    COMMAND ${GIT_EXECUTABLE} pull || ${GIT_EXECUTABLE} status
     COMMENT "Updating config.local"
     WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/config.local"
     )
@@ -145,7 +145,7 @@ foreach(_dir ${_dirs})
     if(_dir MATCHES "config.")
       get_filename_component(_dirName ${_dir} NAME)
       add_custom_target(${_dirName}-update
-        COMMAND ${GIT_EXECUTABLE} pull
+        COMMAND ${GIT_EXECUTABLE} pull || ${GIT_EXECUTABLE} status
         COMMENT "Updating ${_dirName}"
         WORKING_DIRECTORY "${_dir}"
         )
