@@ -108,7 +108,7 @@ endif()
 
 set(_configdone)
 add_custom_target(update
-  COMMAND ${GIT_EXECUTABLE} pull
+  COMMAND ${GIT_EXECUTABLE} pull || ${GIT_EXECUTABLE} status
   COMMENT "Updating Buildyard"
   WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
 
