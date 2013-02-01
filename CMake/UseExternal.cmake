@@ -8,6 +8,7 @@ find_package(Git REQUIRED)
 include(UseExternalClone)
 include(UseExternalMakefile)
 include(UseExternalDeps)
+include(UseExternalAutoconf)
 include(LSBInfo)
 
 set(Boost_NO_BOOST_CMAKE ON) #fix Boost find for CMake > 2.8.7
@@ -150,6 +151,9 @@ function(USE_EXTERNAL name)
   set(ENVROOT $ENV{${ROOT}})
   set(SHORT_ROOT ${SHORT_NAME}_ROOT)
   set(SHORT_ENVROOT $ENV{${SHORT_ROOT}})
+  if(NOT ${NAME}_SOURCE)
+    set(${NAME}_SOURCE "${CMAKE_SOURCE_DIR}/src/${name}")
+  endif()
 
   # CMake module search path
   if(${${SHORT_ROOT}})
@@ -295,10 +299,6 @@ function(USE_EXTERNAL name)
     message(FATAL_ERROR "Unknown repository type ${REPO_TYPE}")
   endif()
 
-  if(NOT ${NAME}_SOURCE)
-    set(${NAME}_SOURCE "${CMAKE_SOURCE_DIR}/src/${name}")
-  endif()
-
   set(INSTALL_PATH "${CMAKE_CURRENT_BINARY_DIR}/install")
   list(APPEND CMAKE_PREFIX_PATH ${INSTALL_PATH})
   use_external_gather_args(${name})
@@ -349,6 +349,7 @@ function(USE_EXTERNAL name)
 
   use_external_makefile(${name})
   use_external_deps(${name})
+  use_external_autoconf(${name})
   add_custom_target(${name}-clean
     COMMAND ${cmd} clean
     COMMENT "Cleaning ${name}"
