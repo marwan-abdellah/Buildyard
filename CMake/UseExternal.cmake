@@ -1,8 +1,9 @@
 
-# Copyright (c) 2012 Stefan Eilemann <Stefan.Eilemann@epfl.ch>
+# Copyright (c) 2012-2013 Stefan Eilemann <Stefan.Eilemann@epfl.ch>
 
 include(SCM)
 include(ExternalProject)
+include(CMakeParseArguments)
 find_package(Git REQUIRED)
 include(UseExternalClone)
 include(UseExternalMakefile)
@@ -135,6 +136,7 @@ function(USE_EXTERNAL name)
   # * If no pre-installed package is found, use ExternalProject to get dependency
   # ** External project settings are read from $name.cmake
 
+  cmake_parse_arguments(USE_EXTERNAL "" "" "COMPONENTS" ${ARGN})
   get_property(_check GLOBAL PROPERTY USE_EXTERNAL_${name})
   if(_check) # tested, be quiet and propagate upwards
     set(BUILDING ${BUILDING} PARENT_SCOPE)
@@ -170,7 +172,14 @@ function(USE_EXTERNAL name)
   # try find_package
   set(USE_EXTERNAL_INDENT "${USE_EXTERNAL_INDENT}  ")
   if(NOT ${NAME}_FORCE_BUILD)
-    find_package(${name} ${${NAME}_PACKAGE_VERSION} QUIET)
+    if(USE_EXTERNAL_COMPONENTS)
+      string(REGEX REPLACE  " " ";" USE_EXTERNAL_COMPONENTS
+        ${USE_EXTERNAL_COMPONENTS})
+      find_package(${name} ${${NAME}_PACKAGE_VERSION}
+        COMPONENTS ${USE_EXTERNAL_COMPONENTS})
+    else()
+      find_package(${name} ${${NAME}_PACKAGE_VERSION} QUIET)
+    endif()
   endif()
   if(${NAME}_FOUND)
     set(${name}_FOUND 1) # compat with Foo_FOUND and FOO_FOUND usage
@@ -218,7 +227,8 @@ function(USE_EXTERNAL name)
     else()
       get_property(_check GLOBAL PROPERTY USE_EXTERNAL_${_dep})
       if(NOT _check)
-        use_external(${_dep})
+        string(TOUPPER ${_dep} _DEP)
+        use_external(${_dep} COMPONENTS ${${NAME}_${_DEP}_COMPONENTS})
       endif()
       get_property(_found GLOBAL PROPERTY USE_EXTERNAL_${_dep}_FOUND)
       get_target_property(_dep_check ${_dep} _EP_IS_EXTERNAL_PROJECT)
