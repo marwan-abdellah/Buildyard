@@ -175,7 +175,7 @@ function(USE_EXTERNAL name)
     if(USE_EXTERNAL_COMPONENTS)
       string(REGEX REPLACE  " " ";" USE_EXTERNAL_COMPONENTS
         ${USE_EXTERNAL_COMPONENTS})
-      find_package(${name} ${${NAME}_PACKAGE_VERSION}
+      find_package(${name} ${${NAME}_PACKAGE_VERSION} QUIET
         COMPONENTS ${USE_EXTERNAL_COMPONENTS})
     else()
       find_package(${name} ${${NAME}_PACKAGE_VERSION} QUIET)
