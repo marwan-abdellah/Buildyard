@@ -240,7 +240,7 @@ function(USE_EXTERNAL name)
       if(_dep_check EQUAL 1)
         list(APPEND DEPENDS ${_dep})
         if("${DEPMODE}" STREQUAL "REQUIRED")
-          add_dependencies(${_dep}-projects ${name} ${name}-projects)
+          add_dependencies(${_dep}-projects ${name}-projects ${name}-buildall)
         endif()
       endif()
 
