@@ -1,6 +1,6 @@
 
 set(BOOST_PACKAGE_VERSION 1.41.0)
-set(BOOST_REPO_URL http://svn.boost.org/svn/boost/tags/release/Boost_1_52_0)
+set(BOOST_REPO_URL http://svn.boost.org/svn/boost/tags/release/Boost_1_53_0)
 set(BOOST_REPO_TYPE SVN)
 set(BOOST_SOURCE "${CMAKE_SOURCE_DIR}/src/Boost")
 set(BOOST_OPTIONAL ON)
