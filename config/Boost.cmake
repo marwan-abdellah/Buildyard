@@ -31,7 +31,7 @@ if(MSVC)
   string(REGEX REPLACE ";" " " WITH_LIBRARIES ${WITH_LIBRARIES})
   file(WRITE "${BATFILE}"
     "set VS_UNICODE_OUTPUT=\n"
-    "b2 --layout=tagged toolset=${TOOLSET} address-model=${ADDRESS} ${WITH_LIBRARIES} \"--prefix=${CMAKE_CURRENT_BINARY_DIR}/install\" %1 %2 %3 %4\n"
+    "b2 --layout=tagged toolset=${TOOLSET} address-model=${ADDRESS} ${WITH_LIBRARIES} link=shared \"--prefix=${CMAKE_CURRENT_BINARY_DIR}/install\" %1 %2 %3 %4\n"
 )
   set(BOOTSTRAP cd ${BOOST_SOURCE} && bootstrap.bat)
   set(BTWO ${BATFILE})
