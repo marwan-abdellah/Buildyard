@@ -220,7 +220,7 @@ if(RELEASE_NAME)
       "  \"\\n\"\n"
       ")\n"
       "foreach(_releaseproj ${RELEASE_PROJECTS})\n"
-      "  file(READ ${CMAKE_CURRENT_BINARY_DIR}/\${_releaseproj}/\${_releaseproj}Module.txt \${_releaseproj}modulename)\n"
+      "  file(READ ${CMAKE_CURRENT_BINARY_DIR}/\${_releaseproj}/Module.txt \${_releaseproj}modulename)\n"
       "  file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/${RELEASE_NAME}\n"
       "    \"module load \${\${_releaseproj}modulename}\\n\"\n"
       "  )\n"
