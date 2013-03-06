@@ -158,15 +158,17 @@ foreach(_dir ${_dirs})
       string(REPLACE ".cmake" "" _config ${_configfile})
       get_filename_component(_config ${_config} NAME)
 
-      set(_configfound)
-      list(FIND _configdone ${_config} _configfound)
-      if(_configfound EQUAL -1)
-        list(APPEND _configdone ${_config})
-        create_dependency_graph(${_dir} ${_dest} "${_group}" ${_config})
+      if(NOT _config STREQUAL "Release")
+        set(_configfound)
+        list(FIND _configdone ${_config} _configfound)
+        if(_configfound EQUAL -1)
+          list(APPEND _configdone ${_config})
+          create_dependency_graph(${_dir} ${_dest} "${_group}" ${_config})
 
-        string(TOUPPER ${_config} _CONFIG)
-        set(${_CONFIG}_CONFIGFILE "${_configfile}")
-        use_external(${_config})
+          string(TOUPPER ${_config} _CONFIG)
+          set(${_CONFIG}_CONFIGFILE "${_configfile}")
+          use_external(${_config})
+        endif()
       endif()
     endforeach()
     create_dependency_graph_end(${_dir} ${_dest} "${_group}")
@@ -186,4 +188,60 @@ endif()
 
 if(TAR_EXE)
   add_dependencies(tarball DEPENDS tarball-${TARBALL_CHAIN})
+endif()
+
+# make metarelease: package & module for selected projects specified
+# in config.*/Release.cmake
+if(RELEASE_NAME)
+  # metamodule
+  if(MODULE_MODULEFILES)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/MetaModule.cmake
+      "file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${RELEASE_NAME}\n"
+      "  \"#%Module1.0\\n\"\n"
+      "  \"######################################################################\\n\"\n"
+      "  \"#\\n\"\n"
+      "  \"# Module:      ${RELEASE_NAME}\\n\"\n"
+      "  \"#\\n\"\n"
+      "  \"#\\n\"\n"
+      "  \"\\n\"\n"
+      "  \"# Set internal variables\\n\"\n"
+      "  \"set package_name \\\"${RELEASE_NAME}\\\"\\n\"\n"
+      "  \"\\n\"\n"
+      "  \"module-whatis \\\"Meta module for Release ${RELEASE_NAME}\\\"\\n\"\n"
+      "  \"\\n\"\n"
+      "  \"proc ModulesHelp { } {\\n\"\n"
+      "  \"    global package_name\\n\"\n"
+      "  \"\\n\"\n"
+      "  \"    puts stderr \\\"This meta module prepares your environment for ${RELEASE_NAME}\\n\"\n"
+      "  \"\\n\"\n"
+      "  \"Type 'module list' to list all the loaded modules.\\n\"\n"
+      "  \"Type 'module avail' to list all the availables ones.\\\"\\n\"\n"
+      "  \"}\\n\"\n"
+      "  \"\\n\"\n"
+      ")\n"
+      "foreach(_releaseproj ${RELEASE_PROJECTS})\n"
+      "  file(READ ${CMAKE_CURRENT_BINARY_DIR}/\${_releaseproj}/\${_releaseproj}Module.txt \${_releaseproj}modulename)\n"
+      "  file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/${RELEASE_NAME}\n"
+      "    \"module load \${\${_releaseproj}modulename}\\n\"\n"
+      "  )\n"
+      "endforeach()\n"
+    )
+
+    add_custom_target(metamodule
+      COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/MetaModule.cmake &&
+              ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/${RELEASE_NAME} ${MODULE_MODULEFILES}/${RELEASE_NAME}
+      COMMENT "Created meta module ${RELEASE_NAME} at ${MODULE_MODULEFILES}: ${RELEASE_PROJECTS}")
+
+    foreach(_releaseproj ${RELEASE_PROJECTS})
+      add_dependencies(metamodule ${_releaseproj}-module)
+    endforeach()
+  endif()
+
+  # metapackage
+  add_custom_target(metapackage
+    COMMENT "Created packages for Release ${RELEASE_NAME}: ${RELEASE_PROJECTS}"
+  )
+  foreach(_releaseproj ${RELEASE_PROJECTS})
+    add_dependencies(metapackage ${_releaseproj}-package)
+  endforeach()
 endif()

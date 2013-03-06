@@ -306,7 +306,11 @@ function(USE_EXTERNAL name)
            -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH}
            -DCMAKE_PREFIX_PATH=${INSTALL_PATH}
            -DCMAKE_OSX_ARCHITECTURES:STRING=${CMAKE_OSX_ARCHITECTURES}
-           -DBoost_NO_BOOST_CMAKE=ON ${${NAME}_ARGS} ${${NAME}_CMAKE_ARGS})
+           -DBoost_NO_BOOST_CMAKE=ON
+           -DMODULE_SW_BASEDIR:INTERNAL=${MODULE_SW_BASEDIR}
+           -DMODULE_MODULEFILES:INTERNAL=${MODULE_MODULEFILES}
+           -DMODULE_SW_CLASS:INTERNAL=${MODULE_SW_CLASS}
+            ${${NAME}_ARGS} ${${NAME}_CMAKE_ARGS})
 
   ExternalProject_Add(${name}
     LIST_SEPARATOR !
@@ -371,6 +375,13 @@ function(USE_EXTERNAL name)
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${name}"
     )
   set_target_properties(${name}-package PROPERTIES EXCLUDE_FROM_ALL ON)
+
+  add_custom_target(${name}-module
+    COMMAND ${cmd} module
+    COMMENT "Building module for ${name}"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${name}"
+    )
+  set_target_properties(${name}-module PROPERTIES EXCLUDE_FROM_ALL ON)
 
   setup_scm(${name})
 
