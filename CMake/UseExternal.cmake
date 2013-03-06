@@ -339,7 +339,7 @@ function(USE_EXTERNAL name)
     unset(${REPO_ORIGIN_NAME} CACHE)
   endif()
 
-  # add optional targets: package, doxygen, github
+  # add optional targets: package, stat, reset
   get_property(cmd_set TARGET ${name} PROPERTY _EP_BUILD_COMMAND SET)
   if(cmd_set)
     get_property(cmd TARGET ${name} PROPERTY _EP_BUILD_COMMAND)
