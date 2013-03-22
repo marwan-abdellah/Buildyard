@@ -23,6 +23,8 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
   endif()
 endif(NOT CMAKE_BUILD_TYPE)
+set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -DNDEBUG")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -DNDEBUG")
 
 set(VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
 string(TOUPPER ${CMAKE_PROJECT_NAME} UPPER_PROJECT_NAME)
@@ -63,9 +65,6 @@ else()
 endif()
 
 # Boost settings
-if(MSVC)
-  option(Boost_USE_STATIC_LIBS "Use boost static libs" ON)
-endif()
 if(BOOST_ROOT)
   set(Boost_NO_SYSTEM_PATHS TRUE)
 endif()
@@ -77,40 +76,7 @@ if(BIGENDIAN)
   add_definitions(-D${UPPER_PROJECT_NAME}_BIGENDIAN)
 endif()
 
-# Compiler settings
-if(CMAKE_CXX_COMPILER_ID STREQUAL "XL")
-  set(CMAKE_COMPILER_IS_XLCXX ON)
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
-  set(CMAKE_COMPILER_IS_INTEL ON)
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  set(CMAKE_COMPILER_IS_CLANG ON)
-elseif(CMAKE_COMPILER_IS_GNUCXX)
-  set(CMAKE_COMPILER_IS_GNUCXX_PURE ON)
-endif()
-
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
-  include(${CMAKE_CURRENT_LIST_DIR}/CompilerVersion.cmake)
-  COMPILER_DUMPVERSION(GCC_COMPILER_VERSION)
-  if(GCC_COMPILER_VERSION VERSION_LESS 4.1)
-    message(ERROR "GCC 4.1 or later required, found ${GCC_COMPILER_VERSION}")
-  endif()
-  set(COMMON_GCC_FLAGS "-Wall -Wextra -Winvalid-pch -Winit-self -Wno-unknown-pragmas -Wno-unused-parameter")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_GCC_FLAGS} ")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_GCC_FLAGS} -Wnon-virtual-dtor -Wsign-promo")
-  if(GCC_COMPILER_VERSION VERSION_GREATER 4.1) # < 4.2 doesn't know -isystem
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow")
-  endif()
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing")
-  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wuninitialized")
-  if(NOT WIN32 AND NOT XCODE_VERSION AND NOT RELEASE_VERSION)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
-  endif()
-  if(CMAKE_COMPILER_IS_CLANG)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qunused-arguments")
-  endif()
-elseif(CMAKE_COMPILER_IS_INTEL)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-unknown-pragmas")
-endif()
+include(Compiler) # compiler-specific default options and warnings
 
 if(MSVC)
   add_definitions(
@@ -159,7 +125,7 @@ endif()
 set(LIBRARY_DIR lib${LIB_SUFFIX})
 
 if(APPLE)
-  list(APPEND CMAKE_PREFIX_PATH "/opt/local/") # Macports
+  list(APPEND CMAKE_PREFIX_PATH /opt/local/ /opt/local/lib) # Macports
   if(NOT CMAKE_OSX_ARCHITECTURES OR CMAKE_OSX_ARCHITECTURES STREQUAL "")
     if(_CMAKE_OSX_MACHINE MATCHES "ppc")
       set(CMAKE_OSX_ARCHITECTURES "ppc;ppc64" CACHE

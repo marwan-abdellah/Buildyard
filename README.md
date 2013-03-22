@@ -19,8 +19,8 @@ dotted bubbles, and optional dependencies linked using dotted arrows:
 
 Use cmake to build a Visual Studio Solution. Build this solution at
 least once to download and install all dependencies. Do not use
-'Build-]Build Solution', but build the project 'ALL_BUILD' or
-'00_Main-]AllProjects' instead. The solution contains sub-targets without
+'Build - Build Solution', but build the project 'ALL_BUILD' or
+'00_Main - AllProjects' instead. The solution contains sub-targets without
 proper dependencies, which will cause build failures.
 
 For development, open [build]/[Project]/[Project].sln and work there as

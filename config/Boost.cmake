@@ -1,6 +1,6 @@
 
 set(BOOST_PACKAGE_VERSION 1.41.0)
-set(BOOST_REPO_URL http://svn.boost.org/svn/boost/tags/release/Boost_1_52_0)
+set(BOOST_REPO_URL http://svn.boost.org/svn/boost/tags/release/Boost_1_53_0)
 set(BOOST_REPO_TYPE SVN)
 set(BOOST_SOURCE "${CMAKE_SOURCE_DIR}/src/Boost")
 set(BOOST_OPTIONAL ON)
@@ -31,7 +31,7 @@ if(MSVC)
   string(REGEX REPLACE ";" " " WITH_LIBRARIES ${WITH_LIBRARIES})
   file(WRITE "${BATFILE}"
     "set VS_UNICODE_OUTPUT=\n"
-    "b2 --layout=tagged toolset=${TOOLSET} address-model=${ADDRESS} ${WITH_LIBRARIES} \"--prefix=${CMAKE_CURRENT_BINARY_DIR}/install\" %1 %2 %3 %4\n"
+    "b2 --layout=tagged toolset=${TOOLSET} address-model=${ADDRESS} ${WITH_LIBRARIES} link=shared \"--prefix=${CMAKE_CURRENT_BINARY_DIR}/install\" %1 %2 %3 %4\n"
 )
   set(BOOTSTRAP cd ${BOOST_SOURCE} && bootstrap.bat)
   set(BTWO ${BATFILE})
